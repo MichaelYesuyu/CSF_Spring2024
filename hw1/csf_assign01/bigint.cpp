@@ -1,4 +1,5 @@
 #include <cassert>
+#include <sstream>
 #include "bigint.h"
 
 BigInt::BigInt(){
@@ -91,7 +92,14 @@ int BigInt::compare(const BigInt &rhs) const
 
 std::string BigInt::to_hex() const
 {
-  // TODO: implement
+  std::stringstream ss;
+  if(isNegative){
+    ss << "-";
+  }
+  for(auto it = values.rbegin(); it != values.rend(); ++it){
+    ss << std::hex << *it;
+  }
+  return ss.str();
 }
 
 std::string BigInt::to_dec() const
