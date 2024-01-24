@@ -35,12 +35,16 @@ bool BigInt::is_negative() const {
 }
 
 const std::vector<uint64_t> &BigInt::get_bit_vector() const {
-  // TODO: implement
+  return values;
 }
 
 uint64_t BigInt::get_bits(unsigned index) const
 {
-  // TODO: implement
+  if(index >= values.size()){
+    return 0;
+  }else{
+    return values[index];
+  }
 }
 
 BigInt BigInt::operator+(const BigInt &rhs) const
