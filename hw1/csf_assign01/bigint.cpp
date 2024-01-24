@@ -1,5 +1,6 @@
 #include <cassert>
 #include <sstream>
+#include <iomanip>
 #include "bigint.h"
 
 BigInt::BigInt(){
@@ -97,7 +98,11 @@ std::string BigInt::to_hex() const
     ss << "-";
   }
   for(auto it = values.rbegin(); it != values.rend(); ++it){
+    if(it == values.rbegin()){
     ss << std::hex << *it;
+    }else{
+      ss << std::hex << std::setw(16) << std::setfill('0') << *it;
+    }
   }
   return ss.str();
 }
