@@ -1,19 +1,19 @@
 #include <cassert>
 #include "bigint.h"
 
-BigInt::BigInt()
-  // TODO: initialize member variables
-{
+BigInt::BigInt(){
+  isNegative = false;
+  values.push_back(0);
 }
 
-BigInt::BigInt(uint64_t val, bool negative)
-  // TODO: initialize member variables
-{
+BigInt::BigInt(uint64_t val, bool negative) : isNegative(negative){
+  values.push_back(val);
 }
 
-BigInt::BigInt(std::initializer_list<uint64_t> vals, bool negative)
-  // TODO: initialize member variables
-{
+BigInt::BigInt(std::initializer_list<uint64_t> vals, bool negative) : isNegative(negative){
+  for(auto it = vals.begin(); it != vals.end(); it++){
+    values.push_back(*it);
+  }
 }
 
 BigInt::BigInt(const BigInt &other)
@@ -30,9 +30,8 @@ BigInt &BigInt::operator=(const BigInt &rhs)
   // TODO: implement
 }
 
-bool BigInt::is_negative() const
-{
-  // TODO: implement
+bool BigInt::is_negative() const {
+  return isNegative;
 }
 
 const std::vector<uint64_t> &BigInt::get_bit_vector() const {

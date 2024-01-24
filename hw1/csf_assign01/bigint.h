@@ -15,11 +15,13 @@
 class BigInt {
 private:
   // TODO: add fields
+  bool isNegative;
+  std::vector<uint64_t> values;
 
 public:
   //! Default constructor.
   //! The initialized BigInt value should be equal to 0.
-  BigInt();
+  BigInt(){};
 
   //! Constructor from a `uint64_t` value and (optionally) a boolean
   //! indicating whether the value is negative.
@@ -27,7 +29,7 @@ public:
   //! @param val a `uint64_t` value indicating the magnitude of the
   //!            BigInt value
   //! @param negative if true, the value is negative
-  BigInt(uint64_t val, bool negative = false);
+  BigInt(uint64_t val, bool negative = false){};
 
   //! Constructor from an `std::initializer_list` of `uint64_t` values
   //! to initialize the BigInt object's bit string, and (optionally)
@@ -36,7 +38,7 @@ public:
   //! @param vals `std::initializer_list` of `uint64_t` values,
   //!             in order from less-significant to more-significant
   //! @param negative if true, the value is negative
-  BigInt(std::initializer_list<uint64_t> vals, bool negative = false);
+  BigInt(std::initializer_list<uint64_t> vals, bool negative = false) : isNegative(negative){};
 
   //! Copy constructor.
   //!
