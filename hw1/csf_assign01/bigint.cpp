@@ -16,10 +16,7 @@ BigInt::BigInt(std::initializer_list<uint64_t> vals, bool negative) : isNegative
   }
 }
 
-BigInt::BigInt(const BigInt &other)
-  // TODO: initialize member variables
-{
-}
+BigInt::BigInt(const BigInt &other) : values(other.values), isNegative(other.isNegative) {}
 
 BigInt::~BigInt()
 {
@@ -28,6 +25,9 @@ BigInt::~BigInt()
 BigInt &BigInt::operator=(const BigInt &rhs)
 {
   // TODO: implement
+  values = rhs.values;
+  isNegative = rhs.isNegative;
+  return *this;
 }
 
 bool BigInt::is_negative() const {
@@ -61,6 +61,7 @@ BigInt BigInt::operator-(const BigInt &rhs) const
 BigInt BigInt::operator-() const
 {
   // TODO: implement
+  
 }
 
 bool BigInt::is_bit_set(unsigned n) const
