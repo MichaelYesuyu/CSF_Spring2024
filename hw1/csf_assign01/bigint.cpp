@@ -75,8 +75,9 @@ BigInt BigInt::operator-(const BigInt &rhs) const
 BigInt BigInt::operator-() const
 {
   // TODO: implement
-  isNegative = !isNegative;
-  return *this;
+  BigInt negate = BigInt(*this);
+  negate.isNegative = !negate.isNegative;
+  return negate;
 }
 
 bool BigInt::is_bit_set(unsigned n) const
