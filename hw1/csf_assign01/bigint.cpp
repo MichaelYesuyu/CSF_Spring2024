@@ -74,7 +74,7 @@ BigInt BigInt::operator-(const BigInt &rhs) const
 //unary minus
 BigInt BigInt::operator-() const
 {
-  // TODO: implement
+  //create a new BigInt instance
   BigInt negate = BigInt(*this);
   negate.isNegative = !negate.isNegative;
   return negate;
@@ -105,16 +105,21 @@ int BigInt::compare(const BigInt &rhs) const
   // TODO: implement
 }
 
+//change the bigInt to hexadecimal represention (string)
 std::string BigInt::to_hex() const
 {
   std::stringstream ss;
+  //load the sign (if needed) first
   if(isNegative){
     ss << "-";
   }
+  //iterate through the vector in reverse order 
   for(auto it = values.rbegin(); it != values.rend(); ++it){
     if(it == values.rbegin()){
+    //for the most significant bit, no need to setfill
     ss << std::hex << *it;
     }else{
+      //for other digits, we should setfill
       ss << std::hex << std::setw(16) << std::setfill('0') << *it;
     }
   }
