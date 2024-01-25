@@ -3,27 +3,34 @@
 #include <iomanip>
 #include "bigint.h"
 
+//default constructor, sets the sign to negative
 BigInt::BigInt(){
   isNegative = false;
   values.push_back(0);
 }
 
+//constructor that takes in one value
 BigInt::BigInt(uint64_t val, bool negative) : isNegative(negative){
   values.push_back(val);
 }
 
+//constructor that takes in multiple values
 BigInt::BigInt(std::initializer_list<uint64_t> vals, bool negative) : isNegative(negative){
+  //iterate through the list
   for(auto it = vals.begin(); it != vals.end(); it++){
     values.push_back(*it);
   }
 }
 
+//copy constructor
 BigInt::BigInt(const BigInt &other) : values(other.values), isNegative(other.isNegative) {}
 
+//no dynamically allocated memory, so there's no need for a destructor
 BigInt::~BigInt()
 {
 }
 
+//overload operator =
 BigInt &BigInt::operator=(const BigInt &rhs)
 {
   // TODO: implement
@@ -32,16 +39,20 @@ BigInt &BigInt::operator=(const BigInt &rhs)
   return *this;
 }
 
+//return thr negativity
 bool BigInt::is_negative() const {
   return isNegative;
 }
 
+//return thr value vector
 const std::vector<uint64_t> &BigInt::get_bit_vector() const {
   return values;
 }
 
+//ge the bit at the desired position
 uint64_t BigInt::get_bits(unsigned index) const
 {
+  //check valdity of index
   if(index >= values.size()){
     return 0;
   }else{
@@ -60,10 +71,12 @@ BigInt BigInt::operator-(const BigInt &rhs) const
   // Hint: a - b could be computed as a + -b
 }
 
+//unary minus
 BigInt BigInt::operator-() const
 {
   // TODO: implement
-  
+  isNegative = !isNegative;
+  return *this;
 }
 
 bool BigInt::is_bit_set(unsigned n) const
