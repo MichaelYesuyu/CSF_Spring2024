@@ -76,7 +76,9 @@ BigInt BigInt::operator-() const
 {
   //create a new BigInt instance
   BigInt negate = BigInt(*this);
-  negate.isNegative = !negate.isNegative;
+  if(!negate.is_zero()){
+    negate.isNegative = !negate.isNegative;
+  }
   return negate;
 }
 
@@ -129,5 +131,14 @@ std::string BigInt::to_hex() const
 std::string BigInt::to_dec() const
 {
   // TODO: implement
+}
+
+bool BigInt::is_zero() const{
+  for (uint64_t value : values){
+    if(value != 0){
+      return false;
+    }
+  }
+  return true;
 }
 
