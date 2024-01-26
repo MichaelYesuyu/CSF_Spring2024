@@ -187,6 +187,7 @@ public:
 
 private:
   bool is_zero() const;
+  BigInt cleanData();
 };
 
 #endif // BIGINT_H

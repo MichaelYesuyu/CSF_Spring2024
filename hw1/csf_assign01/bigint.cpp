@@ -110,14 +110,16 @@ int BigInt::compare(const BigInt &rhs) const
 //change the bigInt to hexadecimal represention (string)
 std::string BigInt::to_hex() const
 {
+  //remove leading 0s
+  data = this.cleanData();
   std::stringstream ss;
   //load the sign (if needed) first
-  if(isNegative){
+  if(data.isNegative){
     ss << "-";
   }
   //iterate through the vector in reverse order 
-  for(auto it = values.rbegin(); it != values.rend(); ++it){
-    if(it == values.rbegin()){
+  for(auto it = data.values.rbegin(); it != data.values.rend(); ++it){
+    if(it == data.values.rbegin()){
     //for the most significant bit, no need to setfill
     ss << std::hex << *it;
     }else{
@@ -133,6 +135,7 @@ std::string BigInt::to_dec() const
   // TODO: implement
 }
 
+//check if the number is zero
 bool BigInt::is_zero() const{
   for (uint64_t value : values){
     if(value != 0){
@@ -140,5 +143,19 @@ bool BigInt::is_zero() const{
     }
   }
   return true;
+}
+
+//clear any leading bits that is 0
+BigInt BigInt::cleanData() {
+  BigInt out = BigInt(this);
+  for(auto it = out.values.rbegin(); it != out.values.rend(); ++it){
+    if(it != 0){
+      return out;
+    }
+    else{
+      out.values.erase(it);
+    }
+  }
+  return out;
 }
 
