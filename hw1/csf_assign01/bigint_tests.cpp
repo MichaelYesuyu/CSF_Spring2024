@@ -577,8 +577,7 @@ void test_to_hex_2(TestObjs *) {
 
 void test_to_hex_3(TestObjs *objs){
   std::string result = objs->u64_max_leading_zero.to_hex();
-  std::cout << result << std::endl;
-  //ASSERT("ffffffffffffffff"== result);
+  ASSERT("ffffffffffffffff"== result);
 }
 
 void test_to_dec_1(TestObjs *objs) {
