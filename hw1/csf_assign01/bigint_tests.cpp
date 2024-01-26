@@ -15,6 +15,7 @@ struct TestObjs {
   BigInt negative_nine;
   BigInt negative_three;
   BigInt nine;
+  BigInt u64_max_leading_zero;
   // TODO: add additional test fixture objects
 
   TestObjs();
@@ -58,9 +59,12 @@ void test_div_1(TestObjs *objs);
 void test_div_2(TestObjs *objs);
 void test_to_hex_1(TestObjs *objs);
 void test_to_hex_2(TestObjs *objs);
+void test_to_hex_3(TestObjs *objs);
 void test_to_dec_1(TestObjs *objs);
 void test_to_dec_2(TestObjs *objs);
-// TODO: declare additional test functions
+void test_negation_1(TestObjs *objs);
+void test_negation_2(TestObjs *objs);
+void test_negation_zero(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -93,12 +97,18 @@ int main(int argc, char **argv) {
   TEST(test_compare_2);
   TEST(test_div_1);
   TEST(test_div_2);
+  */
   TEST(test_to_hex_1);
   TEST(test_to_hex_2);
+  TEST(test_to_hex_3);
+  /*
   TEST(test_to_dec_1);
   TEST(test_to_dec_2);
   */
-  // TODO: add calls to TEST for additional test functions
+  TEST(test_negation_1);
+  TEST(test_negation_2);
+  TEST(test_negation_zero);
+  
 
   TEST_FINI();
 }
@@ -117,6 +127,7 @@ TestObjs::TestObjs()
   , negative_nine(9UL, true)
   , negative_three(3UL, true)
   , nine(9UL)
+  , u64_max_leading_zero({0xFFFFFFFFFFFFFFFFUL, 0UL})
   // TODO: initialize additional test fixture objects
 {
 }
@@ -564,6 +575,12 @@ void test_to_hex_2(TestObjs *) {
 
 }
 
+void test_to_hex_3(TestObjs *objs){
+  std::string result = objs->u64_max_leading_zero.to_hex();
+  std::cout << result << std::endl;
+  //ASSERT("ffffffffffffffff"== result);
+}
+
 void test_to_dec_1(TestObjs *objs) {
   // some basic tests for to_dec()
 
@@ -588,3 +605,17 @@ void test_to_dec_2(TestObjs *) {
 }
 
 // TODO: implement additional test functions
+void test_negation_1(TestObjs *objs){
+  check_contents(-objs->one, { 1UL });
+  ASSERT((-objs->one).is_negative());
+}
+
+void test_negation_2(TestObjs *objs){
+  check_contents(-objs->negative_two_pow_64, { 0UL, 1UL });
+  ASSERT(!(-objs->negative_two_pow_64).is_negative());
+}
+
+void test_negation_zero(TestObjs *objs){
+  check_contents(-objs->zero, {0});
+  ASSERT(!(-objs->zero).is_negative());
+}
