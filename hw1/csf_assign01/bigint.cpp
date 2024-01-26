@@ -111,7 +111,7 @@ int BigInt::compare(const BigInt &rhs) const
 std::string BigInt::to_hex() const
 {
   //remove leading 0s
-  data = this.cleanData();
+  BigInt data = this.cleanData();
   std::stringstream ss;
   //load the sign (if needed) first
   if(data.isNegative){
@@ -149,11 +149,11 @@ bool BigInt::is_zero() const{
 BigInt BigInt::cleanData() {
   BigInt out = BigInt(this);
   for(auto it = out.values.rbegin(); it != out.values.rend(); ++it){
-    if(it != 0){
+    if(*it != 0){
       return out;
     }
     else{
-      out.values.erase(it);
+      out.values.pop_back();
     }
   }
   return out;
