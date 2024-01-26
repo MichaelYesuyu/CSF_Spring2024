@@ -77,8 +77,8 @@ int main(int argc, char **argv) {
   TEST(test_u64_ctor);
   TEST(test_initlist_ctor);
   TEST(test_copy_ctor);
-  /*
   TEST(test_get_bits);
+  /*
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
@@ -89,8 +89,10 @@ int main(int argc, char **argv) {
   TEST(test_sub_4);
   TEST(test_is_bit_set_1);
   TEST(test_is_bit_set_2);
+  */
   TEST(test_lshift_1);
   TEST(test_lshift_2);
+  /*
   TEST(test_mul_1);
   TEST(test_mul_2);
   TEST(test_compare_1);

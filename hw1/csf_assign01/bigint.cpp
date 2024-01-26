@@ -104,8 +104,50 @@ bool BigInt::is_bit_set(unsigned n) const
 }
 
 BigInt BigInt::operator<<(unsigned n) const
-{
-  // TODO: implement
+{   
+    //Throw exception if attempting to left shift negative number
+    if(this->is_negative()){
+      throw std::invalid_argument("Cannot left shift negative number");
+    }
+    //Make a copy of the current BigInt
+    BigInt newBigInt = BigInt(*this);
+    //no shift needed when n=0 or vector is empty
+    if(n == 0 || newBigInt.values.size() == 0){
+      return newBigInt;
+    }
+    //Multiples of 64 shifts the entire vector and inserts 0 at the end
+    int indexShifts = n / 64;
+    //The remainder is the number of bits that needs to be shifted left
+    int bitShifts = n % 64;
+    //The number of bits that will overflow into the next element of the vector due to the bit shift
+    int overflow = 64 - bitShifts;
+
+    //Add 0s for the elements due to shifts by powers of 64
+    newBigInt.values.insert(newBigInt.values.begin(), indexShifts, 0);
+
+    uint64_t curVal = 0;
+    uint64_t curVal_overflow = 0;
+    uint64_t extraElement = 0;
+    //Performs the shift with overflow handling
+    if(bitShifts != 0){
+      for(auto it = newBigInt.values.rbegin(); it != newBigInt.values.rend(); it++){
+          curVal = *it;
+          curVal_overflow = curVal >> overflow;
+          *it = curVal << bitShifts;
+          //Store the most significant element's overflow to add later
+          if(it == newBigInt.values.rbegin()){
+              extraElement = curVal_overflow;
+          }
+          //Edit the next element's bits, - because it's reverse iterator
+          else{
+            *(it - 1) |= curVal_overflow;
+          }
+      }
+    }
+    if(extraElement != 0){
+        newBigInt.values.push_back(extraElement);
+    }
+    return newBigInt;
 }
 
 BigInt BigInt::operator*(const BigInt &rhs) const
