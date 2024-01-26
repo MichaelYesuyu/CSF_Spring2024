@@ -60,20 +60,31 @@ uint64_t BigInt::get_bits(unsigned index) const
   }
 }
 
+uint64_t BigInt::get_len() const{
+  return this->values.size();
+}
+
 BigInt BigInt::operator+(const BigInt &rhs) const
 {
   // first remove leading zeros
   BigInt left = this->cleanData();
-  BigInt right = rhs->cleanData();
-  if(left.is_Negative() == right.is_Negative()){
-    
-  }
+  BigInt right = rhs.cleanData();
+  BigInt output;
+  if(left.is_negative() == right.is_negative()){
+    output = add_magnitudes(left, right);
+  }else{
+   output = subtract_magnitudes(left, right);
+    }
+  return output;
 }
 
 BigInt BigInt::operator-(const BigInt &rhs) const
 {
-  // TODO: implement
-  // Hint: a - b could be computed as a + -b
+  // first remove leading zeros
+  BigInt left = this->cleanData();
+  BigInt right = rhs.cleanData();
+  BigInt output = left + (-right);
+  return output;
 }
 
 //unary minus
@@ -160,3 +171,88 @@ BigInt BigInt::cleanData() const {
   return out;
 }
 
+//use this method with cleaned data
+BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
+  bool negativity = lhs.is_negative();
+  //use overload to track 
+  int overflow = 0;
+  //let len be the largest of the sizes of the two value vectors
+  int len = 0;
+  if(BigInt::compare_magnitudes(lhs, rhs) == 1){
+    len = lhs.get_len();
+  }else{
+    len = rhs.get_len();
+  }
+  uint64_t outputvec[len];
+  for(int i = 0; i < len; i++){
+    outputvec[i] = lhs.get_bits(i) + rhs.get_bits(i) + overflow;
+    if(outputvec[i] <= lhs.get_bits(i)){ //overflow happens!
+      overflow = 1;
+    }else{
+      overflow = 0;
+    } 
+  }
+  BigInt output = BigInt(*outputvec, negativity);
+  return output;
+}
+
+//use this method with cleaned data
+BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
+  bool negativity;
+  int len = 0;
+  int borrow = 0;
+  if(lhs.get_len() > rhs.get_len()){
+    len = lhs.get_len();
+  }else{
+    len = rhs.get_len();
+  }
+  uint64_t outputvec[len];
+  //negativity equal to the negativity of the BigInt with larger magnitude
+  //len equal to the len of the BigInt with larger magnitude
+  if(BigInt::compare_magnitudes(lhs, rhs) == 1){
+    negativity = lhs.is_negative();
+    for(int i = 0; i < len; i++){
+      outputvec[i] = lhs.get_bits(i) - rhs.get_bits(i) - borrow;
+      if(lhs.get_bits(i)>(rhs.get_bits(i) + borrow)){ //if the lhs is smaller, need to borrow
+        borrow = 0;
+      }else{
+        borrow = 1;
+      }
+    }
+  }else{
+    negativity = rhs.is_negative();
+    for(int i = 0; i < len; i++){
+      outputvec[i] = rhs.get_bits(i) - lhs.get_bits(i) - borrow;
+      if(rhs.get_bits(i)>(lhs.get_bits(i) + borrow)){ //if the lhs is smaller, need to borrow
+        borrow = 0;
+      }else{
+        borrow = 1;
+      }
+    }
+  }
+  BigInt output = BigInt(*outputvec, negativity);
+  return output;
+  
+}
+
+//return 1 if left has larger magnitude, 0 if right has larger magnitude
+//use this method with cleaned data
+int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
+  int leftlen = lhs.get_len();
+  int rightlen = rhs.get_len();
+  if(leftlen > rightlen){
+    return 1;
+  }else if(leftlen < rightlen){
+    return 0;
+  }else{
+    for(int i = (leftlen - 1); i >= 0; i--){
+      if(lhs.get_bits(i) > rhs.get_bits(i)){
+        return 1;
+      }else if(lhs.get_bits(i) < (rhs.get_bits(i))){
+        return 0;
+      }
+    }
+    return 1; //is they are the same, return 1;
+  }
+  return -1; //error message
+}

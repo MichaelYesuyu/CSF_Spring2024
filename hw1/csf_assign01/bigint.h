@@ -85,6 +85,7 @@ public:
   //!         containing the bit string)
   uint64_t get_bits(unsigned index) const;
 
+  uint64_t get_len() const;
   //! Addition operator.
   //!
   //! @param rhs the right-hand side BigInt value (the left hand value
@@ -185,11 +186,20 @@ public:
   //! @return the value of this BigInt object in decimal (base-10)
   std::string to_dec() const;
 
+  //add two BigInt's magnitude
+  static BigInt add_magnitudes(const BigInt &lhs, const BigInt &rhs);
+  //subtra two BigInt's magnitude, left is bigger
+  static BigInt subtract_magnitudes(const BigInt &lhs, const BigInt &rhs);
+  //compare the magnitude of the two BigInt
+  static int compare_magnitudes(const BigInt &lhs, const BigInt &rhs);
+
 private:
   //check if the vector has only zeros
   bool is_zero() const;
   //clean any leading unnecessary 0 bits
   BigInt cleanData() const;
+
 };
+
 
 #endif // BIGINT_H
