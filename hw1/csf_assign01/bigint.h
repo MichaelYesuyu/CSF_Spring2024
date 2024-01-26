@@ -186,7 +186,9 @@ public:
   std::string to_dec() const;
 
 private:
+  //check if the vector has only zeros
   bool is_zero() const;
+  //clean any leading unnecessary 0 bits
   BigInt cleanData() const;
 };
 

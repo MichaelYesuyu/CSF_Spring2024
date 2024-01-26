@@ -148,13 +148,9 @@ bool BigInt::is_zero() const{
 //clear any leading bits that is 0
 BigInt BigInt::cleanData() const {
   BigInt out = BigInt(*this);
-  for(auto it = out.values.rbegin(); it != out.values.rend(); ++it){
-    if(*it != 0){
-      return out;
-    }
-    else{
+  //if the biggest digit is 0 and that is not the only digit
+  while (out.values.back() == 0 && out.values.size() != 1){
       out.values.pop_back();
-    }
   }
   return out;
 }
