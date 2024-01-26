@@ -62,7 +62,12 @@ uint64_t BigInt::get_bits(unsigned index) const
 
 BigInt BigInt::operator+(const BigInt &rhs) const
 {
-  // TODO: implement
+  // first remove leading zeros
+  BigInt left = this->cleanData();
+  BigInt right = rhs->cleanData();
+  if(left.is_Negative() == right.is_Negative()){
+    
+  }
 }
 
 BigInt BigInt::operator-(const BigInt &rhs) const
