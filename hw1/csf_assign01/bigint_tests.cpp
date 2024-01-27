@@ -66,6 +66,7 @@ void test_negation_1(TestObjs *objs);
 void test_negation_2(TestObjs *objs);
 void test_negation_zero(TestObjs *objs);
 void test_add_magnitudes(TestObjs *objs);
+void test_subtract_magnitudes(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -113,6 +114,7 @@ int main(int argc, char **argv) {
   TEST(test_negation_2);
   TEST(test_negation_zero);
   TEST(test_add_magnitudes);
+  TEST(test_subtract_magnitudes);
 
   TEST_FINI();
 }
@@ -624,5 +626,36 @@ void test_negation_zero(TestObjs *objs){
 }
 
 void test_add_magnitudes(TestObjs *objs){
-  ASSERT(objs->one.add_magnitudes(objs->one, objs->one) == objs->two);
+  BigInt zero = objs->zero;
+  BigInt one = objs->one;
+  BigInt two = objs->two;
+  BigInt result = one.add_magnitudes(one, two);
+  check_contents(result, {3UL});
+  ASSERT(!result.is_negative());
+
+  BigInt result2 = zero.add_magnitudes(zero, one);
+  check_contents(result2, {1UL});
+  ASSERT(!result2.is_negative());
+
+  BigInt two_pow_64 = objs->two_pow_64;
+  BigInt result3 = one.add_magnitudes(one, two_pow_64);
+  check_contents(result3, {1UL, 1UL});
+  ASSERT(!result3.is_negative());
+
+  BigInt result4 = two_pow_64.add_magnitudes(two_pow_64, two_pow_64);
+  check_contents(result4, {0UL, 2UL});
+  ASSERT(!result4.is_negative());
+
+  BigInt negative_two_pow_64 = objs->negative_two_pow_64;
+  BigInt result5 = negative_two_pow_64.add_magnitudes(negative_two_pow_64, negative_two_pow_64);
+  check_contents(result5, {0UL, 2UL});
+  ASSERT(result5.is_negative());
+}
+
+void test_subtract_magnitudes(TestObjs *objs){
+  BigInt zero = objs->zero;
+  BigInt one = objs->one;
+  BigInt two = objs->two;
+  BigInt negative_three = objs->negative_three;
+  BigInt result = zero.subtract_magnitudes(zero, negative_three);
 }
