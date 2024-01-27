@@ -65,6 +65,7 @@ void test_to_dec_2(TestObjs *objs);
 void test_negation_1(TestObjs *objs);
 void test_negation_2(TestObjs *objs);
 void test_negation_zero(TestObjs *objs);
+void test_add_magnitudes(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -78,18 +79,19 @@ int main(int argc, char **argv) {
   TEST(test_initlist_ctor);
   TEST(test_copy_ctor);
   TEST(test_get_bits);
-  /*
+  
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
   TEST(test_add_4);
+  /*
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
   TEST(test_sub_4);
+  */
   TEST(test_is_bit_set_1);
   TEST(test_is_bit_set_2);
-  */
   TEST(test_lshift_1);
   TEST(test_lshift_2);
   /*
@@ -110,7 +112,7 @@ int main(int argc, char **argv) {
   TEST(test_negation_1);
   TEST(test_negation_2);
   TEST(test_negation_zero);
-  
+  TEST(test_add_magnitudes);
 
   TEST_FINI();
 }
@@ -619,4 +621,8 @@ void test_negation_2(TestObjs *objs){
 void test_negation_zero(TestObjs *objs){
   check_contents(-objs->zero, {0});
   ASSERT(!(-objs->zero).is_negative());
+}
+
+void test_add_magnitudes(TestObjs *objs){
+  ASSERT(objs->one.add_magnitudes(objs->one, objs->one) == objs->two);
 }

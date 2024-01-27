@@ -101,6 +101,20 @@ BigInt BigInt::operator-() const
 bool BigInt::is_bit_set(unsigned n) const
 {
   // TODO: implement
+  unsigned vecIndex = n / 64;
+  unsigned bitPosition = n % 64;
+  //Bit not set if the request bit is larger than the value of the BigInt
+  if(vecIndex >= values.size()){
+    return false;
+  }
+  uint64_t curVal = values[vecIndex];
+  if(bitPosition != 0){
+    //Get the lower bitPosition number of bits from the current value
+    curVal = curVal & ~(~0UL << bitPosition + 1);
+    //Leaves curVal with all 0s except the bit that we want to check
+    curVal = curVal >> (bitPosition);
+  }
+  return (curVal & 1) == 1;
 }
 
 BigInt BigInt::operator<<(unsigned n) const
