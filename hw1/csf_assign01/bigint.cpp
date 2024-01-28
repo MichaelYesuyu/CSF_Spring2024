@@ -177,7 +177,24 @@ BigInt BigInt::operator/(const BigInt &rhs) const
 
 int BigInt::compare(const BigInt &rhs) const
 {
-  // TODO: implement
+  //if they have different negativity
+  if(rhs.is_negative() != this->is_negative()){
+    if(rhs.is_negative()){
+      return 1; //rhs is negative, while lhs is positive
+    }else{
+      return -1; //lhs is negative, rhs is positive
+    }
+  }
+  // if has same negativity, call the compare_magnitude helper function
+  int compare = compare_magnitudes(*this, rhs);
+  if(compare == 1){
+    return 1;
+  }else if(compare == 0){
+    return -1;
+  }else{
+    return 0;
+  }
+  return 0;
 }
 
 //change the bigInt to hexadecimal represention (string)
@@ -315,7 +332,7 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
   
 }
 
-//return 1 if left has larger magnitude, 0 if right has larger magnitude
+//return 1 if left has larger magnitude, 0 if right has larger magnitude, 2 if they have the same magnitude
 //use this method with cleaned data
 int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
   int leftlen = lhs.get_len();
@@ -332,7 +349,7 @@ int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
         return 0;
       }
     }
-    return 1; //is they are the same, return 1;
+    return 2; //is they are the same, return 2;
   }
   return -1; //error message
 }
