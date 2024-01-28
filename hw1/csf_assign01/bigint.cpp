@@ -1,6 +1,7 @@
 #include <cassert>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 #include "bigint.h"
 
 //default constructor, sets the sign to negative
@@ -110,7 +111,7 @@ bool BigInt::is_bit_set(unsigned n) const
   uint64_t curVal = values[vecIndex];
   if(bitPosition != 0){
     //Get the lower bitPosition number of bits from the current value
-    curVal = curVal & ~(~0UL << bitPosition + 1);
+    curVal = curVal & ~(~0UL << (bitPosition + 1));
     //Leaves curVal with all 0s except the bit that we want to check
     curVal = curVal >> (bitPosition);
   }
@@ -239,16 +240,26 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
   }else{
     len = rhs.get_len();
   }
-  uint64_t outputvec[len];
+  BigInt output = BigInt();
+  output.isNegative = negativity;
   for(int i = 0; i < len; i++){
-    outputvec[i] = lhs.get_bits(i) + rhs.get_bits(i) + overflow;
-    if(outputvec[i] <= lhs.get_bits(i)){ //overflow happens!
+    uint64_t curSum = lhs.get_bits(i) + rhs.get_bits(i) + overflow;
+    if(curSum < lhs.get_bits(i)){ //overflow happens!
       overflow = 1;
     }else{
       overflow = 0;
-    } 
+    }
+    //Don't add new element for first iteration as values already has one element by default
+    if(i == 0){
+      output.values[0] = curSum;
+    }else{
+      output.values.push_back(curSum);
+    }
   }
-  BigInt output = BigInt(*outputvec, negativity);
+  //Handles the case where an extra element is needed due to overflow
+  if(overflow == 1){
+    output.values.push_back(1);
+  }
   return output;
 }
 
