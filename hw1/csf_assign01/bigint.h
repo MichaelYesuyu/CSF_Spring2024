@@ -192,6 +192,10 @@ public:
   static BigInt subtract_magnitudes(const BigInt &lhs, const BigInt &rhs);
   //compare the magnitude of the two BigInt
   static int compare_magnitudes(const BigInt &lhs, const BigInt &rhs);
+  //Divide by 2 helper function
+  BigInt div_by_2() const;
+  //Helper function to search for the result in division
+  BigInt division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend);
 
 private:
   //check if the vector has only zeros

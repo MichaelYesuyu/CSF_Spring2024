@@ -109,13 +109,9 @@ bool BigInt::is_bit_set(unsigned n) const
     return false;
   }
   uint64_t curVal = values[vecIndex];
-  if(bitPosition != 0){
-    //Get the lower bitPosition number of bits from the current value
-    curVal = curVal & ~(~0UL << (bitPosition + 1));
-    //Leaves curVal with all 0s except the bit that we want to check
-    curVal = curVal >> (bitPosition);
-  }
-  return (curVal & 1) == 1;
+  curVal = curVal >> (bitPosition);
+  
+  return ((curVal % 2) == 1);
 }
 
 BigInt BigInt::operator<<(unsigned n) const
@@ -189,7 +185,53 @@ BigInt BigInt::operator*(const BigInt &rhs) const
 
 BigInt BigInt::operator/(const BigInt &rhs) const
 {
-  // TODO: implement
+  //Cannot divide by zero
+  if(rhs.is_zero()){
+    throw std::invalid_argument("Division by zero");
+  }
+  //rhs is the larger number
+  BigInt upperBound;
+  BigInt lowerBound;
+  BigInt dividend;
+  BigInt divisor;
+  BigInt result = BigInt();
+  BigInt mid = BigInt();
+  BigInt one = BigInt(1);
+  if(compare(rhs) < 0){
+    //Initialize upper bound to rhs and lower bound to 0
+    upperBound = BigInt(rhs);
+    lowerBound = BigInt();
+    dividend = BigInt(rhs);
+    divisor = BigInt(*this);
+  }
+  //lhs is the larger number (or they are equal)
+  else{
+    upperBound = BigInt(*this);
+    lowerBound = BigInt();
+    dividend = BigInt(*this);
+    divisor = BigInt(rhs);
+  }
+  while(upperBound > lowerBound){
+    mid = upperBound.div_by_2();
+    result = mid * divisor;
+    //If the difference between the result and the dividend is within 1, it means that we found our answer
+    if(compare_magnitudes((mid - divisor), one) == 0){
+      return result;
+    }
+    //Result is larger than the dividend
+    else if(result.compare(rhs) > 0){
+      //Update mid
+      mid = (mid + upperBound).div_by_2() + 1;
+    }
+    //Dividend is larger than the result
+    else if(result.compare(rhs) < 0){
+      mid = (lowerBound + mid).div_by_2() - 1;
+    }
+  }
+}
+
+BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend){
+
 }
 
 int BigInt::compare(const BigInt &rhs) const
@@ -369,4 +411,21 @@ int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
     return 2; //is they are the same, return 2;
   }
   return -1; //error message
+}
+
+BigInt BigInt::div_by_2() const{
+  if(this->values.size() == 0){
+    return *this;
+  }
+  BigInt newBigInt = BigInt(*this);
+  for(auto it = newBigInt.values.begin(); it != newBigInt.values.end(); ++it){
+    //Right shift the current element by 2
+    *it = *it >> 1;
+    //If not the last element, check to see if the more significant element has a 1 in the last bit (shifted down)
+    if(((it+1) != newBigInt.values.end()) && *(it+1) % 2 == 1){
+      //Set the most significant bit of the lower value to 1
+      (*it) |= (1 << 63);
+    }
+  }
+  return newBigInt;
 }
