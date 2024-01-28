@@ -16,7 +16,7 @@ struct TestObjs {
   BigInt negative_three;
   BigInt nine;
   BigInt u64_max_leading_zero;
-  // TODO: add additional test fixture objects
+  BigInt negative_one;
 
   TestObjs();
 };
@@ -80,17 +80,14 @@ int main(int argc, char **argv) {
   TEST(test_initlist_ctor);
   TEST(test_copy_ctor);
   TEST(test_get_bits);
-  
   TEST(test_add_1);
   TEST(test_add_2);
   TEST(test_add_3);
   TEST(test_add_4);
-  /*
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
   TEST(test_sub_4);
-  */
   TEST(test_is_bit_set_1);
   TEST(test_is_bit_set_2);
   TEST(test_lshift_1);
@@ -134,7 +131,7 @@ TestObjs::TestObjs()
   , negative_three(3UL, true)
   , nine(9UL)
   , u64_max_leading_zero({0xFFFFFFFFFFFFFFFFUL, 0UL})
-  // TODO: initialize additional test fixture objects
+  , negative_one(1UL, true)
 {
 }
 
@@ -656,6 +653,19 @@ void test_subtract_magnitudes(TestObjs *objs){
   BigInt zero = objs->zero;
   BigInt one = objs->one;
   BigInt two = objs->two;
+  BigInt negative_one = objs->negative_one;
   BigInt negative_three = objs->negative_three;
+  BigInt two_pow_64 = objs->two_pow_64;
+  
   BigInt result = zero.subtract_magnitudes(zero, negative_three);
+  check_contents(result, {3UL});
+  ASSERT(result.is_negative());
+
+  BigInt result2 = two.subtract_magnitudes(two, negative_three);
+  check_contents(result2, {1UL});
+  ASSERT(result2.is_negative());
+
+  BigInt result3 = negative_one.subtract_magnitudes(negative_one, two_pow_64);
+  check_contents(result3, {18446744073709551615UL});
+  ASSERT(!result3.is_negative());
 }

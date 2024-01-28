@@ -75,7 +75,7 @@ BigInt BigInt::operator+(const BigInt &rhs) const
     output = add_magnitudes(left, right);
   }else{
    output = subtract_magnitudes(left, right);
-    }
+  }
   return output;
 }
 
@@ -244,7 +244,8 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
   output.isNegative = negativity;
   for(int i = 0; i < len; i++){
     uint64_t curSum = lhs.get_bits(i) + rhs.get_bits(i) + overflow;
-    if(curSum < lhs.get_bits(i)){ //overflow happens!
+    //Detects that overflow occurs
+    if(curSum < lhs.get_bits(i)){
       overflow = 1;
     }else{
       overflow = 0;
@@ -273,31 +274,43 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
   }else{
     len = rhs.get_len();
   }
-  uint64_t outputvec[len];
+  BigInt output = BigInt();
   //negativity equal to the negativity of the BigInt with larger magnitude
   //len equal to the len of the BigInt with larger magnitude
   if(BigInt::compare_magnitudes(lhs, rhs) == 1){
     negativity = lhs.is_negative();
     for(int i = 0; i < len; i++){
-      outputvec[i] = lhs.get_bits(i) - rhs.get_bits(i) - borrow;
-      if(lhs.get_bits(i)>(rhs.get_bits(i) + borrow)){ //if the lhs is smaller, need to borrow
+      uint64_t curVal = lhs.get_bits(i) - rhs.get_bits(i) - borrow;
+      if(lhs.get_bits(i)>(rhs.get_bits(i) - borrow)){ //if the lhs is smaller, need to borrow
         borrow = 0;
       }else{
         borrow = 1;
+      }
+      //Don't add element for first iteration as vector starts off with one element inside (0)
+      if(i == 0){
+        output.values[0] = curVal;
+      }else{
+        output.values.push_back(curVal);
       }
     }
   }else{
     negativity = rhs.is_negative();
     for(int i = 0; i < len; i++){
-      outputvec[i] = rhs.get_bits(i) - lhs.get_bits(i) - borrow;
-      if(rhs.get_bits(i)>(lhs.get_bits(i) + borrow)){ //if the lhs is smaller, need to borrow
+      uint64_t curVal = rhs.get_bits(i) - lhs.get_bits(i) - borrow;
+      if(rhs.get_bits(i)>(lhs.get_bits(i) - borrow)){ //if the lhs is smaller, need to borrow
         borrow = 0;
       }else{
         borrow = 1;
       }
+      //Don't add element for first iteration as vector starts off with one element inside (0)
+      if(i == 0){
+        output.values[0] = curVal;
+      }else{
+        output.values.push_back(curVal);
+      }
     }
   }
-  BigInt output = BigInt(*outputvec, negativity);
+  output.isNegative = negativity;
   return output;
   
 }
