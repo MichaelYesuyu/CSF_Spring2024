@@ -180,10 +180,8 @@ BigInt BigInt::operator*(const BigInt &rhs) const
     answer.isNegative = false;
   }
   for(unsigned i=0; i<numBits; i++){
-    if(is_bit_set(i)){
-      BigInt addVal = BigInt(*this);
-      addVal = addVal << i;
-      answer = answer + addVal;
+    if(rhs.is_bit_set(i)){
+      answer = answer + (*this << i);
     }
   }
   return answer;
