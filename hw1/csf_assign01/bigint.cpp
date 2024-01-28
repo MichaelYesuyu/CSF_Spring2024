@@ -167,7 +167,26 @@ BigInt BigInt::operator<<(unsigned n) const
 
 BigInt BigInt::operator*(const BigInt &rhs) const
 {
-  // TODO: implement
+  unsigned numBits = rhs.values.size() * 64;
+  BigInt answer = BigInt();
+  //If either value is zero, just return zero
+  if(this->is_zero() || rhs.is_zero()){
+    return answer;
+  }
+  //If one of the values is negative, answer will be negative, otherwise answer is positive
+  if(this->isNegative ^ rhs.is_negative()){
+    answer.isNegative = true;
+  }else{
+    answer.isNegative = false;
+  }
+  for(unsigned i=0; i<numBits; i++){
+    if(is_bit_set(i)){
+      BigInt addVal = BigInt(*this);
+      addVal = addVal << i;
+      answer = answer + addVal;
+    }
+  }
+  return answer;
 }
 
 BigInt BigInt::operator/(const BigInt &rhs) const

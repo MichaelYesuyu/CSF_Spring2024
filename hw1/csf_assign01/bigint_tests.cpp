@@ -92,9 +92,9 @@ int main(int argc, char **argv) {
   TEST(test_is_bit_set_2);
   TEST(test_lshift_1);
   TEST(test_lshift_2);
-  /*
   TEST(test_mul_1);
   TEST(test_mul_2);
+  /*
   TEST(test_div_1);
   TEST(test_div_2);
   */
