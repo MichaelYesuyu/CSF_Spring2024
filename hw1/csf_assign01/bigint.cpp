@@ -314,7 +314,6 @@ std::string BigInt::to_dec() const
   if((ss.str()).empty()){
     ss << "0";
   }
-  std::cout << ss.str() << std::endl;
   return ss.str();
 }
 
