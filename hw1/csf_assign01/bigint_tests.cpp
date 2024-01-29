@@ -17,6 +17,9 @@ struct TestObjs {
   BigInt nine;
   BigInt u64_max_leading_zero;
   BigInt negative_one;
+  BigInt two_pow_128;
+  BigInt ten;
+  BigInt six;
 
   TestObjs();
 };
@@ -57,6 +60,7 @@ void test_compare_1(TestObjs *objs);
 void test_compare_2(TestObjs *objs);
 void test_div_1(TestObjs *objs);
 void test_div_2(TestObjs *objs);
+void test_div_3(TestObjs *objs);
 void test_to_hex_1(TestObjs *objs);
 void test_to_hex_2(TestObjs *objs);
 void test_to_hex_3(TestObjs *objs);
@@ -67,6 +71,7 @@ void test_negation_2(TestObjs *objs);
 void test_negation_zero(TestObjs *objs);
 void test_add_magnitudes(TestObjs *objs);
 void test_subtract_magnitudes(TestObjs *objs);
+void test_div_by_2(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -96,6 +101,7 @@ int main(int argc, char **argv) {
   TEST(test_mul_2);
   TEST(test_div_1);
   TEST(test_div_2);
+  TEST(test_div_3);
   TEST(test_compare_1);
   TEST(test_compare_2);
   TEST(test_to_hex_1);
@@ -110,6 +116,7 @@ int main(int argc, char **argv) {
   TEST(test_negation_zero);
   TEST(test_add_magnitudes);
   TEST(test_subtract_magnitudes);
+  TEST(test_div_by_2);
 
   TEST_FINI();
 }
@@ -130,6 +137,9 @@ TestObjs::TestObjs()
   , nine(9UL)
   , u64_max_leading_zero({0xFFFFFFFFFFFFFFFFUL, 0UL})
   , negative_one(1UL, true)
+  , two_pow_128({0UL,0UL,1UL})
+  , ten(10UL)
+  , six(6UL)
 {
 }
 
@@ -543,6 +553,13 @@ void test_div_2(TestObjs *) {
   }
 }
 
+void test_div_3(TestObjs *objs){
+  BigInt ten = objs->ten;
+  BigInt six = objs->six;
+  BigInt result = ten / six;
+  check_contents(result, {1UL});
+}
+
 void test_to_hex_1(TestObjs *objs) {
   // some basic tests for to_hex()
 
@@ -666,4 +683,19 @@ void test_subtract_magnitudes(TestObjs *objs){
   BigInt result3 = negative_one.subtract_magnitudes(negative_one, two_pow_64);
   check_contents(result3, {18446744073709551615UL});
   ASSERT(!result3.is_negative());
+}
+
+void test_div_by_2(TestObjs *objs){
+  BigInt two = objs->two;
+  BigInt result = two.div_by_2();
+  check_contents(result, {1UL});
+  ASSERT(!result.is_negative());
+
+  BigInt two_pow_64 = objs->two_pow_64;
+  BigInt result2 = two_pow_64.div_by_2();
+  check_contents(result2, {1UL << 63});
+
+  BigInt two_pow_128 = objs->two_pow_128;
+  BigInt result3 = two_pow_128.div_by_2();
+  check_contents(result3, {0UL, 1UL << 63});
 }

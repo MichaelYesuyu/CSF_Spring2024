@@ -195,7 +195,7 @@ public:
   //Divide by 2 helper function
   BigInt div_by_2() const;
   //Helper function to search for the result in division
-  BigInt division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend);
+  BigInt division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend, BigInt divisor);
 
 private:
   //check if the vector has only zeros

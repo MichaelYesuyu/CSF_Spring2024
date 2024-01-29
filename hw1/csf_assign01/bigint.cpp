@@ -110,7 +110,7 @@ bool BigInt::is_bit_set(unsigned n) const
   }
   uint64_t curVal = values[vecIndex];
   curVal = curVal >> (bitPosition);
-  
+
   return ((curVal % 2) == 1);
 }
 
@@ -189,49 +189,54 @@ BigInt BigInt::operator/(const BigInt &rhs) const
   if(rhs.is_zero()){
     throw std::invalid_argument("Division by zero");
   }
-  //rhs is the larger number
-  BigInt upperBound;
-  BigInt lowerBound;
-  BigInt dividend;
-  BigInt divisor;
-  BigInt result = BigInt();
-  BigInt mid = BigInt();
-  BigInt one = BigInt(1);
-  if(compare(rhs) < 0){
-    //Initialize upper bound to rhs and lower bound to 0
-    upperBound = BigInt(rhs);
-    lowerBound = BigInt();
-    dividend = BigInt(rhs);
-    divisor = BigInt(*this);
+  //if RHS is larger than LHS, integer division defaults to 0
+  if(compare_magnitudes(*this, rhs) == 0){
+    return BigInt();
   }
-  //lhs is the larger number (or they are equal)
+  //Determine sign of final answer
+  bool result_isNeg;
+  if(this->isNegative ^ rhs.isNegative){
+    result_isNeg = true;
+  }
   else{
-    upperBound = BigInt(*this);
-    lowerBound = BigInt();
-    dividend = BigInt(*this);
-    divisor = BigInt(rhs);
+    result_isNeg = false;
   }
-  while(upperBound > lowerBound){
-    mid = upperBound.div_by_2();
-    result = mid * divisor;
-    //If the difference between the result and the dividend is within 1, it means that we found our answer
-    if(compare_magnitudes((mid - divisor), one) == 0){
-      return result;
-    }
-    //Result is larger than the dividend
-    else if(result.compare(rhs) > 0){
-      //Update mid
-      mid = (mid + upperBound).div_by_2() + 1;
-    }
-    //Dividend is larger than the result
-    else if(result.compare(rhs) < 0){
-      mid = (lowerBound + mid).div_by_2() - 1;
-    }
-  }
+  
+  //rhs is the larger number
+  BigInt upperBound = BigInt(*this);
+  BigInt lowerBound = BigInt();
+  BigInt dividend = BigInt(*this); 
+  BigInt divisor = BigInt(rhs);
+  BigInt result = BigInt();
+  //Make all numbers positive as sign has already been accounted for
+  upperBound.isNegative = false;
+  lowerBound.isNegative = false;
+  dividend.isNegative = false;
+  divisor.isNegative = false;
+  result.isNegative = false;
+
+  result = dividend.division_search(lowerBound, upperBound, dividend, divisor);
+  result.isNegative = result_isNeg;
+  return result;
 }
 
-BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend){
-
+BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend, BigInt divisor){
+  BigInt one = BigInt(1);
+  BigInt mid = (upperBound + lowerBound).div_by_2();  
+  BigInt result = mid * divisor;
+  BigInt result_plus_one = (mid + 1) * divisor;
+  //If result is less than or equal to dividend, but result + 1 is larger than dividend, then we have found our answer
+  if((compare_magnitudes(result, dividend) != 1) && compare_magnitudes(dividend, result_plus_one) == 0){
+    return mid;
+  }
+  //Result is larger than the dividend, divisor is too big
+  else if(compare_magnitudes(result, dividend) > 0){
+    return result.division_search(lowerBound, mid - 1, dividend, divisor);
+  } 
+  //Result is smaller than the dividend, divisor is too small
+  else{
+    return result.division_search(mid + 1, upperBound, dividend, divisor);
+  }
 }
 
 int BigInt::compare(const BigInt &rhs) const
@@ -424,8 +429,11 @@ BigInt BigInt::div_by_2() const{
     //If not the last element, check to see if the more significant element has a 1 in the last bit (shifted down)
     if(((it+1) != newBigInt.values.end()) && *(it+1) % 2 == 1){
       //Set the most significant bit of the lower value to 1
-      (*it) |= (1 << 63);
+      (*it) |= (1UL << 63);
     }
+  }
+  if(newBigInt.is_zero()){
+    newBigInt.isNegative = false;
   }
   return newBigInt;
 }
