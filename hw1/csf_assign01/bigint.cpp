@@ -286,7 +286,31 @@ std::string BigInt::to_hex() const
 
 std::string BigInt::to_dec() const
 {
-  // TODO: implement
+  //remove leading 0s
+  BigInt data = this->cleanData();
+  std::stringstream ss;
+  //load the sign (if needed) first
+  if(data.isNegative){
+    ss << "-";
+  }
+  uint64_t a = 100;
+  int checkZero = 0;
+  BigInt hundred = BigInt(a);
+  BigInt cur = BigInt(*this);
+  while(!cur.is_zero()){
+    BigInt result = cur - ((cur / hundred)* hundred);
+    cur = cur/hundred;
+    if((result.get_bits(0) < 10)&&(checkZero == 1)){
+      ss << "0";
+    }
+    ss << result.get_bits(0);
+    checkZero = 1;
+  }
+  if((ss.str()).empty()){
+    ss << "0";
+  }
+  std::cout << ss.str() << std::endl;
+  return ss.str();
 }
 
 //check if the number is zero

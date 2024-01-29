@@ -107,10 +107,8 @@ int main(int argc, char **argv) {
   TEST(test_to_hex_1);
   TEST(test_to_hex_2);
   TEST(test_to_hex_3);
-  /*
   TEST(test_to_dec_1);
   TEST(test_to_dec_2);
-  */
   TEST(test_negation_1);
   TEST(test_negation_2);
   TEST(test_negation_zero);
