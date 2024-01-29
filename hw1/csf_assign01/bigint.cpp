@@ -295,16 +295,20 @@ std::string BigInt::to_dec() const
   }
   uint64_t a = 100;
   int checkZero = 0;
+  std::vector<int> intVec;
   BigInt hundred = BigInt(a);
   BigInt cur = BigInt(*this);
   while(!cur.is_zero()){
     BigInt result = cur - ((cur / hundred)* hundred);
     cur = cur/hundred;
-    if((result.get_bits(0) < 10)&&(checkZero == 1)){
+    intVec.push_back(result.get_bits(0));
+  }
+  int len = intVec.size();
+  for(int i = 0; i<len; i++){
+    if((intVec[len - i - 1] < 10)&&(checkZero == 1)){
       ss << "0";
     }
-    ss << result.get_bits(0);
-    checkZero = 1;
+    ss << intVec[len - i - 1];
   }
   if((ss.str()).empty()){
     ss << "0";
