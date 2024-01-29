@@ -309,6 +309,7 @@ std::string BigInt::to_dec() const
       ss << "0";
     }
     ss << intVec[len - i - 1];
+    checkZero = 1;
   }
   if((ss.str()).empty()){
     ss << "0";
