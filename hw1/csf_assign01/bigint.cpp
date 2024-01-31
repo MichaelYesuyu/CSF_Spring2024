@@ -380,9 +380,9 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
   //let len be the largest of the sizes of the two value vectors
   int len = 0;
   if(BigInt::compare_magnitudes(lhs, rhs) == 1){
-    len = lhs.get_len();
+    len = (lhs.get_len() + 1);
   }else{
-    len = rhs.get_len();
+    len = (rhs.get_len() + 1);
   }
   BigInt output = BigInt();
   output.isNegative = negativity;
@@ -402,9 +402,9 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
     }
   }
   //Handles the case where an extra element is needed due to overflow
-  if(overflow == 1){
-    output.values.push_back(1);
-  }
+  //if(overflow == 1){
+  //  output.values.push_back(1);
+  //}
   return output;
 }
 
@@ -441,7 +441,7 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
     negativity = rhs.is_negative();
     for(int i = 0; i < len; i++){
       uint64_t curVal = rhs.get_bits(i) - lhs.get_bits(i) - borrow;
-      if(rhs.get_bits(i)>(lhs.get_bits(i) - borrow)){ //if the lhs is smaller, need to borrow
+      if(rhs.get_bits(i)>=(lhs.get_bits(i) - borrow)){ //if the lhs is smaller, need to borrow
         borrow = 0;
       }else{
         borrow = 1;
