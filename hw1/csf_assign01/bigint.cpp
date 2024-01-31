@@ -252,6 +252,21 @@ BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt divi
 //delegate to compare_magnitude
 int BigInt::compare(const BigInt &rhs) const
 {
+  if((rhs.is_zero())&&(this->is_zero())){
+    return 0;
+  }else if(rhs.is_zero()){
+    if(this->is_negative()){
+      return -1;
+    }else{
+      return 1;
+    }
+  }else if(this->is_zero()){
+    if(rhs.is_negative()){
+      return 1;
+    }else{
+      return -1;
+    }
+  }
   //if they have different negativity
   if(rhs.is_negative() != this->is_negative()){
     if(rhs.is_negative()){
@@ -443,17 +458,19 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
 
 //use this method with cleaned data
 int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
-  int leftlen = lhs.get_len();
-  int rightlen = rhs.get_len();
+  BigInt left = lhs.cleanData();
+  BigInt right = rhs.cleanData();
+  int leftlen = left.get_len();
+  int rightlen = right.get_len();
   if(leftlen > rightlen){
     return 1;
   }else if(leftlen < rightlen){
     return 0;
   }else{
     for(int i = (leftlen - 1); i >= 0; i--){
-      if(lhs.get_bits(i) > rhs.get_bits(i)){
+      if(left.get_bits(i) > right.get_bits(i)){
         return 1;
-      }else if(lhs.get_bits(i) < (rhs.get_bits(i))){
+      }else if(left.get_bits(i) < (right.get_bits(i))){
         return 0;
       }
     }
