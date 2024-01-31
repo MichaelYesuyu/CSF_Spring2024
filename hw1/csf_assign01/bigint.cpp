@@ -366,7 +366,7 @@ bool BigInt::is_zero() const{
 BigInt BigInt::cleanData() const {
   BigInt out = BigInt(*this);
   //if the biggest digit is 0 and that is not the only digit
-  while (out.values.back() == 0 && out.values.size() != 1){
+  while ((out.values.back() == 0)&&(out.values.size() != 1)){
       out.values.pop_back();
   }
   return out;
@@ -468,7 +468,7 @@ int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
   if(leftlen > rightlen){
     return 1;
   }else if(leftlen < rightlen){
-    return 0;
+    return -1;
   }else{
     for(int i = (leftlen - 1); i >= 0; i--){
       if(left.get_bits(i) > right.get_bits(i)){
