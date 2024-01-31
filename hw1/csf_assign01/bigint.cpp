@@ -441,7 +441,6 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
   
 }
 
-//return 1 if left has larger magnitude, 0 if right has larger magnitude, 2 if they have the same magnitude
 //use this method with cleaned data
 int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
   int leftlen = lhs.get_len();

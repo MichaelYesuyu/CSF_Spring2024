@@ -185,29 +185,49 @@ public:
   //! @return the value of this BigInt object in decimal (base-10)
   std::string to_dec() const;
 
-  //get the length of the int vector
+  //! Return the length of the values vector
+  //! @return the length of the values vector for a BigInt
   uint64_t get_len() const;
 
-  //add two BigInt's magnitude
+  //! Helper function for + operator
+  //! Add the absolute value (magnitudes) of two BigInts
+  //! @param lhs first BigInt to be added
+  //! @param rhs second BigInt to be added
+  //! @return the sum of the absolute values of two BigInts
   static BigInt add_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
-  //subtra two BigInt's magnitude, left is bigger
+  //! Helper function for + operator
+  //! Subtract the absolute value of the right BigInt from the left BigInt
+  //! Assume that the lhs is larger than rhs when calling this method
+  //! @param lhs BigInt to be subtracted from
+  //! @param rhs BigInt subtracting from lhs
+  //! @return the result after subtracting the absolute value of rhs from lhs
   static BigInt subtract_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
   //compare the magnitude of the two BigInt
+  //! Compares the magnitudes of the two BigInts
+  //! @param lhs first BigInt to be compared
+  //! @param rhs second BigInt to be comapred
+  //! @return 1 if left has larger magnitude, 0 if right has larger magnitude, 2 if they have the same magnitude
   static int compare_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
-  //Divide by 2 helper function
+  //! Helper function for binary search
+  //! @return BigInt after dividing by 2 (right shift by 1)
   BigInt div_by_2() const;
 
-  //Helper function to search for the result in division
+  //! Helper function to search for the result in division with binary search
+  //! @param lowerBound the lower bound of the binary search
+  //! @param upperBound the upper bound of the binary search
+  //! @param dividend the dividend
+  //! @param divisor the divisor
+  //! @return returns the answer after divding the dividend by the divisor
   BigInt division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend, BigInt divisor);
 
 private:
-  //check if the vector has only zeros
+  //! @return returns true if the values vector has only zeros, false otherwise
   bool is_zero() const;
   
-  //clean any leading unnecessary 0 bits
+  //! @return returns a BigInt with all leading zero elements in its values vector removed
   BigInt cleanData() const;
 
 };
