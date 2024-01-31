@@ -34,51 +34,57 @@ BigInt::~BigInt()
 //overload operator =
 BigInt &BigInt::operator=(const BigInt &rhs)
 {
-  // TODO: implement
+  //copy member fields of the rhs object into this
   values = rhs.values;
   isNegative = rhs.isNegative;
   return *this;
 }
 
-//return thr negativity
+//return the negativity
 bool BigInt::is_negative() const {
   return isNegative;
 }
 
-//return thr value vector
+//return the value vector
 const std::vector<uint64_t> &BigInt::get_bit_vector() const {
   return values;
 }
 
-//ge the bit at the desired position
+//get the bit at the desired position
 uint64_t BigInt::get_bits(unsigned index) const
 {
-  //check valdity of index
+  //check validity of index
   if(index >= values.size()){
     return 0;
   }else{
     return values[index];
   }
+  return 0;
 }
 
+//get the length of the value vector, for static functions without access to the private field
 uint64_t BigInt::get_len() const{
   return this->values.size();
 }
 
+//overload +, delegate to either add magnitude or subtract magnitude according to negativity
 BigInt BigInt::operator+(const BigInt &rhs) const
 {
-  // first remove leading zeros
+  // first remove leading zeros with cleanData()
   BigInt left = this->cleanData();
   BigInt right = rhs.cleanData();
   BigInt output;
+  //a + b
   if(left.is_negative() == right.is_negative()){
     output = add_magnitudes(left, right);
+  //a - (-b)
   }else{
    output = subtract_magnitudes(left, right);
   }
   return output;
 }
 
+//delegate to the overloaded "+"
 BigInt BigInt::operator-(const BigInt &rhs) const
 {
   // first remove leading zeros
@@ -91,7 +97,7 @@ BigInt BigInt::operator-(const BigInt &rhs) const
 //unary minus
 BigInt BigInt::operator-() const
 {
-  //create a new BigInt instance
+  //create a new BigInt instance, and then reverse negativity
   BigInt negate = BigInt(*this);
   if(!negate.is_zero()){
     negate.isNegative = !negate.isNegative;
@@ -99,9 +105,9 @@ BigInt BigInt::operator-() const
   return negate;
 }
 
+//check if the n th bit is 1
 bool BigInt::is_bit_set(unsigned n) const
 {
-  // TODO: implement
   unsigned vecIndex = n / 64;
   unsigned bitPosition = n % 64;
   //Bit not set if the request bit is larger than the value of the BigInt
@@ -114,6 +120,7 @@ bool BigInt::is_bit_set(unsigned n) const
   return ((curVal % 2) == 1);
 }
 
+//overload <<
 BigInt BigInt::operator<<(unsigned n) const
 {   
     //Throw exception if attempting to left shift negative number
@@ -161,20 +168,23 @@ BigInt BigInt::operator<<(unsigned n) const
     return newBigInt;
 }
 
+//overload *
 BigInt BigInt::operator*(const BigInt &rhs) const
 {
+  //get the size of rhs, then multiply each digit of rhs with the whole of lhs
   unsigned numBits = rhs.values.size() * 64;
   BigInt answer = BigInt();
   //If either value is zero, just return zero
   if(this->is_zero() || rhs.is_zero()){
     return answer;
   }
-  //If one of the values is negative, answer will be negative, otherwise answer is positive
+  //If only one of the values is negative, answer will be negative, otherwise answer is positive
   if(this->isNegative ^ rhs.is_negative()){
     answer.isNegative = true;
   }else{
     answer.isNegative = false;
   }
+  //multiply each valid bit with this, then add up
   for(unsigned i=0; i<numBits; i++){
     if(rhs.is_bit_set(i)){
       answer = answer + (*this << i);
@@ -183,6 +193,7 @@ BigInt BigInt::operator*(const BigInt &rhs) const
   return answer;
 }
 
+//overload /
 BigInt BigInt::operator/(const BigInt &rhs) const
 {
   //Cannot divide by zero
@@ -197,8 +208,7 @@ BigInt BigInt::operator/(const BigInt &rhs) const
   bool result_isNeg;
   if(this->isNegative ^ rhs.isNegative){
     result_isNeg = true;
-  }
-  else{
+  }else{
     result_isNeg = false;
   }
   
@@ -239,6 +249,7 @@ BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt divi
   }
 }
 
+//delegate to compare_magnitude
 int BigInt::compare(const BigInt &rhs) const
 {
   //if they have different negativity
@@ -284,6 +295,7 @@ std::string BigInt::to_hex() const
   return ss.str();
 }
 
+//convert to decimal form
 std::string BigInt::to_dec() const
 {
   //remove leading 0s
@@ -293,19 +305,24 @@ std::string BigInt::to_dec() const
   if(data.isNegative){
     ss << "-";
   }
+  //create a bigint with 100
   uint64_t a = 100;
-  int checkZero = 0;
-  std::vector<int> intVec;
   BigInt hundred = BigInt(a);
+  //store the 2-digit numbers
+  std::vector<int> intVec;
+  //divide this by 100 each time
   BigInt cur = BigInt(*this);
   while(!cur.is_zero()){
     BigInt result = cur - ((cur / hundred)* hundred);
     cur = cur/hundred;
     intVec.push_back(result.get_bits(0));
   }
+  //used to check if we need to add zero to the 2-digit number
+  int checkZero = 0;
+  //iterate through the 2-digit numbers
   int len = intVec.size();
   for(int i = 0; i<len; i++){
-    if((intVec[len - i - 1] < 10)&&(checkZero == 1)){
+    if((intVec[len - i - 1] < 10)&&(checkZero == 1)){ //add a zero if the 2-digit number is actually 1-digit long AND it is not the first 2-digit number
       ss << "0";
     }
     ss << intVec[len - i - 1];
