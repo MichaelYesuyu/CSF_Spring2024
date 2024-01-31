@@ -556,6 +556,17 @@ void test_div_3(TestObjs *objs){
   BigInt six = objs->six;
   BigInt result = ten / six;
   check_contents(result, {1UL});
+
+  //tests the special case of negative number integer division to positive zero
+  BigInt negative_three = objs->negative_three;
+  BigInt result2 = negative_three / ten;
+  check_contents(result2, {0UL});
+  ASSERT(!result2.is_negative());
+
+  BigInt three = objs->three;
+  BigInt result3 = negative_three / three;
+  check_contents(result3, {1UL});
+  ASSERT(result3.is_negative());
 }
 
 void test_to_hex_1(TestObjs *objs) {
