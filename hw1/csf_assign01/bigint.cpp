@@ -201,7 +201,7 @@ BigInt BigInt::operator/(const BigInt &rhs) const
     throw std::invalid_argument("Division by zero");
   }
   //if RHS is larger than LHS, integer division defaults to 0
-  if(compare_magnitudes(*this, rhs) == 0){
+  if(compare_magnitudes(*this, rhs) < 0){
     return BigInt();
   }
   //Determine sign of final answer
@@ -236,7 +236,7 @@ BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt divi
   BigInt result = mid * divisor;
   BigInt result_plus_one = (mid + 1) * divisor;
   //If result is less than or equal to dividend, but result + 1 is larger than dividend, then we have found our answer
-  if((compare_magnitudes(result, dividend) != 1) && compare_magnitudes(dividend, result_plus_one) == 0){
+  if((compare_magnitudes(result, dividend) != 1) && compare_magnitudes(result_plus_one, dividend) == 1){
     return mid;
   }
   //Result is larger than the dividend, divisor is too big
@@ -277,14 +277,17 @@ int BigInt::compare(const BigInt &rhs) const
   }
   // if has same negativity, call the compare_magnitude helper function
   int compare = compare_magnitudes(*this, rhs);
-  if(compare == 1){
-    return 1;
-  }else if(compare == 0){
-    return -1;
+  if(rhs.is_negative()){
+    if(compare == 1){
+      return -1;
+    }else if(compare == -1){
+      return 1;
+    }else{
+      return 0;
+    }
   }else{
-    return 0;
+    return compare;
   }
-  return 0;
 }
 
 //change the bigInt to hexadecimal represention (string)
@@ -471,12 +474,11 @@ int BigInt::compare_magnitudes(const BigInt &lhs, const BigInt &rhs){
       if(left.get_bits(i) > right.get_bits(i)){
         return 1;
       }else if(left.get_bits(i) < (right.get_bits(i))){
-        return 0;
+        return -1;
       }
     }
-    return 2; //is they are the same, return 2;
+    return 0; //is they are the same, return 0;
   }
-  return -1; //error message
 }
 
 BigInt BigInt::div_by_2() const{
