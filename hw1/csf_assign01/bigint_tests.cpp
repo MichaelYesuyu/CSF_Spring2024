@@ -331,6 +331,12 @@ void test_add_5(TestObjs *){
   BigInt result = left + right;
   check_contents(result, {0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL});
   ASSERT(!result.is_negative());
+
+  BigInt left2({0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL});
+  BigInt right2({1UL});
+  BigInt result2 = left2 + right2;
+  check_contents(result2, {0UL, 0UL, 0UL, 1UL});
+  ASSERT(!result2.is_negative());
 }
 
 void test_add_6(TestObjs *){
