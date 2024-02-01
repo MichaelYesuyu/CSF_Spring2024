@@ -344,6 +344,18 @@ void test_add_6(TestObjs *){
   BigInt right({0x0UL, 0x0UL, 0x1UL});
   BigInt result = left + right;
   check_contents(result, {0xffffffffffffffffUL, 0xfffffffffffffffeUL});
+
+  BigInt left2({1UL, 1UL, 1UL}, true);
+  BigInt right2({1UL, 1UL, 1UL});
+  BigInt result2 = left2 + right2;
+  check_contents(result2, {0UL});
+  ASSERT(!result2.is_negative());
+
+  BigInt left3({1UL, 1UL, 1UL});
+  BigInt right3({1UL, 1UL, 1UL}, true);
+  BigInt result3 = left3 + right3;
+  check_contents(result3, {0UL});
+  ASSERT(!result3.is_negative());
 }
 
 void test_sub_1(TestObjs *objs) {

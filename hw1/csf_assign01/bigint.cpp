@@ -184,10 +184,13 @@ BigInt BigInt::operator*(const BigInt &rhs) const
   }else{
     answer.isNegative = false;
   }
+  //Make sure that *this is positive (since sign is already determined), and left shift doesn't work for negative numbers
+  BigInt curNumber = BigInt(*this);
+  curNumber.isNegative = false;
   //multiply each valid bit with this, then add up
   for(unsigned i=0; i<numBits; i++){
     if(rhs.is_bit_set(i)){
-      answer = answer + (*this << i);
+      answer = answer + (curNumber << i);
     }
   }
   return answer;
@@ -406,6 +409,10 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
 
 //use this method with cleaned data
 BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
+  //If lhs and rhs have the same magnitude, return 0
+  if(compare_magnitudes(lhs, rhs) == 0){
+    return BigInt();
+  }
   bool negativity;
   int len = 0;
   int borrow = 0;
