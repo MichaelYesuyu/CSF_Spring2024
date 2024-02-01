@@ -203,7 +203,7 @@ BigInt BigInt::operator/(const BigInt &rhs) const
   if(rhs.is_zero()){
     throw std::invalid_argument("Division by zero");
   }
-  //if RHS is larger than LHS, integer division defaults to 0
+  //if RHS is larger magnitude than LHS, integer division defaults to 0
   if(compare_magnitudes(*this, rhs) < 0){
     return BigInt();
   }
@@ -235,7 +235,10 @@ BigInt BigInt::operator/(const BigInt &rhs) const
 
 BigInt BigInt::division_search(BigInt lowerBound, BigInt upperBound, BigInt dividend, BigInt divisor){
   BigInt one = BigInt(1);
-  BigInt mid = (upperBound + lowerBound).div_by_2();  
+  //Calculate mid this way to avoid upperBound + lowerBound overflowing
+  BigInt diff = upperBound - lowerBound;
+  diff = diff.div_by_2();
+  BigInt mid = lowerBound + diff;  
   BigInt result = mid * divisor;
   BigInt result_plus_one = (mid + 1) * divisor;
   //If result is less than or equal to dividend, but result + 1 is larger than dividend, then we have found our answer
