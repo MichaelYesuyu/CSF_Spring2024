@@ -46,6 +46,8 @@ void test_add_1(TestObjs *objs);
 void test_add_2(TestObjs *objs);
 void test_add_3(TestObjs *objs);
 void test_add_4(TestObjs *objs);
+void test_add_5(TestObjs *objs);
+void test_add_6(TestObjs *objs);
 void test_sub_1(TestObjs *objs);
 void test_sub_2(TestObjs *objs);
 void test_sub_3(TestObjs *objs);
@@ -56,6 +58,7 @@ void test_lshift_1(TestObjs *objs);
 void test_lshift_2(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
+void test_mul_3(TestObjs *objs);
 void test_compare_1(TestObjs *objs);
 void test_compare_2(TestObjs *objs);
 void test_div_1(TestObjs *objs);
@@ -89,6 +92,8 @@ int main(int argc, char **argv) {
   TEST(test_add_2);
   TEST(test_add_3);
   TEST(test_add_4);
+  TEST(test_add_5);
+  TEST(test_add_6);
   TEST(test_sub_1);
   TEST(test_sub_2);
   TEST(test_sub_3);
@@ -99,6 +104,7 @@ int main(int argc, char **argv) {
   TEST(test_lshift_2);
   TEST(test_mul_1);
   TEST(test_mul_2);
+  TEST(test_mul_3);
   TEST(test_div_1);
   TEST(test_div_2);
   TEST(test_div_3);
@@ -318,6 +324,22 @@ void test_add_4(TestObjs *) {
 
 }
 
+void test_add_5(TestObjs *){
+  //Testing multiple carry overs
+  BigInt left({0UL, 0UL, 0UL, 1UL});
+  BigInt right({1UL}, true);
+  BigInt result = left + right;
+  check_contents(result, {0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL, 0xFFFFFFFFFFFFFFFFUL});
+  ASSERT(!result.is_negative());
+}
+
+void test_add_6(TestObjs *){
+  BigInt left({0x1UL, 0x1UL}, true);
+  BigInt right({0x0UL, 0x0UL, 0x1UL});
+  BigInt result = left + right;
+  check_contents(result, {0xffffffffffffffffUL, 0xfffffffffffffffeUL});
+}
+
 void test_sub_1(TestObjs *objs) {
   // very basic tests for subtraction
 
@@ -496,6 +518,21 @@ void test_mul_2(TestObjs *) {
     check_contents(result, {0x2bf1cf198f85396eUL, 0x92c5b43447ed673fUL, 0xbb463828efUL});
     ASSERT(!result.is_negative());
   }
+}
+
+void test_mul_3(TestObjs *objs){
+  //testing some edge cases
+  BigInt zero = objs->zero;
+  BigInt negative_three = objs->negative_three;
+  BigInt three = objs->three;
+
+  BigInt result = zero * three;
+  check_contents(result, {0UL});
+  ASSERT(!result.is_negative());
+
+  BigInt result2 = zero * negative_three;
+  check_contents(result2, {0UL});
+  ASSERT(!result2.is_negative());
 }
 
 void test_compare_1(TestObjs *objs) {
