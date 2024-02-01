@@ -59,11 +59,14 @@ void test_lshift_2(TestObjs *objs);
 void test_mul_1(TestObjs *objs);
 void test_mul_2(TestObjs *objs);
 void test_mul_3(TestObjs *objs);
+void test_mul_4(TestObjs *objs);
+void test_mul_5(TestObjs *objs); 
 void test_compare_1(TestObjs *objs);
 void test_compare_2(TestObjs *objs);
 void test_div_1(TestObjs *objs);
 void test_div_2(TestObjs *objs);
 void test_div_3(TestObjs *objs);
+void test_div_4(TestObjs *objs);
 void test_to_hex_1(TestObjs *objs);
 void test_to_hex_2(TestObjs *objs);
 void test_to_hex_3(TestObjs *objs);
@@ -105,9 +108,12 @@ int main(int argc, char **argv) {
   TEST(test_mul_1);
   TEST(test_mul_2);
   TEST(test_mul_3);
+  TEST(test_mul_4);
+  TEST(test_mul_5);
   TEST(test_div_1);
   TEST(test_div_2);
   TEST(test_div_3);
+  TEST(test_div_4);
   TEST(test_compare_1);
   TEST(test_compare_2);
   TEST(test_to_hex_1);
@@ -553,6 +559,42 @@ void test_mul_3(TestObjs *objs){
   ASSERT(!result2.is_negative());
 }
 
+void test_mul_4(TestObjs *) {
+  // multiplication test(s) with larger values
+
+  {
+    BigInt left({0x1UL, 0x1UL});
+    BigInt right({0x1UL, 0x1UL});
+    BigInt result = left * right;
+    check_contents(result, {0x1UL, 0x2UL, 0x1UL});
+    ASSERT(!result.is_negative());
+  }
+
+  BigInt left1({0x1UL, 0x1UL});
+    BigInt right1({0x1UL, 0x1UL}, true);
+    BigInt result1 = left1 * right1;
+    check_contents(result1, {0x1UL, 0x2UL, 0x1UL});
+    ASSERT(result1.is_negative());
+}
+
+void test_mul_5(TestObjs *) {
+  // multiplication test(s) with larger values
+
+  {
+    BigInt left({0xffffffffffffffffUL});
+    BigInt right({0x2UL});
+    BigInt result = left * right;
+    check_contents(result, {0xfffffffffffffffeUL, 0x1UL});
+    ASSERT(!result.is_negative());
+
+    BigInt left1({0xffffffffffffffffUL});
+    BigInt right1({0x2UL, 0x1UL});
+    BigInt result1 = left1 * right1;
+    check_contents(result1, {0xfffffffffffffffeUL, 0x0UL, 0x1UL});
+    ASSERT(!result1.is_negative());
+  }
+}
+
 void test_compare_1(TestObjs *objs) {
   // some basic tests for compare
   ASSERT(objs->zero.compare(objs->zero) == 0);
@@ -624,6 +666,13 @@ void test_div_3(TestObjs *objs){
   ASSERT(result3.is_negative());
 }
 
+void test_div_4(TestObjs *objs){
+  BigInt left({0x0UL});
+  BigInt right({0x5UL}, true);
+  BigInt result = left / right;
+  check_contents(result, {0x0UL});
+  ASSERT(!result.is_negative());
+}
 void test_to_hex_1(TestObjs *objs) {
   // some basic tests for to_hex()
 
