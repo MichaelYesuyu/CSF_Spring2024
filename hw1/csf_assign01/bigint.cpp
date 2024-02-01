@@ -425,7 +425,7 @@ BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
     negativity = lhs.is_negative();
     for(int i = 0; i < len; i++){
       uint64_t curVal = lhs.get_bits(i) - rhs.get_bits(i) - borrow;
-      if(lhs.get_bits(i)>(rhs.get_bits(i) - borrow)){ //if the lhs is smaller, need to borrow
+      if(lhs.get_bits(i)>=(rhs.get_bits(i) + borrow)){ //if the lhs is smaller, need to borrow
         borrow = 0;
       }else{
         borrow = 1;
