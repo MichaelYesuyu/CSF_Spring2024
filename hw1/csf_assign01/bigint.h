@@ -197,18 +197,17 @@ public:
   static BigInt add_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
   //! Helper function for + operator
-  //! Subtract the absolute value of the right BigInt from the left BigInt
-  //! Assume that the lhs is larger than rhs when calling this method
-  //! @param lhs BigInt to be subtracted from
-  //! @param rhs BigInt subtracting from lhs
-  //! @return the result after subtracting the absolute value of rhs from lhs
+  //! Subtract the absolute value of the larger BigInt fron the smaller BigInt
+  //! @param lhs first BigInt
+  //! @param rhs second BigInt
+  //! @return the result after subtracting the absolute value of the smaller BigInt fron the absolute val of the larger BigInt
   static BigInt subtract_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
   //compare the magnitude of the two BigInt
   //! Compares the magnitudes of the two BigInts
   //! @param lhs first BigInt to be compared
   //! @param rhs second BigInt to be comapred
-  //! @return 1 if left has larger magnitude, 0 if right has larger magnitude, 2 if they have the same magnitude
+  //! @return 1 if left has larger magnitude, -1 if right has larger magnitude, 0 if they have the same magnitude
   static int compare_magnitudes(const BigInt &lhs, const BigInt &rhs);
 
   //! Helper function for binary search
