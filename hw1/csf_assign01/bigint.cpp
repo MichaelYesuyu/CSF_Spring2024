@@ -401,10 +401,6 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
       output.values.push_back(curSum);
     }
   }
-  //Handles the case where an extra element is needed due to overflow
-  //if(overflow == 1){
-  //  output.values.push_back(1);
-  //}
   return output;
 }
 
