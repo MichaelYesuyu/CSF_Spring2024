@@ -410,6 +410,10 @@ BigInt BigInt::add_magnitudes(const BigInt &lhs, const BigInt &rhs){
 
 //use this method with cleaned data
 BigInt BigInt::subtract_magnitudes(const BigInt &lhs, const BigInt &rhs){
+  //If lhs and rhs have the same magnitude, return 0
+  if(compare_magnitudes(lhs, rhs) == 0){
+    return BigInt();
+  }
   bool negativity;
   int len = 0;
   int borrow = 0;
