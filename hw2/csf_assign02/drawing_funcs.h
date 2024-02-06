@@ -28,4 +28,7 @@ void draw_sprite(struct Image *img,
                  struct Image *spritemap,
                  const struct Rect *sprite);
 
+//Helper function to calculate the color value of the new pixel
+uint32_t calculate_color(uint32_t background_color, uint32_t new_color);
+
 #endif // DRAWING_FUNCS_H

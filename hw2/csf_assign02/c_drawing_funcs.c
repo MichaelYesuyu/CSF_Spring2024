@@ -103,3 +103,48 @@ void draw_sprite(struct Image *img,
                  const struct Rect *sprite) {
   // TODO: implement
 }
+
+uint32_t calculate_color(uint32_t background_color, uint32_t new_color){
+  //Get bottom 8 bits of background_color - alpha value
+  uint32_t background_alpha = background_color & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - blue component value
+  background_color = background_color >> 8;
+  uint32_t background_blue = background_color & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - green component value
+  background_color = background_color >> 8;
+  uint32_t background_green = background_color & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - red component value
+  background_color = background_color >> 8;
+  uint32_t background_red = background_color & ~(~0U << 8);
+
+  //get bottom 8 bits of new_color - alpha value
+  uint32_t new_alpha = new_color & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - blue component value
+  new_color = new_color >> 8;
+  uint32_t new_blue = new_blue & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - green component value
+  new_color = new_color >> 8;
+  uint32_t new_green = new_green & ~(~0U << 8);
+  //Right shift 8 bits, get the new bottom 8 bits - red component value
+  new_color = new_color >> 8;
+  uint32_t new_red = new_red & ~(~0U << 8);
+
+  //Calculate color blend
+  uint32_t blended_alpha = 255; //Alpha value of destination image is always 255
+  uint32_t blended_blue = ((new_alpha * new_blue) + (255 - new_alpha) * (background_blue)) / 255;
+  uint32_t blended_green = ((new_alpha * new_green) + (255 - new_alpha) * (background_green)) / 255;
+  uint32_t blended_red = ((new_alpha * new_red) + (255 - new_alpha) * (background_red)) / 255;
+  //Initialize the blended color
+  uint32_t blended_color = 0;
+  //Perform shifting so that the colors are stored in the specified bit format
+  //Bitwise or used to change just the lower 8 bits (since all the values only have bits set to 1 in the lower 8 bits)
+  blended_color |= blended_alpha; 
+  blended_color = blended_color << 8;
+  blended_color |= blended_blue;
+  blended_color = blended_color << 8;
+  blended_color |= blended_green;
+  blended_color = blended_color << 8;
+  blended_color |= blended_red;
+
+  return blended_color;
+}
