@@ -25,8 +25,13 @@
 //   color - uint32_t color value
 //
 void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
-  // TODO: implement
-  
+  int32_t index = in_bounds(img, x, y);
+  if(index = -1){
+    printf("Given point out of range!\n");
+    return;
+  }
+  set_pixel(img, index, color);
+  return;
 }
 
 //
