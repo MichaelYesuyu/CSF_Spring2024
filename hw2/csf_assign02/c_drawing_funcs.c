@@ -105,6 +105,35 @@ void draw_sprite(struct Image *img,
   // TODO: implement
 }
 
+//check if a point is within the range. if not, return -1
+int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
+    int32_t index;
+    if((x >= (img->width))||(y >= (img->height))||(x < 0)||(y < 0)){
+        return -1;
+    }else{
+        return compute_index(img, x, y);
+    }
+}
+
+//compute the index at a given point, given that the point is within the range
+uint32_t compute_index(struct Image *img, int32_t x, int32_t y){
+    uint32_t new_x = clamp(x, 0, (img->width - 1));
+    uint32_t new_y = clamp(y, 0, (img->height - 1));
+    uint32_t index = new_x + new_y*(img->width);
+    return index;
+}
+
+//restrains the value into a given range
+int32_t clamp(int32_t val, int32_t min, int32_t max){
+    int32_t result = val;
+    if(result < min){
+        result = min;
+    }else if(result > max){
+        result = max;
+    }
+    return result;
+}
+
 uint8_t get_r(uint32_t color){
   //Shift color right by 24 bits so the lower 8 bits stores bits for blue
   color = color >> 24;
