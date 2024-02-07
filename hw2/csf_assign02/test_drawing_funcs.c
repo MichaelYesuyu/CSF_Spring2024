@@ -272,7 +272,9 @@ void test_get_color_components(TestObjs *objs) {
   uint32_t test_color_1 = UINT32_MAX;
   //This number represents R = 0, G = 0, B = 0, alpha = 0
   uint32_t test_color_2 = 0;
-
+  //This number represents R = 120, G = 120, B = 120, alpha = 255
+  uint32_t test_color_3 = 2021161215;
+  
   ASSERT(get_a(test_color_1) == 255);
   ASSERT(get_r(test_color_1) == 255);
   ASSERT(get_g(test_color_1) == 255);
@@ -281,6 +283,10 @@ void test_get_color_components(TestObjs *objs) {
   ASSERT(get_r(test_color_2) == 0);
   ASSERT(get_g(test_color_2) == 0);
   ASSERT(get_b(test_color_2) == 0);
+  ASSERT(get_b(test_color_3) == 120);
+  ASSERT(get_r(test_color_3) == 120);
+  ASSERT(get_g(test_color_3) == 120);
+  ASSERT(get_a(test_color_3) == 255);
 }
 
 void test_color_blending(TestObjs *objs) {
