@@ -201,11 +201,11 @@ uint32_t blend_colors(uint32_t fg, uint32_t bg){
   uint32_t new_color = 0;
   //Bitwise OR and shift to store all the components in specified format
   new_color |= new_r;
-  new_color << 8;
+  new_color = new_color << 8;
   new_color |= new_g;
-  new_color << 8;
+  new_color = new_color << 8;
   new_color |= new_b;
-  new_color << 8;
+  new_color = new_color << 8;
   new_color |= new_alpha;
 
   return new_color;
@@ -222,7 +222,7 @@ int64_t square(int64_t x){
 
 //return the square distance of two points
 int64_t square_dist(int64_t x1, int64_t y1, int64_t x2, int64_t y2){
-    x_dist = x1 - x2;
-    y_dist = y1 - y2;
+    int64_t x_dist = x1 - x2;
+    int64_t y_dist = y1 - y2;
     return (square(x_dist) + square(y_dist));
 }

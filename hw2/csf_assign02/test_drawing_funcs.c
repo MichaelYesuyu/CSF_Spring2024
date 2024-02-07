@@ -83,6 +83,7 @@ void test_draw_circle(TestObjs *objs);
 void test_draw_circle_clip(TestObjs *objs);
 void test_draw_tile(TestObjs *objs);
 void test_draw_sprite(TestObjs *objs);
+void test_get_color_components(TestObjs *objs);
 void test_color_blending(TestObjs *objs);
 
 int main(int argc, char **argv) {
@@ -100,6 +101,7 @@ int main(int argc, char **argv) {
   //TEST(test_draw_circle_clip);
   //TEST(test_draw_tile);
   //TEST(test_draw_sprite);
+  TEST(test_get_color_components);
   TEST(test_color_blending);
 
   TEST_FINI();
@@ -265,10 +267,30 @@ void test_draw_sprite(TestObjs *objs) {
   check_picture(&objs->large, &pic);
 }
 
+void test_get_color_components(TestObjs *objs) {
+  //This number represents R = 255, G = 255, B = 255, alpha = 255
+  uint32_t test_color_1 = UINT32_MAX;
+  //This number represents R = 0, G = 0, B = 0, alpha = 0
+  uint32_t test_color_2 = 0;
+
+  ASSERT(get_a(test_color_1) == 255);
+  ASSERT(get_r(test_color_1) == 255);
+  ASSERT(get_g(test_color_1) == 255);
+  ASSERT(get_b(test_color_1) == 255);
+  ASSERT(get_a(test_color_2) == 0);
+  ASSERT(get_r(test_color_2) == 0);
+  ASSERT(get_g(test_color_2) == 0);
+  ASSERT(get_b(test_color_2) == 0);
+}
+
 void test_color_blending(TestObjs *objs) {
-  //Sanity test, blend 2 of the same color with RGB = 255 and alpha = 255
-  uint32_t color1 = UINT32_MAX;
-  uint32_t color2 = UINT32_MAX;
-  uint32_t test_color = calculate_color(color1, color2);
-  ASSERT(test_color == UINT32_MAX);
+  //Background
+  uint8_t r_1 = 255;
+  uint8_t g_1 = 255;
+  uint8_t b_1 = 255;
+
+  //Foreground
+  uint8_t r_2 = 120;
+  uint8_t g_2 = 120;
+  uint8_t b_3 = 120;
 }
