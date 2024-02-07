@@ -288,9 +288,53 @@ void test_color_blending(TestObjs *objs) {
   uint8_t r_1 = 255;
   uint8_t g_1 = 255;
   uint8_t b_1 = 255;
+  uint8_t alpha_1 = 255; //alpha doesn't matter but need to be stored anyway
+  uint32_t bg = 0;
+  bg |= r_1;
+  bg = bg << 8;
+  bg |= g_1;
+  bg = bg << 8;
+  bg |= b_1;
+  bg = bg << 8;
+  bg |= alpha_1;
 
   //Foreground
   uint8_t r_2 = 120;
   uint8_t g_2 = 120;
+  uint8_t b_2 = 120;
+  uint8_t alpha_2 = 255; //Should completely replace background
+  uint32_t fg = 0;
+  fg |= r_2;
+  fg = fg << 8;
+  fg |= g_2;
+  fg = fg << 8;
+  fg |= b_2;
+  fg = fg << 8;
+  fg |= alpha_2;
+
+  uint32_t new_color = blend_colors(fg, bg);
+  ASSERT(get_a(new_color) == 255);
+  ASSERT(get_r(new_color) == 120);
+  ASSERT(get_g(new_color) == 120);
+  ASSERT(get_b(new_color) == 120);
+
+  //Foreground 2
+  uint8_t r_3 = 120;
+  uint8_t g_3 = 120;
   uint8_t b_3 = 120;
+  uint8_t alpha_3 = 200;
+  uint32_t fg_2 = 0;
+  fg_2 |= r_3;
+  fg_2 = fg_2 << 8;
+  fg_2 |= g_3;
+  fg_2 = fg_2 << 8;
+  fg_2 |= b_3;
+  fg_2 = fg_2 << 8;
+  fg_2 |= alpha_3;
+
+  uint32_t new_color_2 = blend_colors(fg_2, bg);
+  ASSERT(get_a(new_color_2) == 255);
+  ASSERT(get_r(new_color_2) == 149);
+  ASSERT(get_g(new_color_2) == 149);
+  ASSERT(get_b(new_color_2) == 149);
 }
