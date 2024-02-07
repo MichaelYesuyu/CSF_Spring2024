@@ -210,3 +210,19 @@ uint32_t blend_colors(uint32_t fg, uint32_t bg){
 
   return new_color;
 }
+
+void set_pixel(struct Image *img, uint32_t index, uint32_t color){
+    
+}
+
+//return the square of an int64_t
+int64_t square(int64_t x){
+    return (x*x);
+}
+
+//return the square distance of two points
+int64_t square_dist(int64_t x1, int64_t y1, int64_t x2, int64_t y2){
+    x_dist = x1 - x2;
+    y_dist = y1 - y2;
+    return (square(x_dist) + square(y_dist));
+}
