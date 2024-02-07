@@ -105,45 +105,79 @@ void draw_sprite(struct Image *img,
   // TODO: implement
 }
 
-uint32_t calculate_color(uint32_t background_color, uint32_t foreground_color){
-  //Right shift 8 bits, get the new bottom 8 bits - blue component value
-  background_color = background_color >> 8;
-  uint32_t background_blue = background_color & ~(~0U << 8);
-  //Right shift 8 bits, get the new bottom 8 bits - green component value
-  background_color = background_color >> 8;
-  uint32_t background_green = background_color & ~(~0U << 8);
-  //Right shift 8 bits, get the new bottom 8 bits - red component value
-  background_color = background_color >> 8;
-  uint32_t background_red = background_color & ~(~0U << 8);
+uint8_t get_r(uint32_t color){
+  //Shift color right by 24 bits so the lower 8 bits stores bits for blue
+  color = color >> 24;
+  //Mask the lower 8 bits
+  color = color & ~(~0U << 8);
+  //Bitwise OR to store the lower 8 bits in a
+  uint8_t r = 0;
+  r |= color;
+  return r;
+}
 
-  //get bottom 8 bits of foreground_color - alpha value
-  uint32_t new_alpha = foreground_color & ~(~0U << 8);
-  //Right shift 8 bits, get the new bottom 8 bits - blue component value
-  foreground_color = foreground_color >> 8;
-  uint32_t new_blue = foreground_color & ~(~0U << 8);
-  //Right shift 8 bits, get the new bottom 8 bits - green component value
-  foreground_color = foreground_color >> 8;
-  uint32_t new_green = foreground_color & ~(~0U << 8);
-  //Right shift 8 bits, get the new bottom 8 bits - red component value
-  foreground_color = foreground_color >> 8;
-  uint32_t new_red = foreground_color & ~(~0U << 8);
+uint8_t get_g(uint32_t color){
+  //Shift color right by 16 bits so the lower 8 bits stores bits for blue
+  color = color >> 16;
+  //Mask the lower 8 bits
+  color = color & ~(~0U << 8);
+  //Bitwise OR to store the lower 8 bits in a
+  uint8_t g = 0;
+  g |= color;
+  return g;
+}
 
-  //Calculate color blend
-  uint32_t blended_alpha = 255; //Alpha value of destination image is always 255
-  uint32_t blended_blue = ((new_alpha * new_blue) + (255 - new_alpha) * (background_blue)) / 255;
-  uint32_t blended_green = ((new_alpha * new_green) + (255 - new_alpha) * (background_green)) / 255;
-  uint32_t blended_red = ((new_alpha * new_red) + (255 - new_alpha) * (background_red)) / 255;
-  //Initialize the blended color
-  uint32_t blended_color = 0;
-  //Perform shifting so that the colors are stored in the specified bit format
-  //Bitwise or used to change just the lower 8 bits (since all the values only have bits set to 1 in the lower 8 bits)
-  blended_color |= blended_alpha; 
-  blended_color = blended_color << 8;
-  blended_color |= blended_blue;
-  blended_color = blended_color << 8;
-  blended_color |= blended_green;
-  blended_color = blended_color << 8;
-  blended_color |= blended_red;
+uint8_t get_b(uint32_t color){
+  //Shift color right by 8 bits so the lower 8 bits stores bits for blue
+  color = color >> 8;
+  //Mask the lower 8 bits
+  color = color & ~(~0U << 8);
+  //Bitwise OR to store the lower 8 bits in a
+  uint8_t b = 0;
+  b |= color;
+  return b;
+}
 
-  return blended_color;
+uint8_t get_a(uint32_t color){
+  //Mask the lower 8 bits
+  color = color & ~(~0U << 8);
+  //Bitwise OR to store the lower 8 bits in a
+  uint8_t a = 0;
+  a |= color;
+  return a;
+}
+
+uint8_t blend_components(uint8_t fg, uint8_t bg, uint8_t alpha){
+  uint8_t blended_component = ((alpha * fg) + (255 - alpha) * (bg)) / 255;
+  return blended_component;
+}
+
+uint32_t blend_colors(uint32_t fg, uint32_t bg){
+  //Get all the color components
+  uint8_t fg_r = get_r(fg);
+  uint8_t fg_g = get_g(fg);
+  uint8_t fg_b = get_b(fg);
+  uint8_t alpha = get_a(fg);
+  uint8_t bg_r = get_r(bg);
+  uint8_t bg_g = get_g(bg);
+  uint8_t bg_b = get_b(bg);
+
+  //Calculate the new color components
+  uint8_t new_r = blend_components(fg_r, bg_r, alpha);
+  uint8_t new_g = blend_components(fg_b, bg_b, alpha);
+  uint8_t new_b = blend_components(fg_b, bg_b, alpha);
+  uint8_t new_alpha = 255; //alpha for destination image is always 255
+
+  //Create the new color with the new components
+  uint32_t new_color = 0;
+  //Bitwise OR and shift to store all the components in specified format
+  new_color |= new_r;
+  new_color << 8;
+  new_color |= new_g;
+  new_color << 8;
+  new_color |= new_b;
+  new_color << 8;
+  new_color |= new_alpha;
+
+  return new_color;
 }
