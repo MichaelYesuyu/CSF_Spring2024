@@ -26,12 +26,13 @@
 //
 void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
   int32_t index = in_bounds(img, x, y);
+  //If the index is out of bounds, print error message
   if(index = -1){
     printf("Given point out of range!\n");
-    return;
   }
-  set_pixel(img, index, color);
-  return;
+  else{
+    set_pixel(img, index, color);
+  }
 }
 
 //
@@ -47,7 +48,7 @@ void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
 void draw_rect(struct Image *img,
                const struct Rect *rect,
                uint32_t color) {
-  // TODO: implement
+  
 }
 
 //
@@ -110,7 +111,7 @@ void draw_sprite(struct Image *img,
   // TODO: implement
 }
 
-//check if a point is within the range. if not, return -1
+//check if a point is within the range. if not, return -1. Otherwise, return the computed index of (x,y)
 int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
     int32_t index;
     if((x >= (img->width))||(y >= (img->height))||(x < 0)||(y < 0)){
