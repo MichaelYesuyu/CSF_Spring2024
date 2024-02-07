@@ -211,8 +211,15 @@ uint32_t blend_colors(uint32_t fg, uint32_t bg){
   return new_color;
 }
 
+//set the destined pixed to a certain color
 void set_pixel(struct Image *img, uint32_t index, uint32_t color){
-    
+    if(index >= (img->width)*(img->height)){
+      return;
+    }
+    uint32_t bcolor = (img->data)[index];
+    uint32_t new_color = blend_colors(color, bcolor);
+    (img->data)[index] = new_color;
+    return;
 }
 
 //return the square of an int64_t
