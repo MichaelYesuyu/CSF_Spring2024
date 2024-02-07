@@ -26,6 +26,7 @@
 //
 void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
   // TODO: implement
+  
 }
 
 //
@@ -104,9 +105,7 @@ void draw_sprite(struct Image *img,
   // TODO: implement
 }
 
-uint32_t calculate_color(uint32_t background_color, uint32_t new_color){
-  //Get bottom 8 bits of background_color - alpha value
-  uint32_t background_alpha = background_color & ~(~0U << 8);
+uint32_t calculate_color(uint32_t background_color, uint32_t foreground_color){
   //Right shift 8 bits, get the new bottom 8 bits - blue component value
   background_color = background_color >> 8;
   uint32_t background_blue = background_color & ~(~0U << 8);
@@ -117,17 +116,17 @@ uint32_t calculate_color(uint32_t background_color, uint32_t new_color){
   background_color = background_color >> 8;
   uint32_t background_red = background_color & ~(~0U << 8);
 
-  //get bottom 8 bits of new_color - alpha value
-  uint32_t new_alpha = new_color & ~(~0U << 8);
+  //get bottom 8 bits of foreground_color - alpha value
+  uint32_t new_alpha = foreground_color & ~(~0U << 8);
   //Right shift 8 bits, get the new bottom 8 bits - blue component value
-  new_color = new_color >> 8;
-  uint32_t new_blue = new_blue & ~(~0U << 8);
+  foreground_color = foreground_color >> 8;
+  uint32_t new_blue = foreground_color & ~(~0U << 8);
   //Right shift 8 bits, get the new bottom 8 bits - green component value
-  new_color = new_color >> 8;
-  uint32_t new_green = new_green & ~(~0U << 8);
+  foreground_color = foreground_color >> 8;
+  uint32_t new_green = foreground_color & ~(~0U << 8);
   //Right shift 8 bits, get the new bottom 8 bits - red component value
-  new_color = new_color >> 8;
-  uint32_t new_red = new_red & ~(~0U << 8);
+  foreground_color = foreground_color >> 8;
+  uint32_t new_red = foreground_color & ~(~0U << 8);
 
   //Calculate color blend
   uint32_t blended_alpha = 255; //Alpha value of destination image is always 255

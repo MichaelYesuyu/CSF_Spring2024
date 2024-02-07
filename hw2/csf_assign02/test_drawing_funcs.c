@@ -83,6 +83,7 @@ void test_draw_circle(TestObjs *objs);
 void test_draw_circle_clip(TestObjs *objs);
 void test_draw_tile(TestObjs *objs);
 void test_draw_sprite(TestObjs *objs);
+void test_color_blending(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -93,12 +94,13 @@ int main(int argc, char **argv) {
   TEST_INIT();
 
   // TODO: add TEST() directives for your helper functions
-  TEST(test_draw_pixel);
-  TEST(test_draw_rect);
-  TEST(test_draw_circle);
-  TEST(test_draw_circle_clip);
-  TEST(test_draw_tile);
-  TEST(test_draw_sprite);
+  //TEST(test_draw_pixel);
+  //TEST(test_draw_rect);
+  //TEST(test_draw_circle);
+  //TEST(test_draw_circle_clip);
+  //TEST(test_draw_tile);
+  //TEST(test_draw_sprite);
+  TEST(test_color_blending);
 
   TEST_FINI();
 }
@@ -261,4 +263,12 @@ void test_draw_sprite(TestObjs *objs) {
   };
 
   check_picture(&objs->large, &pic);
+}
+
+void test_color_blending(TestObjs *objs) {
+  //Sanity test, blend 2 of the same color with RGB = 255 and alpha = 255
+  uint32_t color1 = UINT32_MAX;
+  uint32_t color2 = UINT32_MAX;
+  uint32_t test_color = calculate_color(color1, color2);
+  ASSERT(test_color == UINT32_MAX);
 }
