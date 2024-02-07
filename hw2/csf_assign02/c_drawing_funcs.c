@@ -112,7 +112,6 @@ void draw_sprite(struct Image *img,
 
 //check if a point is within the range. if not, return -1
 int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
-    int32_t index;
     if((x >= (img->width))||(y >= (img->height))||(x < 0)||(y < 0)){
         return -1;
     }else{
