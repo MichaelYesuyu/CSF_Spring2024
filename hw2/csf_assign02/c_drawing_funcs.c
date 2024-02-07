@@ -193,7 +193,7 @@ uint32_t blend_colors(uint32_t fg, uint32_t bg){
 
   //Calculate the new color components
   uint8_t new_r = blend_components(fg_r, bg_r, alpha);
-  uint8_t new_g = blend_components(fg_b, bg_b, alpha);
+  uint8_t new_g = blend_components(fg_g, bg_g, alpha);
   uint8_t new_b = blend_components(fg_b, bg_b, alpha);
   uint8_t new_alpha = 255; //alpha for destination image is always 255
 
