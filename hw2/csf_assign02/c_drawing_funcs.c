@@ -141,7 +141,7 @@ int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
 }
 
 int32_t in_circle(int32_t x_center, int32_t y_center, int32_t r, int32_t j, int32_t i){
-  if(((x_center - j) * (x_center - j) + (y_center - i) * (y_center - i)) <= r * r){
+  if(square_dist(x_center, y_center, j, i) <= square(r)){
     return 1;
   }
   return -1;
