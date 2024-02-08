@@ -32,6 +32,9 @@ int32_t in_bounds(struct Image *img, int32_t x, int32_t y);
 uint32_t compute_index(struct Image *img, int32_t x, int32_t y);
 int32_t clamp(int32_t val, int32_t min, int32_t max);
 
+//Checks to see if a (j,i) coordinate point is inside the circle, returns 1 if it is in the circle, -1 otherwise
+int32_t in_circle(int32_t x_center, int32_t y_center, int32_t r, int32_t j, int32_t i);
+
 //Get R component of RGB
 uint8_t get_r(uint32_t color);
 

@@ -79,7 +79,13 @@ void draw_rect(struct Image *img,
 void draw_circle(struct Image *img,
                  int32_t x, int32_t y, int32_t r,
                  uint32_t color) {
-  // TODO: implement
+  for(int xCoord = 0; xCoord < img->width; xCoord++){
+    for(int yCoord = 0; yCoord < img->height; yCoord++){
+      if(in_circle(x, y, r, xCoord, yCoord) == 1){
+        draw_pixel(img, xCoord, yCoord, color);
+      }
+    }
+  }
 }
 
 //
@@ -132,6 +138,13 @@ int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
     }else{
         return compute_index(img, x, y);
     }
+}
+
+int32_t in_circle(int32_t x_center, int32_t y_center, int32_t r, int32_t j, int32_t i){
+  if(((x_center - j) * (x_center - j) + (y_center - i) * (y_center - i)) <= r * r){
+    return 1;
+  }
+  return -1;
 }
 
 //compute the index at a given point, given that the point is within the range
