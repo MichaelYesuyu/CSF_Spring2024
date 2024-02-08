@@ -26,17 +26,18 @@
 //
 void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
   int32_t index = in_bounds(img, x, y);
-<<<<<<< HEAD
+  //If index is not out of bounds, draw the pixel
+  if(index != -1){
+    set_pixel(img, index, color);
+  }
+  /*
   //If the index is out of bounds, print error message
   if(index = -1){
-=======
-  if(index == -1){
->>>>>>> refs/remotes/origin/main
     printf("Given point out of range!\n");
   }
   else{
     set_pixel(img, index, color);
-  }
+  }*/
 }
 
 //
@@ -52,7 +53,16 @@ void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
 void draw_rect(struct Image *img,
                const struct Rect *rect,
                uint32_t color) {
-  
+  //Get the top left and bottom right corners of the rectangle
+  int32_t xStartCoord = rect->x;
+  int32_t yStartCoord = rect->y;
+  int32_t xEndCoord = xStartCoord + rect->width;
+  int32_t yEndCoord = yStartCoord + rect->height;
+  for(int32_t xCoord = xStartCoord; xCoord < xEndCoord; xCoord++){
+    for(int32_t yCoord = yStartCoord; yCoord < yEndCoord; yCoord++){
+      draw_pixel(img, xCoord, yCoord, color);
+    }
+  }
 }
 
 //
