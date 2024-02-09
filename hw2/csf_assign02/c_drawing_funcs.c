@@ -25,9 +25,8 @@
 //   color - uint32_t color value
 //
 void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
-  int32_t index = in_bounds(img, x, y);
-  //If index is not out of bounds, draw the pixel
-  if(index != -1){
+  if(in_bounds(img, x, y) == 1){
+    int32_t index = compute_index(img, x, y);
     set_pixel(img, index, color);
   }
   /*
@@ -106,7 +105,29 @@ void draw_tile(struct Image *img,
                int32_t x, int32_t y,
                struct Image *tilemap,
                const struct Rect *tile) {
- // TODO: implement
+  int32_t xStartCoordTile = tile->x;
+  int32_t yStartCoordTile = tile->y;
+  int32_t xEndCoordTile = xStartCoordTile + tile->width;
+  int32_t yEndCoordTile = yStartCoordTile + tile->height;
+  //Loop through the tile     
+  for(int32_t xCoordTile = xStartCoordTile; xCoordTile < xEndCoordTile; xCoordTile++){
+    for(int32_t yCoordTile = yStartCoordTile; yCoordTile < yEndCoordTile; yCoordTile++){
+      //Compute the corresponding coordinate on the target image
+      int32_t xCoordImage = x + xCoordTile;
+      int32_t yCoordImage = y + yCoordTile;
+      //If in bounds of the target image, compute index and update color from tile
+      if(in_bounds(img, xCoordImage, yCoordImage)){
+        //Find the index of the current coords of the image
+        int32_t indexImage = compute_index(img, xCoordImage, yCoordImage);
+        //Find the index of the current coords of the tilemap
+        int32_t indexTile = compute_index(tilemap, xCoordTile, yCoordTile);
+        //Get the color of the current index of the tilemap
+        int32_t colorTile = (tilemap->data)[indexTile];
+        //Update the color inside the current index of the image
+        (img->data)[indexImage] = colorTile;
+      }
+    }
+  }
 }
 
 //
@@ -131,12 +152,12 @@ void draw_sprite(struct Image *img,
   // TODO: implement
 }
 
-//check if a point is within the range. if not, return -1. Otherwise, return the computed index of (x,y)
+//check if a point is within the range. if not, return -1. Otherwise, return 1
 int32_t in_bounds(struct Image *img, int32_t x, int32_t y){
     if((x >= (img->width))||(y >= (img->height))||(x < 0)||(y < 0)){
         return -1;
     }else{
-        return compute_index(img, x, y);
+        return 1;
     }
 }
 
