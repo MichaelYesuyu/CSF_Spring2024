@@ -149,7 +149,23 @@ void draw_sprite(struct Image *img,
                  int32_t x, int32_t y,
                  struct Image *spritemap,
                  const struct Rect *sprite) {
-  // TODO: implement
+  int32_t xStartCoordSprite = sprite->x;
+  int32_t yStartCoordSprite = sprite->y;
+  int32_t xEndCoordSprite = xStartCoordSprite + sprite->width;
+  int32_t yEndCoordSprite = yStartCoordSprite + sprite->height;
+  //Loop through the tile     
+  for(int32_t xCoordSprite = xStartCoordSprite; xCoordSprite < xEndCoordSprite; xCoordSprite++){
+    for(int32_t yCoordSprite = yStartCoordSprite; yCoordSprite < yEndCoordSprite; yCoordSprite++){
+      int32_t xCoordImage = x + xCoordSprite - xStartCoordSprite;
+      int32_t yCoordImage = y + yCoordSprite- yStartCoordSprite;
+      //Find the index of the current coords of the tilemap
+      int32_t indexSprite = compute_index(spritemap, xCoordSprite, yCoordSprite);
+      //Get the color
+      int32_t colorSprite = (spritemap->data)[indexSprite];
+      //Call drawpixel to update the image
+      draw_pixel(img, xCoordImage, yCoordImage, colorSprite);
+    }
+  }
 }
 
 //check if a point is within the range. if not, return -1. Otherwise, return 1
