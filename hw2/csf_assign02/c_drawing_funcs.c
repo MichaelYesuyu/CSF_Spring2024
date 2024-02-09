@@ -105,18 +105,14 @@ void draw_tile(struct Image *img,
                int32_t x, int32_t y,
                struct Image *tilemap,
                const struct Rect *tile) {
-  int32_t xStartCoordTile = tile->x;
-  int32_t yStartCoordTile = tile->y;
-  int32_t xEndCoordTile = xStartCoordTile + tile->width;
-  int32_t yEndCoordTile = yStartCoordTile + tile->height;
   //Loop through the tile     
-  for(int32_t xCoordTile = xStartCoordTile; xCoordTile < xEndCoordTile; xCoordTile++){
-    for(int32_t yCoordTile = yStartCoordTile; yCoordTile < yEndCoordTile; yCoordTile++){
+  for(int32_t xCoordTile = tile->x; xCoordTile < (tile->x + tile->width); xCoordTile++){
+    for(int32_t yCoordTile = tile->y; yCoordTile < (tile->y + tile->height); yCoordTile++){
       //Compute the corresponding coordinate on the target image
-      int32_t xCoordImage = x + xCoordTile - xStartCoordTile;
-      int32_t yCoordImage = y + yCoordTile - yStartCoordTile;
+      int32_t xCoordImage = x + xCoordTile - tile->x;
+      int32_t yCoordImage = y + yCoordTile - tile->y;
       //If in bounds of the target image, compute index and update color from tile
-      if(in_bounds(img, xCoordImage, yCoordImage)){
+      if(in_bounds(img, xCoordImage, yCoordImage) && in_bounds(tilemap, xCoordTile, yCoordTile)){
         //Find the index of the current coords of the image
         int32_t indexImage = compute_index(img, xCoordImage, yCoordImage);
         //Find the index of the current coords of the tilemap
@@ -149,15 +145,11 @@ void draw_sprite(struct Image *img,
                  int32_t x, int32_t y,
                  struct Image *spritemap,
                  const struct Rect *sprite) {
-  int32_t xStartCoordSprite = sprite->x;
-  int32_t yStartCoordSprite = sprite->y;
-  int32_t xEndCoordSprite = xStartCoordSprite + sprite->width;
-  int32_t yEndCoordSprite = yStartCoordSprite + sprite->height;
   //Loop through the tile     
-  for(int32_t xCoordSprite = xStartCoordSprite; xCoordSprite < xEndCoordSprite; xCoordSprite++){
-    for(int32_t yCoordSprite = yStartCoordSprite; yCoordSprite < yEndCoordSprite; yCoordSprite++){
-      int32_t xCoordImage = x + xCoordSprite - xStartCoordSprite;
-      int32_t yCoordImage = y + yCoordSprite- yStartCoordSprite;
+  for(int32_t xCoordSprite = sprite->x; xCoordSprite < (sprite->x + sprite->width); xCoordSprite++){
+    for(int32_t yCoordSprite = sprite->y; yCoordSprite < (sprite->y + sprite->height); yCoordSprite++){
+      int32_t xCoordImage = x + xCoordSprite - sprite->x;
+      int32_t yCoordImage = y + yCoordSprite - sprite->y;
       //Find the index of the current coords of the tilemap
       int32_t indexSprite = compute_index(spritemap, xCoordSprite, yCoordSprite);
       //Get the color
