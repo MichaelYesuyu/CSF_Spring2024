@@ -113,8 +113,8 @@ void draw_tile(struct Image *img,
   for(int32_t xCoordTile = xStartCoordTile; xCoordTile < xEndCoordTile; xCoordTile++){
     for(int32_t yCoordTile = yStartCoordTile; yCoordTile < yEndCoordTile; yCoordTile++){
       //Compute the corresponding coordinate on the target image
-      int32_t xCoordImage = x + xCoordTile;
-      int32_t yCoordImage = y + yCoordTile;
+      int32_t xCoordImage = x + xCoordTile - xStartCoordTile;
+      int32_t yCoordImage = y + yCoordTile - yStartCoordTile;
       //If in bounds of the target image, compute index and update color from tile
       if(in_bounds(img, xCoordImage, yCoordImage)){
         //Find the index of the current coords of the image
