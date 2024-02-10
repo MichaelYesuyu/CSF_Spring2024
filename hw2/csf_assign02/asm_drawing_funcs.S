@@ -80,6 +80,21 @@ square_dist:
 	popq %r12
 	ret
 
+/*
+ * Compute the index at a given point (x,y)
+ *
+ * Parameters:
+ *   %rdi     - x1
+ *   %rsi     - y1
+ *   %rdx     - x2
+ *   %rcx     - y2
+ * 
+ * Returns (in %rax):
+ *  the square of the geomoetrical distance between (x1, y1)
+ *  and (x2, y2)
+ */
+	.globl square_dist
+
 
 /*
  * Draw a pixel.
