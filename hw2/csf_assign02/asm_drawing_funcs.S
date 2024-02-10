@@ -94,7 +94,11 @@ square_dist:
 	.globl in_bounds
 in_bounds:
 
-	/*cmpq %rsi*/
+	cmpq %rsi, $0					/* compare x with 0 */
+	jl .LoutOfBound
+
+.LoutOfBound:
+	
 	ret
 /*
  * Compute the index at a given point (x,y)
