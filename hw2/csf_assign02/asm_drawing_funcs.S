@@ -116,7 +116,7 @@ compute_index:
 get_pixel:
 
 	/* get the pointer that points to the data (pixel array) */
-	movq IMAGE_DATA_OFFSET(%rdi). %r10
+	movq IMAGE_DATA_OFFSET(%rdi), %r10
 
 	/* retrieve the element value */
 	movl (%r10, %rsi, 4), %eax
