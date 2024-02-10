@@ -102,7 +102,27 @@ compute_index:
 	popq %r12								/* restore the value originally in %r12 */
 	ret
 
+/*
+ * Return the color stored in the given pixel index
+ *
+ * Parameters:
+ *   %rdi     - pointer to struct Image
+ *   %rsi     - index of the pixel to retrieve
+ * 
+ * Returns (in %rax):
+ *  the uint32_t pixel color value
+ */
+	.globl get_pixel
+get_pixel:
 
+	/* get the pointer that points to the data (pixel array) */
+	movq IMAGE_DATA_OFFSET(%rdi). %r10
+
+	/* retrieve the element value */
+	movl (%r10, %rsi, 4), %eax
+
+	/* return value */
+	ret
 
 /*
  * Draw a pixel.
