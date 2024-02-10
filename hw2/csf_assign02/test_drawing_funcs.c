@@ -86,6 +86,9 @@ void test_draw_sprite(TestObjs *objs);
 void test_get_color_components(TestObjs *objs);
 void test_color_blending(TestObjs *objs);
 void test_square(TestObjs *objs);
+void test_square_distance(TestObjs *objs);
+void test_compute_index(TestObjs *objs);
+void test_get_pixel(TestObjs *objs);
 void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
 void test_get_b(TestObjs *objs);
@@ -109,6 +112,9 @@ int main(int argc, char **argv) {
   //TEST(test_get_color_components);
   //TEST(test_color_blending);
   TEST(test_square);
+  TEST(test_square_distance);
+  TEST(test_compute_index);
+  TEST(test_get_pixel);
   TEST(test_get_r);
   TEST(test_get_g);
   TEST(test_get_b);
@@ -363,6 +369,40 @@ void test_square(TestObjs *objs){
   ASSERT(10000L == square(100L));
   ASSERT(10000L == square(-100L));
 }
+
+void test_square_distance(TestObjs *objs){
+  ASSERT(0L == square_dist(0L, 0L, 0L, 0L));
+  ASSERT(4L == square_dist(0L, 0L, 2L, 0L));
+  ASSERT(13L == square_dist(0L, 0L, 2L, 3L));
+  ASSERT(4L == square_dist(0L, 0L, -2L, 0L));
+  ASSERT(10000L == square_dist(0L, 0L, 100L, 0L));
+  ASSERT(10000L == square_dist(0L, 0L, -100L, 0L));
+}
+
+void test_compute_index(TestObjs *objs){
+  int index = compute_index(&objs->small, 2, 2);
+  ASSERT(18 == index);
+  index = compute_index(&objs->small, 0, 0);
+  ASSERT(0 == index);
+  index = compute_index(&objs->small, 5, 0);
+  ASSERT(5 == index);
+  index = compute_index(&objs->small, 0, 5);
+  ASSERT(40 == index);
+}
+
+void test_get_pixel(TestObjs *objs){
+  uint32_t pixel = get_pixel(&objs->small, 5);
+  ASSERT(pixel == 0x000000FFU);
+  pixel = get_pixel(&objs->small, 20);
+  ASSERT(pixel == 0x000000FFU);
+  pixel = get_pixel(&objs->small, 0);
+  ASSERT(pixel == 0x000000FFU);
+  pixel = get_pixel(&objs->small, 7);
+  ASSERT(pixel == 0x000000FFU);
+  pixel = get_pixel(&objs->small, 20);
+  ASSERT(pixel == 0x000000FFU);
+}
+
 
 void test_get_r(TestObjs *objs){
   uint8_t expected1 = 255;
