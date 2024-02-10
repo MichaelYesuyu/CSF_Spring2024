@@ -194,24 +194,61 @@ draw_sprite:
  * Returns (in %rax):
  *  8 bit integer representing the r component
 */
+
     .globl get_r
 get_r:
-    shrq $24, %rdi /* Perform right shift by 24 to set the lower 8 bits of rdi to R component value */
-    movq %rdi, %rax /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
-	ret
+    shrl $24, %edi /* Perform right shift by 24 to set the lower 8 bits of rdi to r component value */
+    movl %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret /* returns the r component value */
 
+
+/*
+ * Gets the 8 bit integer representing the g component of the 32 bit integer color
+ * g is stored in bits 16-23
+ *
+ * Parameters:
+ *  %edi - 32 bit integer storing an RBG color and alpha value
+ *
+ * Returns (in %rax):
+ *  8 bit integer representing the g component
+*/
 	.globl get_g
 get_g:
-	
-	ret
+    shrl $16, %edi /* Perform right shift by 16 to set the lower 8 bits of rdi to g component value */
+    movl %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret /* returns the G component value */
 
+/*
+ * Gets the 8 bit integer representing the b component of the 32 bit integer color
+ * b is stored in bits 8-15
+ *
+ * Parameters:
+ *  %edi - 32 bit integer storing an RBG color and alpha value
+ *
+ * Returns (in %rax):
+ *  8 bit integer representing the b component
+*/
 	.globl get_b
 get_b:
-	ret
+	shrl $8, %edi /* Perform right shift by 8 to set the lower 8 bits of rdi to b component value */
+    movl %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret /* returns the b component value */
 
+/*
+ * Gets the 8 bit integer representing the a component of the 32 bit integer color
+ * a is stored in bits 0-7
+ *
+ * Parameters:
+ *  %edi - 32 bit integer storing an RBG color and alpha value
+ *
+ * Returns (in %rax):
+ *  8 bit integer representing the a component
+*/
 	.globl get_a
 get_a:
-	ret
+    movl %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret /* returns the a component value */
+
 
 	.globl blend_colors
 blend_colors:
