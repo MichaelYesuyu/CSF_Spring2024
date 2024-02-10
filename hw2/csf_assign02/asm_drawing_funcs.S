@@ -166,12 +166,25 @@ draw_sprite:
 	/* TODO: implement */
 	ret
 
-	.globl get_r
+/*
+ * Gets the 8 bit integer representing the r component of the 32 bit integer color
+ * r is stored in bits 24-31
+ *
+ * Parameters:
+ *  %edi - 32 bit integer storing an RBG color and alpha value
+ *
+ * Returns (in %rax):
+ *  8 bit integer representing the r component
+*/
+    .globl get_r
 get_r:
+    shrq $24, %rdi /* Perform right shift by 24 to set the lower 8 bits of rdi to R component value */
+    movq %rdi, %rax /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret
 
 	.globl get_g
 get_g:
+	
 	ret
 
 	.globl get_b

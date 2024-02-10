@@ -86,6 +86,7 @@ void test_draw_sprite(TestObjs *objs);
 void test_get_color_components(TestObjs *objs);
 void test_color_blending(TestObjs *objs);
 void test_square(TestObjs *objs);
+void test_get_r(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -105,6 +106,7 @@ int main(int argc, char **argv) {
   //TEST(test_get_color_components);
   //TEST(test_color_blending);
   TEST(test_square);
+  TEST(test_get_r);
 
   TEST_FINI();
 }
@@ -355,3 +357,13 @@ void test_square(TestObjs *objs){
   ASSERT(10000L == square(100L));
   ASSERT(10000L == square(-100L));
 }
+
+void test_get_r(TestObjs *objs){
+  uint8_t expected1 = 255;
+  uint32_t input1 = UINT32_MAX;
+  ASSERT(get_r(input1) == expected1);
+  uint8_t expected2 = 0;
+  uint32_t input2 = UINT32_MAX >> 8;
+  ASSERT(get_r(input2) == expected2);
+}
+
