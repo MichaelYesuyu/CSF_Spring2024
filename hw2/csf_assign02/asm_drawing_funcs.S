@@ -29,7 +29,7 @@
  ***********************************************************************/
 
 /*
- * Return the square of int64.
+ * Return the square of an int64 value.
  *
  * Parameters:
  *   %rdi     - the value to square
@@ -39,8 +39,45 @@
  */
 	.globl square
 square:
-	imulq %rdi, %rdi
-	movq %rdi, %rax
+	imulq %rdi, %rdi           /* multiply the value in rdi by itself*/
+	movq %rdi, %rax			   /* move the multiplied value to rax*/
+	ret
+
+/*
+ * Compute the square of the geomoetrical distance between 
+ * (x1, y1) and (x2, y2)
+ *
+ * Parameters:
+ *   %rdi     - x1
+ *   %rsi     - y1
+ *   %rdx     - x2
+ *   %rcx     - y2
+ * 
+ * Returns (in %rax):
+ *  the square of the geomoetrical distance between (x1, y1)
+ *  and (x2, y2)
+ */
+	.globl square_dist
+square_dist:
+	
+	/* save the value originally in r12 to the memory */
+	pushq %r12
+
+	/* compute (x1 - x2)^2 */
+	subq %rdx, %rdi					/* store x1 - x2 into %rdi */
+	call square						/* compute (x1 - x2)^2, store in %rax */
+	movq %rax, %r12					/* move (x1 - x2)^2 to %r12 */
+
+	/* compute (y1 - y2)^2 */
+	subq %rcx, %rsi			 		/* store y1 - y2 into %rsi */
+	movq %rsi, %rdi					/* move y1 - y2 to %rdi */
+	call square						/* compute (y1 - y2)^2, store in rax */
+
+	/* add (y1 - y2)^2 and (x1 - x2)^2 */
+	addq %r12, %rax
+
+	/* restore the value originally in r12 */
+	popq %r12
 	ret
 
 
