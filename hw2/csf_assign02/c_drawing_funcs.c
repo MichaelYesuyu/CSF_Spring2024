@@ -116,7 +116,7 @@ void draw_tile(struct Image *img,
       int32_t xCoordImage = x + xCoordTile - tile->x;
       int32_t yCoordImage = y + yCoordTile - tile->y;
       //If in bounds of the target image, compute index and update color from tile
-      if(in_bounds(img, xCoordImage, yCoordImage)){
+      if(in_bounds(img, xCoordImage, yCoordImage) == 1){
         //Find the index of the current coords of the image
         int32_t indexImage = compute_index(img, xCoordImage, yCoordImage);
         //Find the index of the current coords of the tilemap
