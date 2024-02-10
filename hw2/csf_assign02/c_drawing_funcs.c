@@ -106,7 +106,7 @@ void draw_tile(struct Image *img,
                struct Image *tilemap,
                const struct Rect *tile) {
   //If region is not entirely in tilemap, do nothing
-  if(!in_bounds(tilemap, tile->x, tile->y) || !in_bounds(tilemap, (tile->x + tile->width), (tile->y + tile->height))){
+  if(in_bounds(tilemap, tile->x, tile->y) == -1 || in_bounds(tilemap, (tile->x + tile->width), (tile->y + tile->height)) == -1){
     return;
   }
   //Loop through the tile     
@@ -150,7 +150,7 @@ void draw_sprite(struct Image *img,
                  struct Image *spritemap,
                  const struct Rect *sprite) {
   //If region is not entirely in spritemap, do nothing
-  if(!in_bounds(spritemap, sprite->x, sprite->y) || !in_bounds(spritemap, (sprite->x + sprite->width), (sprite->y + sprite->height))){
+  if(in_bounds(spritemap, sprite->x, sprite->y) == -1 || in_bounds(spritemap, (sprite->x + sprite->width), (sprite->y + sprite->height)) == -1){
     return;
   }
   //Loop through the tile     
