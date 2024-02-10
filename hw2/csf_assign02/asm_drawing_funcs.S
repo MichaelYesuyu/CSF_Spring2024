@@ -2,6 +2,7 @@
  * Assembly-language implementations of the drawing functions
  */
 
+
 /* Offsets of struct Image fields */
 #define IMAGE_WIDTH_OFFSET   0
 #define IMAGE_HEIGHT_OFFSET  4
@@ -26,6 +27,22 @@
 /***********************************************************************
    Public API functions
  ***********************************************************************/
+
+/*
+ * Return the square of int64.
+ *
+ * Parameters:
+ *   %rdi     - the value to square
+ * 
+ * Returns (in %rax):
+ *  the square of the input value
+ */
+	.globl square
+square:
+	imulq %rdi, %rdi
+	movq %rdi, %rax
+	ret
+
 
 /*
  * Draw a pixel.
