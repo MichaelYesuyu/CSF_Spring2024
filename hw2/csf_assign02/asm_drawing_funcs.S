@@ -84,16 +84,19 @@ square_dist:
  * Compute the index at a given point (x,y)
  *
  * Parameters:
- *   %rdi     - x1
- *   %rsi     - y1
- *   %rdx     - x2
- *   %rcx     - y2
+ *   %rdi     - pointer to struct Image
+ *   %esi     - x coordinate of the target point
+ *   %edx     - y coordinate of the target point
  * 
  * Returns (in %rax):
- *  the square of the geomoetrical distance between (x1, y1)
- *  and (x2, y2)
+ *  the index of the target pixel
  */
-	.globl square_dist
+	.globl compute_index
+compute_index:
+
+	pushq %r12 								/* save the value in % to memory r12 */
+	movq IMAGE_WIDTH_OFFSET(%rdi), %r12 	/* get the width of the given image */
+	
 
 
 /*
