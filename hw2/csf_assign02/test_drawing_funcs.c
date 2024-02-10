@@ -93,6 +93,7 @@ void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
 void test_get_b(TestObjs *objs);
 void test_get_a(TestObjs *objs);
+void test_blend_components(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -119,6 +120,7 @@ int main(int argc, char **argv) {
   TEST(test_get_g);
   TEST(test_get_b);
   TEST(test_get_a);
+  TEST(test_blend_components);
 
   TEST_FINI();
 }
@@ -450,6 +452,13 @@ void test_get_a(TestObjs *objs){
   uint8_t expected3 = 127;
   uint32_t input3 = UINT32_MAX >> 25;
   ASSERT(get_a(input3) == expected3);
+}
+
+void test_blend_components(TestObjs *objs){
+  uint32_t fg_component_1 = 255;
+  uint32_t bg_component_1 = 255;
+  uint32_t alpha_1 = 255;
+  ASSERT(blend_components(fg_component_1, bg_component_1, alpha_1) == 255);
 }
 
 
