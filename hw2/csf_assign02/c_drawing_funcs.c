@@ -235,20 +235,20 @@ uint8_t get_a(uint32_t color){
   return a;
 }
 
-uint8_t blend_components(uint8_t fg, uint8_t bg, uint8_t alpha){
+uint8_t blend_components(uint32_t fg, uint32_t bg, uint32_t alpha){
   uint8_t blended_component = ((alpha * fg) + (255 - alpha) * (bg)) / 255;
   return blended_component;
 }
 
 uint32_t blend_colors(uint32_t fg, uint32_t bg){
-  //Get all the color components
-  uint8_t fg_r = get_r(fg);
-  uint8_t fg_g = get_g(fg);
-  uint8_t fg_b = get_b(fg);
-  uint8_t alpha = get_a(fg);
-  uint8_t bg_r = get_r(bg);
-  uint8_t bg_g = get_g(bg);
-  uint8_t bg_b = get_b(bg);
+  //Get all the color components, cast to uint32_t to call blend components
+  uint32_t fg_r = get_r(fg);
+  uint32_t fg_g = get_g(fg);
+  uint32_t fg_b = get_b(fg);
+  uint32_t alpha = get_a(fg);
+  uint32_t bg_r = get_r(bg);
+  uint32_t bg_g = get_g(bg);
+  uint32_t bg_b = get_b(bg);
 
   //Calculate the new color components
   uint8_t new_r = blend_components(fg_r, bg_r, alpha);

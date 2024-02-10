@@ -48,7 +48,7 @@ uint8_t get_b(uint32_t color);
 uint8_t get_a(uint32_t color);
 
 //Calculates the value of blended individual components (RGB)
-uint8_t blend_components(uint8_t fg, uint8_t bg, uint8_t alpha);
+uint8_t blend_components(uint32_t fg, uint32_t bg, uint32_t alpha);
 
 //Helper function to blend the colors
 uint32_t blend_colors(uint32_t fg, uint32_t bg);
