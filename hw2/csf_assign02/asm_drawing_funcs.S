@@ -150,7 +150,7 @@ get_pixel:
 set_pixel:
 
 	movq IMAGE_DATA_OFFSET(%rdi), %r10 			/* get the pointer that points to the data (pixel array) */
-	movl %rdx, (%r10, %rsi, 4) 					/* move target color to the destination pixel */
+	movq %rdx, (%r10, %rsi, 4) 					/* move target color to the destination pixel */
 	ret											/* return */
 
 
@@ -335,10 +335,10 @@ get_a:
 */
     .globl blend_components
 blend_components:
-    mull %edx, %edi /* computes alpha * fg and stores it in %edi */
+    imull %edx, %edi /* computes alpha * fg and stores it in %edi */
     movl $255, %r10d /* stores the constant value 255 inside %r10d */
     subl %r10d, %edx /* computes 255 - alpha and stores it inside %edx */
-    mull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
+    imull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
     addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
     movl %edx, %eax /* moves the dividend into %eax */
     divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
