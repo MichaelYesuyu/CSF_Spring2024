@@ -81,6 +81,22 @@ square_dist:
 	ret
 
 /*
+ * check if a point is within the range. if not, return -1. Otherwise, return 1
+ *
+ * Parameters:
+ *   %rdi     - pointer to struct Image
+ *   %rsi     - x coordinate of the target point
+ *   %rdx     - y coordinate of the target point
+ * 
+ * Returns (in %rax):
+ *  whether the point is in the bound or not
+ */
+	.globl in_bounds
+in_bounds:
+
+	cmpq %rsi
+
+/*
  * Compute the index at a given point (x,y)
  *
  * Parameters:
@@ -115,14 +131,30 @@ compute_index:
 	.globl get_pixel
 get_pixel:
 
-	/* get the pointer that points to the data (pixel array) */
-	movq IMAGE_DATA_OFFSET(%rdi), %r10
+	movq IMAGE_DATA_OFFSET(%rdi), %r10  		/* get the pointer that points to the data (pixel array) */
+	movl (%r10, %rsi, 4), %eax                  /* retrieve the element value */
+	ret											/* return value */
 
-	/* retrieve the element value */
-	movl (%r10, %rsi, 4), %eax
+/*
+ * Set a pixel with a given index to a certain color (without blending)
+ *
+ * Parameters:
+ *   %rdi     - pointer to struct Image
+ *   %rsi     - index of the pixel to rewrite
+ * 	 %rdx     - the color to be write into the image
 
-	/* return value */
-	ret
+ * Returns (in %rax):
+ *  no return
+ */
+	.globl set_pixel
+set_pixel:
+
+	movq IMAGE_DATA_OFFSET(%rdi), %r10 			/* get the pointer that points to the data (pixel array) */
+	movl %rdx, (%r10, %rsi, 4) 					/* move target color to the destination pixel */
+	ret											/* return */
+
+
+
 
 /*
  * Draw a pixel.
@@ -135,7 +167,16 @@ get_pixel:
  */
 	.globl draw_pixel
 draw_pixel:
-	/* TODO: implement */
+
+	/* get the index of the given point */
+
+	/* get the pixel of the given index (background color)*/
+
+	/* blend the foreground and background color */
+
+	/* put the blended color back to the image */
+
+
 	ret
 
 
