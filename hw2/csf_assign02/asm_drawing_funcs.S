@@ -85,8 +85,8 @@ square_dist:
  *
  * Parameters:
  *   %rdi     - pointer to struct Image
- *   %esi     - x coordinate of the target point
- *   %edx     - y coordinate of the target point
+ *   %rsi     - x coordinate of the target point
+ *   %rdx     - y coordinate of the target point
  * 
  * Returns (in %rax):
  *  the index of the target pixel
@@ -94,11 +94,12 @@ square_dist:
 	.globl compute_index
 compute_index:
 
-	pushq %r12 								/* save the value in % to memory r12 */
+	pushq %r12 								/* save the value in %r12 to memory */
 	movq IMAGE_WIDTH_OFFSET(%rdi), %r12 	/* get the width of the given image */
-	imulq %r12, %edx						/* multiply the y coordinate with width */
-	addq %edx, %esi
-	popq %r12
+	imulq %r12, %rdx						/* multiply the y coordinate with width */
+	addq %rdx, %rsi							/* compute x + y * width, store in esi */
+	movq %rsi, %rax							/* move x + y * width to rax */
+	popq %r12								/* restore the value originally in %r12 */
 	ret
 
 
@@ -202,7 +203,7 @@ draw_sprite:
     .globl get_r
 get_r:
     shrl $24, %edi /* Perform right shift by 24 to set the lower 8 bits of rdi to r component value */
-    movb %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the r component value */
 
 
@@ -219,7 +220,7 @@ get_r:
 	.globl get_g
 get_g:
     shrl $16, %edi /* Perform right shift by 16 to set the lower 8 bits of rdi to g component value */
-    movb %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the G component value */
 
 /*
@@ -235,7 +236,7 @@ get_g:
 	.globl get_b
 get_b:
 	shrl $8, %edi /* Perform right shift by 8 to set the lower 8 bits of rdi to b component value */
-    movb %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the b component value */
 
 /*
@@ -250,7 +251,7 @@ get_b:
 */
 	.globl get_a
 get_a:
-    movb %edi, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the a component value */
 
 
