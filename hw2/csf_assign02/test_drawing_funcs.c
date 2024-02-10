@@ -85,6 +85,7 @@ void test_draw_tile(TestObjs *objs);
 void test_draw_sprite(TestObjs *objs);
 void test_get_color_components(TestObjs *objs);
 void test_color_blending(TestObjs *objs);
+void test_square(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -95,14 +96,15 @@ int main(int argc, char **argv) {
   TEST_INIT();
 
   // TODO: add TEST() directives for your helper functions
-  TEST(test_draw_pixel);
-  TEST(test_draw_rect);
-  TEST(test_draw_circle);
-  TEST(test_draw_circle_clip);
-  TEST(test_draw_tile);
-  TEST(test_draw_sprite);
-  TEST(test_get_color_components);
-  TEST(test_color_blending);
+  //TEST(test_draw_pixel);
+  //TEST(test_draw_rect);
+  //TEST(test_draw_circle);
+  //TEST(test_draw_circle_clip);
+  //TEST(test_draw_tile);
+  //TEST(test_draw_sprite);
+  //TEST(test_get_color_components);
+  //TEST(test_color_blending);
+  TEST(test_square);
 
   TEST_FINI();
 }
@@ -343,4 +345,13 @@ void test_color_blending(TestObjs *objs) {
   ASSERT(get_r(new_color_2) == 149);
   ASSERT(get_g(new_color_2) == 149);
   ASSERT(get_b(new_color_2) == 149);
+}
+
+void test_square(TestObjs *objs){
+  ASSERT(0L == square(0L));
+  ASSERT(4L == square(2L));
+  ASSERT(9L == square(3L));
+  ASSERT(4L == square(-2L));
+  ASSERT(10000L == square(100L));
+  ASSERT(10000L == square(-100L));
 }

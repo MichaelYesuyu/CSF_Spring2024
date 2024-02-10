@@ -129,6 +129,28 @@ draw_sprite:
 	/* TODO: implement */
 	ret
 
+	.globl get_r
+get_r:
+	ret
+
+	.globl get_g
+get_g:
+	ret
+
+	.globl get_b
+get_b:
+	ret
+
+	.globl get_a
+get_a:
+	ret
+
+	.globl blend_colors
+blend_colors:
+	ret
+
+
+
 /*
 vim:ft=gas:
 */
