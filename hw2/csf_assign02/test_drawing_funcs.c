@@ -459,6 +459,11 @@ void test_blend_components(TestObjs *objs){
   uint32_t bg_component_1 = 255;
   uint32_t alpha_1 = 255;
   ASSERT(blend_components(fg_component_1, bg_component_1, alpha_1) == 255);
-}
 
+  uint32_t fg_component_2 = 120;
+  uint32_t bg_component_2 = 255;
+  uint32_t alpha_2 = 200;
+  printf("%d", blend_components(fg_component_2, bg_component_2, alpha_2));
+  ASSERT(blend_components(fg_component_2, bg_component_2, alpha_2) == 149);
+}
 

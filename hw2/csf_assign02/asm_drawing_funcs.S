@@ -341,6 +341,7 @@ blend_components:
     imull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
     addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
     movl %edx, %eax /* moves the dividend into %eax */
+	XOR %edx, %edx /* clear all the bits of edx */
     divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
     ret /* Only the lower 8 bits (al) should have bits set to 1 */
 
