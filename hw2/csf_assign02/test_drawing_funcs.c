@@ -87,6 +87,9 @@ void test_get_color_components(TestObjs *objs);
 void test_color_blending(TestObjs *objs);
 void test_square(TestObjs *objs);
 void test_get_r(TestObjs *objs);
+void test_get_g(TestObjs *objs);
+void test_get_b(TestObjs *objs);
+void test_get_a(TestObjs *objs);
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -107,6 +110,9 @@ int main(int argc, char **argv) {
   //TEST(test_color_blending);
   TEST(test_square);
   TEST(test_get_r);
+  TEST(test_get_g);
+  TEST(test_get_b);
+  TEST(test_get_a);
 
   TEST_FINI();
 }
@@ -365,5 +371,45 @@ void test_get_r(TestObjs *objs){
   uint8_t expected2 = 0;
   uint32_t input2 = UINT32_MAX >> 8;
   ASSERT(get_r(input2) == expected2);
+  uint8_t expected3 = 127;
+  uint32_t input3 = UINT32_MAX >> 1;
+  ASSERT(get_r(input3) == expected3);
 }
+
+void test_get_g(TestObjs *objs){
+  uint8_t expected1 = 255;
+  uint32_t input1 = UINT32_MAX;
+  ASSERT(get_g(input1) == expected1);
+  uint8_t expected2 = 0;
+  uint32_t input2 = UINT32_MAX >> 16;
+  ASSERT(get_g(input2) == expected2);
+  uint8_t expected3 = 127;
+  uint32_t input3 = UINT32_MAX >> 9;
+  ASSERT(get_g(input3) == expected3);
+}
+
+void test_get_b(TestObjs *objs){
+  uint8_t expected1 = 255;
+  uint32_t input1 = UINT32_MAX;
+  ASSERT(get_b(input1) == expected1);
+  uint8_t expected2 = 0;
+  uint32_t input2 = UINT32_MAX >> 24;
+  ASSERT(get_b(input2) == expected2);
+  uint8_t expected3 = 127;
+  uint32_t input3 = UINT32_MAX >> 17;
+  ASSERT(get_b(input3) == expected3);
+}
+
+void test_get_a(TestObjs *objs){
+  uint8_t expected1 = 255;
+  uint32_t input1 = UINT32_MAX;
+  ASSERT(get_a(input1) == expected1);
+  uint8_t expected2 = 1;
+  uint32_t input2 = UINT32_MAX >> 31;
+  ASSERT(get_a(input2) == expected2);
+  uint8_t expected3 = 127;
+  uint32_t input3 = UINT32_MAX >> 25;
+  ASSERT(get_a(input3) == expected3);
+}
+
 
