@@ -257,7 +257,7 @@ draw_sprite:
  * Parameters:
  *  %edi - 32 bit integer storing an RBG color and alpha value
  *
- * Returns (in %rax):
+ * Returns (in %al):
  *  8 bit integer representing the r component
 */
 
@@ -275,7 +275,7 @@ get_r:
  * Parameters:
  *  %edi - 32 bit integer storing an RBG color and alpha value
  *
- * Returns (in %rax):
+ * Returns (in %al):
  *  8 bit integer representing the g component
 */
 	.globl get_g
@@ -291,7 +291,7 @@ get_g:
  * Parameters:
  *  %edi - 32 bit integer storing an RBG color and alpha value
  *
- * Returns (in %rax):
+ * Returns (in %al):
  *  8 bit integer representing the b component
 */
 	.globl get_b
@@ -307,13 +307,42 @@ get_b:
  * Parameters:
  *  %edi - 32 bit integer storing an RBG color and alpha value
  *
- * Returns (in %rax):
+ * Returns (in %al):
  *  8 bit integer representing the a component
 */
 	.globl get_a
 get_a:
     movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the a component value */
+
+
+/*
+ * Computes the blended component given the foreground component, background component and alpha value
+ * Follows the formula: blended_component = ((alpha * fg) + (255 - alpha) * (bg)) / 255
+ *
+ * Parameters: 
+ *  %edi - 32 bit integer storing the foreground component to be blended (fg)
+ *  %esi - 32 bit integer storing the background component to be blended (bg)
+ *  %edx - 32 bit integer storing the alpha value
+ *
+ * Returns (in %al):
+ *  8 bit integer representing the blended component
+ *
+ * Register use: 
+ *  %r10d - for temporary storage during computation
+ *  %eax - used to store ((alpha * fg) + (255 - alpha) * (bg)) to be divided by 255
+ *
+*/
+    .globl blend_components
+blend_components:
+    mull %edx, %edi /* computes alpha * fg and stores it in %edi */
+    movl $255, %r10d /* stores the constant value 255 inside %r10d */
+    subl %r10d, %edx /* computes 255 - alpha and stores it inside %edx */
+    mull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
+    addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
+    movl %edx, %eax /* moves the dividend into %eax */
+    divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
+    ret /* Only the lower 8 bits (al) should have bits set to 1 */
 
 
 	.globl blend_colors
