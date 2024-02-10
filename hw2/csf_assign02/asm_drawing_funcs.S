@@ -94,8 +94,8 @@ square_dist:
 	.globl in_bounds
 in_bounds:
 
-	cmpq %rsi
-
+	/*cmpq %rsi*/
+	ret
 /*
  * Compute the index at a given point (x,y)
  *
