@@ -381,27 +381,46 @@ blend_components:
  * Register use:
  *  %rbp - base pointer, for allocating space for local variables
  *  %rsp - stack pointer, for tracking local variables
+ *	%r12 - stores the value of the input foreground color for the duration of the function
+ *	%r13 - stores the value of the input background color for the duration of the function
 */
 	.globl blend_colors
 blend_colors:
+	pushq %r12 /* Push register onto stack to store value of foreground color */
+	pushq %r13 /* Push register onto stack to store value of background color */
     pushq %rbp /* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp /* move stack pointer to the address pointed by the base pointer */
     subq $32, %rsp /* allocate 320 bits of memory for the local variables */
 
+	movl %edi, %r12d /* Moves value of foreground color into %r12 */
+	movl %esi, %r13d /* Moves value of background color into %r13 */
+
     xor %eax, %eax /* clear out eax register before calling helper function */
-    call get_r /* Call get_r function with foreground color already stored inside %edi, result is stored in %al, subregister of %eax */
+	movl %r12d, %edi /* Moves foreground color into 1st argument register */
+    call get_r /* Call get_r function with foreground color, result is stored in %al, subregister of %eax */
     movl %eax, -4(%rbp) /* Store foreground r component (as 32 bit value) inside the stack */
-    call get_g /* Call get_g function with foreground color already stored inside %edi */
+
+	movl %r12d, %edi /* Moves foreground color into 1st argument register */
+    call get_g /* Call get_g function with foreground color */
     movl %eax, -8(%rbp) /* Store foreground g component inside the stack */
-    call get_b /* Call get_b function with foreground color already stored inside %edi */
+
+	movl %r12d, %edi /* Moves foreground color into 1st argument register */
+    call get_b /* Call get_b function with foreground color */
     movl %eax, -12(%rbp) /* Store foreground b component inside the stack */
-    call get_a /* Call get_a function with foreground color already stored inside %edi */
+
+	movl %r12d, %edi /* Moves foreground color into 1st argument register */
+    call get_a /* Call get_a function with foreground color */
     movl %eax, -16(%rbp) /* Store foreground alpha value inside the stack */
-    movl %esi, %edi /* Move bg color from %esi to %edi to call helper functions */  
+
+    movl %r13d, %edi /* Moves background color into 1st argument register */
     call get_r /* Call get_r function with background color */
     movl %eax, -20(%rbp) /* Store background r component inside the stack */
+
+	movl %r13d, %edi /* Moves background color into 1st argument register */
     call get_g /* Call get_g function with background color */
     movl %eax, -24(%rbp) /* Store background g component inside the stack */
+
+	movl %r13d, %edi /* Moves background color into 1st argument register */
     call get_b /* Call get_b function with background color */
     movl %eax, -28(%rbp) /* Store background b component inside the stack */
 
@@ -433,6 +452,8 @@ blend_colors:
 
     addq $32, %rsp /* reset stack pointer after function is done, local variables no longer needed */
     popq %rbp  /* pop the base pointer from the stack after function is over */
+	popq %r13 /* restore value of %r13 */
+	popq %r12 /* restore value of %r12 */
 
 	ret /* Returns the new color (in %eax) */
 
