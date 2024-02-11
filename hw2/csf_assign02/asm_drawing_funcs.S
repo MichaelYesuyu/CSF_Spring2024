@@ -85,8 +85,8 @@ square_dist:
  *
  * Parameters:
  *   %rdi     - pointer to struct Image
- *   %rsi     - x coordinate of the target point
- *   %rdx     - y coordinate of the target point
+ *   %esi     - x coordinate of the target point
+ *   %edx     - y coordinate of the target point
  * 
  * Returns (in %rax):
  *  whether the point is in the bound or not
@@ -97,13 +97,13 @@ in_bounds:
     pushq %r12                              /* save the value in %r12 to memory */
     
     movl IMAGE_WIDTH_OFFSET(%rdi), %r12d     /* Load width value from struct Image */
-    cmpq $0, %rsi                           /* compare x with 0 */
+    cmpl $0, %esi                           /* compare x with 0 */
     jl .LoutOfBound                         /* jump to out of bound flag is x < 0 */
     cmpl %r12d, %esi                         /* compare x to width */
     jge .LoutOfBound                        /* jump to out of bound flag is x >= width */
     
     movl IMAGE_HEIGHT_OFFSET(%rdi), %r12d    /* Load height value from struct Image */
-    cmpq $0, %rdx                           /* compare y with 0 */
+    cmpl $0, %edx                           /* compare y with 0 */
     jl .LoutOfBound                         /* jump to out of bound flag is y < 0 */
     cmpl %r12d, %edx                         /* compare y to height */
     jge .LoutOfBound                        /* jump to out of bound flag is y >= height */
@@ -122,18 +122,18 @@ in_bounds:
  *
  * Parameters:
  *   %rdi     - pointer to struct Image
- *   %rsi     - x coordinate of the target point
- *   %rdx     - y coordinate of the target point
+ *   %esi     - x coordinate of the target point
+ *   %edx     - y coordinate of the target point
  * 
- * Returns (in %rax):
+ * Returns (in %eax):
  *  the index of the target pixel
  */
 	.globl compute_index
 compute_index:
 
 	pushq %r12 								/* save the value in %r12 to memory */
-	movq IMAGE_WIDTH_OFFSET(%rdi), %r12 	/* get the width of the given image */
-	imulq %r12, %rdx						/* multiply the y coordinate with width */
+	movl IMAGE_WIDTH_OFFSET(%rdi), %r12d 	/* get the width of the given image */
+	imulq %r12, %rdx						/* multiply the y coordinate with width */ /*special note: index is 64 bit. x and y coordinates are 32 bit.*/
 	addq %rdx, %rsi							/* compute x + y * width, store in esi */
 	movq %rsi, %rax							/* move x + y * width to rax */
 	popq %r12								/* restore the value originally in %r12 */
@@ -146,7 +146,7 @@ compute_index:
  *   %rdi     - pointer to struct Image
  *   %rsi     - index of the pixel to retrieve
  * 
- * Returns (in %rax):
+ * Returns (in %eax):
  *  the uint32_t pixel color value
  */
 	.globl get_pixel
@@ -196,7 +196,6 @@ draw_pixel:
 	/* blend the foreground and background color */
 
 	/* put the blended color back to the image */
-
 
 	ret
 
