@@ -389,7 +389,7 @@ blend_colors:
 	pushq %r13 /* Push register onto stack to store value of background color */
     pushq %rbp /* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp /* move stack pointer to the address pointed by the base pointer */
-    subq $32, %rsp /* allocate 320 bits of memory for the local variables */
+    subq $48, %rsp /* allocate 32 bytes of memory for the local variables */
 
 	movl %edi, %r12d /* Moves value of foreground color into %r12 */
 	movl %esi, %r13d /* Moves value of background color into %r13 */
@@ -428,28 +428,30 @@ blend_colors:
     movl -16(%rbp), %edx /* Move alpha into the third argument register */
     xor %eax, %eax /* Clear %eax register before calling blend_components */
     call blend_components /* Call function with fg_r, bg_r, alpha */
-    movb %al, -29(%rbp) /* Store the new r component inside the stack */
+    movl %eax, -32(%rbp) /* Store the new r component inside the stack */
 
     movl -8(%rbp), %edi /* Move fg_g into the first argument register */
     movl -24(%rbp), %esi /* Move bg_g into the second argument register */
+	movl -16(%rbp), %edx /* Move alpha into the third argument register */
     call blend_components /* Call function with fg_g, bg_g, alpha */
-    movb %al, -30(%rbp) /* Store the new g component inside the stack */
+    movl %eax, -36(%rbp) /* Store the new g component inside the stack */
 
     movl -12(%rbp), %edi /* Move fg_b into the first argument register */
     movl -28(%rbp), %esi /* Move bg_b into the second argument register */
+	movl -16(%rbp), %edx /* Move alpha into the third argument register */
     call blend_components /* Call function with fg_b, bg_b, alpha */
-    movb %al, -31(%rbp) /* Store the new b component inside the stack */
+    movl %eax, -40(%rbp) /* Store the new b component inside the stack */
 
     xor %eax, %eax /* Set the %eax register to 0 before adding the color inside */
-    orb -29(%rbp), %al /* Sets the lowest 8 bits of color to r */
+    orl -32(%rbp), %eax /* Sets eax color to r */
     shll $8, %eax /* Left shift %eax by 8 bits */ 
-    orb -30(%rbp), %al /* Sets the lowest 8 bits of color to g */
+    orl -36(%rbp), %eax /* Sets the lowest 8 bits of color to g */
     shll $8, %eax /* Left shift %eax by 8 bits */
-    orb -31(%rbp), %al /* Sets the lowest 8 bits of color to b */
+    orl -40(%rbp), %eax /* Sets the lowest 8 bits of color to b */
     shll $8, %eax /* Left shift %eax by 8 bits */
-    orb $255, %al /* Sets the lowest 8 bits of color to alpha (default 255) */
+    orl $255, %eax /* Sets the lowest 8 bits of color to alpha (default 255) */
 
-    addq $32, %rsp /* reset stack pointer after function is done, local variables no longer needed */
+    addq $48, %rsp /* reset stack pointer after function is done, local variables no longer needed */
     popq %rbp  /* pop the base pointer from the stack after function is over */
 	popq %r13 /* restore value of %r13 */
 	popq %r12 /* restore value of %r12 */
