@@ -342,11 +342,11 @@ blend_components:
     imull %edx, %edi /* computes alpha * fg and stores it in %edi */
     movl %edx, %r10d /* stores the value of alpha inside %r10d */
 	movl $255, %edx /*stores 255 inside %edx to be subtracted by alpha later */
-    subl %r10d, %edx /* computes 255 - alpha and stores it inside %r10d */
+    subl %r10d, %edx /* computes (255 - alpha) and stores it inside %edx */
     imull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
     addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
     movl %edx, %eax /* moves the dividend into %eax */
-	xor %edx, %edx /* clear all the bits of edx */
+	xor %edx, %edx /* clear all the bits of edx as it is unused in division */
 	movl $255, %r10d /* moves the constant 255 into %r10d to divide the whole equation in the next step */
     divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
     ret /* Only the lower 8 bits (al) should have bits set to 1 */
