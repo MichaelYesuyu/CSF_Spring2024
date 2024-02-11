@@ -101,7 +101,7 @@ void test_compute_index(TestObjs *objs);
 void test_in_bound(TestObjs *objs);
 void test_get_pixel(TestObjs *objs);
 void test_set_pixel(TestObjs *objs);
-void test_draw_pixel(TestObjs *objs);
+void test_draw_pixel_self(TestObjs *objs);
 void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
 void test_get_b(TestObjs *objs);
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
   TEST(test_in_bound);
   TEST(test_get_pixel);
   TEST(test_set_pixel);
-  TEST(test_draw_pixel);
+  TEST(test_draw_pixel_self);
   TEST(test_get_r);
   TEST(test_get_g);
   TEST(test_get_b);
