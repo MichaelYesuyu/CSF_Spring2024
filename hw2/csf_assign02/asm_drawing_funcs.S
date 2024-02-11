@@ -32,15 +32,15 @@
  * Return the square of an int64 value.
  *
  * Parameters:
- *   %rdi     - the value to square
+ *   %edi     - the value to square
  * 
  * Returns (in %rax):
  *  the square of the input value
  */
 	.globl square
 square:
-	imulq %rdi, %rdi           /* multiply the value in rdi by itself*/
-	movq %rdi, %rax			   /* move the multiplied value to rax*/
+	imull %edi, %edi           /* multiply the value in rdi by itself*/
+	movl %edi, %eax			   /* move the multiplied value to rax*/
 	ret
 
 /*
@@ -48,12 +48,12 @@ square:
  * (x1, y1) and (x2, y2)
  *
  * Parameters:
- *   %rdi     - x1
- *   %rsi     - y1
- *   %rdx     - x2
- *   %rcx     - y2
+ *   %edi     - x1
+ *   %esi     - y1
+ *   %edx     - x2
+ *   %ecx     - y2
  * 
- * Returns (in %rax):
+ * Returns (in %eax):
  *  the square of the geomoetrical distance between (x1, y1)
  *  and (x2, y2)
  */
@@ -64,17 +64,17 @@ square_dist:
 	pushq %r12
 
 	/* compute (x1 - x2)^2 */
-	subq %rdx, %rdi					/* store x1 - x2 into %rdi */
+	subl %edx, %edi					/* store x1 - x2 into %rdi */
 	call square						/* compute (x1 - x2)^2, store in %rax */
-	movq %rax, %r12					/* move (x1 - x2)^2 to %r12 */
+	movl %eax, %r12d				/* move (x1 - x2)^2 to %r12 */
 
 	/* compute (y1 - y2)^2 */
-	subq %rcx, %rsi			 		/* store y1 - y2 into %rsi */
-	movq %rsi, %rdi					/* move y1 - y2 to %rdi */
+	subl %ecx, %esi			 		/* store y1 - y2 into %rsi */
+	movl %esi, %edi					/* move y1 - y2 to %rdi */
 	call square						/* compute (y1 - y2)^2, store in rax */
 
 	/* add (y1 - y2)^2 and (x1 - x2)^2 */
-	addq %r12, %rax
+	addl %r12d, %eax
 
 	/* restore the value originally in r12 */
 	popq %r12
@@ -279,6 +279,53 @@ draw_rect:
 	popq %r13 /* Restore value of %r12 */
 	popq %r12 /* Restore value of %r13 */
 	ret
+
+
+/*
+ * check if a point is within the circle. if not, return -1. Otherwise, return 1
+ *
+ * Parameters:
+ *   %edi     - x coordinate of the center
+ *   %esi     - y coordinate of the center
+ *   %edx     - r -- the radius of the circle
+ *   %ecx     - x coordinate of the target point
+ *   %r8d     - y coordinate of the target point
+ * 
+ * Returns (in %rax):
+ *  whether the point is in the circle or not
+ */
+	.globl in_circle
+in_circle:
+
+    pushq %r12                              /* save the value in %r12 to memory */
+    pushq %r13                              /* save the value in %r13 to memory */
+    pushq %r14                              /* save the value in %r14 to memory */
+    
+    movl %edx, %r12d						/* move the r value to r12d */
+	movl %ecx, %edx							/* move the x of the target point to input register 3 */
+	movl %r8d, %ecx							/* move the y of the target point to input register 4 */
+    call square_dist						/* compute the square distance of the point and the circle center */		
+	movl %eax, %r13d						/* move the computed square distance to r13d */
+	
+	movl %r12d, %edi							/* move r to edi */
+	call square								/* compute the square of r */
+	cmpl %r13d, %eax						/* compare the r square and the square distance */
+	jl .LoutOfCircle						/* if r square is smaller than square distance, jump */
+
+
+    movq $1, %rax                           /* 1 means the input is in bound */
+    popq %r14                               /* restore the value originally in %r12 */
+    popq %r13                               /* restore the value originally in %r12 */
+	popq %r12                               /* restore the value originally in %r12 */
+    ret
+
+.LoutOfCircle:
+    movq $-1, %rax                          /* -1 means the input is not in bound */
+    popq %r14                               /* restore the value originally in %r12 */
+    popq %r13                               /* restore the value originally in %r12 */
+	popq %r12                               /* restore the value originally in %r12 */
+	ret
+
 
 /*
  * Draw a circle.

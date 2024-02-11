@@ -99,9 +99,9 @@ void test_square(TestObjs *objs);
 void test_square_distance(TestObjs *objs);
 void test_compute_index(TestObjs *objs);
 void test_in_bound(TestObjs *objs);
+void test_in_circle(TestObjs *objs);
 void test_get_pixel(TestObjs *objs);
 void test_set_pixel(TestObjs *objs);
-void test_draw_pixel_self(TestObjs *objs);
 void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
 void test_get_b(TestObjs *objs);
@@ -131,9 +131,9 @@ int main(int argc, char **argv)
   TEST(test_square_distance);
   TEST(test_compute_index);
   TEST(test_in_bound);
+  TEST(test_in_circle);
   TEST(test_get_pixel);
   TEST(test_set_pixel);
-  TEST(test_draw_pixel_self);
   TEST(test_get_r);
   TEST(test_get_g);
   TEST(test_get_b);
@@ -460,17 +460,18 @@ void test_set_pixel(TestObjs *objs)
 
 }
 
-void test_draw_pixel_self(TestObjs *objs)
+void test_in_circle(TestObjs *objs)
 {
-  int inBoundCheck = in_bounds(&objs->small, 2, 2);
-  ASSERT(inBoundCheck == 1);
-  inBoundCheck = in_bounds(&objs->small, 8, 6);
-  ASSERT(inBoundCheck == -1);
-  inBoundCheck = in_bounds(&objs->small, 10, 10);
-  ASSERT(inBoundCheck == -1);
-  inBoundCheck = in_bounds(&objs->small, 0, 0);
-  ASSERT(inBoundCheck == 1);
+  int inCircleCheck = in_circle(0, 0, 5, 1, 2);
+  ASSERT(inCircleCheck == 1);
+  inCircleCheck = in_circle(1, 0, 5, 1, 5);
+  ASSERT(inCircleCheck == 1);
+  inCircleCheck = in_circle(1, 0, 5, 1, 6);
+  ASSERT(inCircleCheck == -1);
+  inCircleCheck = in_circle(1, 0, 3, 1, 6);
+  ASSERT(inCircleCheck == -1);
 }
+
 
 void test_get_r(TestObjs *objs)
 {
