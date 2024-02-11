@@ -100,6 +100,8 @@ void test_square_distance(TestObjs *objs);
 void test_compute_index(TestObjs *objs);
 void test_in_bound(TestObjs *objs);
 void test_get_pixel(TestObjs *objs);
+void test_set_pixel(TestObjs *objs);
+void test_draw_pixel(TestObjs *objs);
 void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
 void test_get_b(TestObjs *objs);
@@ -117,7 +119,7 @@ int main(int argc, char **argv)
   TEST_INIT();
 
   // TODO: add TEST() directives for your helper functions
-  // TEST(test_draw_pixel);
+  TEST(test_draw_pixel);
   // TEST(test_draw_rect);
   // TEST(test_draw_circle);
   // TEST(test_draw_circle_clip);
@@ -130,6 +132,8 @@ int main(int argc, char **argv)
   TEST(test_compute_index);
   TEST(test_in_bound);
   TEST(test_get_pixel);
+  TEST(test_set_pixel);
+  TEST(test_draw_pixel);
   TEST(test_get_r);
   TEST(test_get_g);
   TEST(test_get_b);
@@ -431,6 +435,32 @@ void test_get_pixel(TestObjs *objs)
 }
 
 void test_in_bound(TestObjs *objs)
+{
+  int inBoundCheck = in_bounds(&objs->small, 2, 2);
+  ASSERT(inBoundCheck == 1);
+  inBoundCheck = in_bounds(&objs->small, 8, 6);
+  ASSERT(inBoundCheck == -1);
+  inBoundCheck = in_bounds(&objs->small, 10, 10);
+  ASSERT(inBoundCheck == -1);
+  inBoundCheck = in_bounds(&objs->small, 0, 0);
+  ASSERT(inBoundCheck == 1);
+}
+
+void test_set_pixel(TestObjs *objs)
+{
+  set_pixel(&objs->small, 5, 0x9cadc1ff);
+  uint32_t pixel = get_pixel(&objs->small, 5);
+  ASSERT(pixel == 0x9cadc1ff);
+  set_pixel(&objs->small, 7, 0x100000ff);
+  pixel = get_pixel(&objs->small, 7);
+  ASSERT(pixel == 0x100000ff);
+  set_pixel(&objs->small, 0, 0x264c80ff);
+  pixel = get_pixel(&objs->small, 0);
+  ASSERT(pixel == 0x264c80ff);
+
+}
+
+void test_draw_pixel_self(TestObjs *objs)
 {
   int inBoundCheck = in_bounds(&objs->small, 2, 2);
   ASSERT(inBoundCheck == 1);
