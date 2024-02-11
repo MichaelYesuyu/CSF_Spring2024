@@ -94,25 +94,28 @@ square_dist:
 	.globl in_bounds
 in_bounds:
 
-	pushq %r12 								/* save the value in %r12 to memory */
-	cmpq $0, %rsi							/* compare x with 0 */
-	jl .LoutOfBound							/* jump to out of bound flag is x < 0 */
-	cmpq $0, %rdx							/* compare y with 0 */
-	jl .LoutOfBound							/* jump to out of bound flag is y < 0 */
-	movq IMAGE_WIDTH_OFFSET(%rdi), %r12 	/* move the width value to r12 */
-	cmpq %r12, %rsi							/* compare x to width */
-	jge .LoutOfBound						/* jump to out of bound flag is x >= width */
-	movq IMAGE_HEIGHT_OFFSET(%rdi), %r12 	/* move the height value to r12 */
-	cmpq %r12, %rdx							/* compare y to height */
-	jge .LoutOfBound						/* jump to out of bound flag is y >= height */
-	movq $1, %rax							/* 1 means the input is in bound */
-	popq %r12 								/* restore the value priginally in %r12 */
-	ret 									
+    pushq %r12                              /* save the value in %r12 to memory */
+    
+    movl IMAGE_WIDTH_OFFSET(%rdi), %r12d     /* Load width value from struct Image */
+    cmpq $0, %rsi                           /* compare x with 0 */
+    jl .LoutOfBound                         /* jump to out of bound flag is x < 0 */
+    cmpl %r12d, %esi                         /* compare x to width */
+    jge .LoutOfBound                        /* jump to out of bound flag is x >= width */
+    
+    movl IMAGE_HEIGHT_OFFSET(%rdi), %r12d    /* Load height value from struct Image */
+    cmpq $0, %rdx                           /* compare y with 0 */
+    jl .LoutOfBound                         /* jump to out of bound flag is y < 0 */
+    cmpl %r12d, %edx                         /* compare y to height */
+    jge .LoutOfBound                        /* jump to out of bound flag is y >= height */
+    
+    movq $1, %rax                           /* 1 means the input is in bound */
+    popq %r12                               /* restore the value originally in %r12 */
+    ret
 
 .LoutOfBound:
-	movq $-1, %rax							/* -1 means the input is not in bound */
-	popq %r12 								/* restore the value priginally in %r12 */
-	ret
+    movq $-1, %rax                          /* -1 means the input is not in bound */
+    popq %r12                               /* restore the value originally in %r12 */
+    ret
 	
 /*
  * Compute the index at a given point (x,y)
