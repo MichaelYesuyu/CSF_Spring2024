@@ -241,7 +241,7 @@ draw_rect:
  * Parameters:
  *   %edi     - x coordinate of the center
  *   %esi     - y coordinate of the center
- *   %edx     - r, the radius of the circle
+ *   %edx     - r -- the radius of the circle
  *   %ecx     - x coordinate of the target point
  *   %r8d     - y coordinate of the target point
  * 
