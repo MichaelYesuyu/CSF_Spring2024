@@ -100,7 +100,7 @@ in_bounds:
 	cmpq $0, %rdx							/* compare y with 0 */
 	jl .LoutOfBound							/* jump to out of bound flag is y < 0 */
 	movq IMAGE_WIDTH_OFFSET(%rdi), %r12 	/* move the width value to r12 */
-	cmpq %r12, %rdi							/* compare x to width */
+	cmpq %r12, %rsi							/* compare x to width */
 	jge .LoutOfBound						/* jump to out of bound flag is x >= width */
 	movq IMAGE_HEIGHT_OFFSET(%rdi), %r12 	/* move the height value to r12 */
 	cmpq %r12, %rdx							/* compare y to height */

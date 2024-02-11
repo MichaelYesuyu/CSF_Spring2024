@@ -88,6 +88,7 @@ void test_color_blending(TestObjs *objs);
 void test_square(TestObjs *objs);
 void test_square_distance(TestObjs *objs);
 void test_compute_index(TestObjs *objs);
+void test_in_bound(TestObjs *objs);
 void test_get_pixel(TestObjs *objs);
 void test_get_r(TestObjs *objs);
 void test_get_g(TestObjs *objs);
@@ -115,6 +116,7 @@ int main(int argc, char **argv) {
   TEST(test_square);
   TEST(test_square_distance);
   TEST(test_compute_index);
+  TEST(test_in_bound);
   TEST(test_get_pixel);
   TEST(test_get_r);
   TEST(test_get_g);
@@ -405,6 +407,16 @@ void test_get_pixel(TestObjs *objs){
   ASSERT(pixel == 0x000000FFU);
 }
 
+void test_in_bound(TestObjs *objs){
+  int inBoundCheck = in_bounds(&objs->small, 2, 2);
+  ASSERT(inBoundCheck == 1);
+  inBoundCheck = in_bounds(&objs->small, 100, 100);
+  ASSERT(inBoundCheck == -1);
+  inBoundCheck = in_bounds(&objs->small, 10, 10);
+  ASSERT(inBoundCheck == -1);
+  inBoundCheck = in_bounds(&objs->small, 0, 0);
+  ASSERT(inBoundCheck == 1);
+}
 
 void test_get_r(TestObjs *objs){
   uint8_t expected1 = 255;
