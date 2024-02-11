@@ -228,10 +228,56 @@ draw_pixel:
  *   %rdi     - pointer to struct Image
  *   %rsi     - pointer to struct Rect
  *   %edx     - uint32_t color value
+ *
+ * Register Use:
+ *	%r12 - Stores the x value of rect as the loop iterates
+ *	%r13 - Stores the y value of rect as the loop iterates
+ *	%r14 - Stores the ending x value of rect as the loop iterates
+ *	%r15 - Stores the ending y value of rect as the loop iterates
+ *	%rbx - Stores the color value for the duration of the function
  */
 	.globl draw_rect
 draw_rect:
-	/* TODO: implement */
+	pushq %r12 /* Preserve value of %r12 */
+	pushq %r13 /* Preserve value of %r13 */
+	pushq %r14 /* Preserve value of %r14 */
+	pushq %r15 /* Preserve value of %r15 */
+	pushq %rbx /* Preserve value of %rbx */
+
+	movl RECT_X_OFFSET(%rsi), %r12d /* Store the value of the x starting point on the rectangle in %r12 */
+	movl RECT_Y_OFFSET(%rsi), %r13d /* Store the value of the y starting point on the rectangle in %r13 */
+	
+	movl RECT_X_OFFSET(%rsi), %r14d /* Store the value of the x starting point in %r14 */
+	addl RECT_WIDTH_OFFSET(%rsi), %r14d /* Add the width to get the ending x coordinate */
+	movl RECT_Y_OFFSET(%rsi), %r15d /* Store the value of the y starting point in %r15 */
+	addl RECT_HEIGHT_OFFSET(%rsi), %r15d /* Add the height to get the ending y coordinate */
+
+	/* Nested for loop to loop through the rectangle */
+		jmp .LcheckInXLoop
+	
+	.LloopBody:
+		/* first argument Image pointer is already inside %rdi register */
+		movl %r12d, %esi
+		movl %r13d, %edx
+		/* fourth argument color is already inside the %
+
+	.LcheckInYLoop:
+		cmpq %r15, %r13 /* check if current y coord is less than y ending coord */
+		inc %r13 /* Increment y coord by 1 */
+		jl .LloopBody
+
+	.LcheckInXLoop:
+		cmpq %r14, %r12 /* check if current x coord is less than x ending coord */
+		inc %r12 /* Increment x coord by 1 */
+		jl .LcheckInYLoop
+
+
+	
+	popq %rbx /* Restore value of %rbx */
+	popq %r15 /* Restore value of %r15 */
+	popq %r14 /* Restore value of %r14 */
+	popq %r13 /* Restore value of %r12 */
+	popq %r12 /* Restore value of %r13 */
 	ret
 
 /*
