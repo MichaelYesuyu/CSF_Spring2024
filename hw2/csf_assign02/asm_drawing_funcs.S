@@ -94,7 +94,7 @@ square_dist:
 	.globl in_bounds
 in_bounds:
 
-	cmpq %rsi, $0					/* compare x with 0 */
+	/* cmpq %rsi, $0			*/		/* compare x with 0 */
 	jl .LoutOfBound
 
 .LoutOfBound:
@@ -340,12 +340,14 @@ get_a:
     .globl blend_components
 blend_components:
     imull %edx, %edi /* computes alpha * fg and stores it in %edi */
-    movl $255, %r10d /* stores the constant value 255 inside %r10d */
-    subl %r10d, %edx /* computes 255 - alpha and stores it inside %edx */
+    movl %edx, %r10d /* stores the value of alpha inside %r10d */
+	movl $255, %edx /*stores 255 inside %edx to be subtracted by alpha later */
+    subl %r10d, %edx /* computes 255 - alpha and stores it inside %r10d */
     imull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
     addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
     movl %edx, %eax /* moves the dividend into %eax */
-	XOR %edx, %edx /* clear all the bits of edx */
+	xor %edx, %edx /* clear all the bits of edx */
+	movl $255, %r10d /* moves the constant 255 into %r10d to divide the whole equation in the next step */
     divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
     ret /* Only the lower 8 bits (al) should have bits set to 1 */
 
