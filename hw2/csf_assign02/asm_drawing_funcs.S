@@ -365,10 +365,73 @@ blend_components:
     divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
     ret /* Only the lower 8 bits (al) should have bits set to 1 */
 
-
+/*
+ * Computes the new blended color of the foreground and background colors
+ * 
+ * Parameters: 
+ *  %edi - 32 bit integer storing the foreground color
+ *  %esi - 32 bit integer storing the background color
+ *
+ * Returns (in %eax):
+ *  32 bit integer storing the blended color
+ *
+ * Register use:
+ *  %rbp - base pointer, for allocating space for local variables
+ *  %rsp - stack pointer, for tracking local variables
+*/
 	.globl blend_colors
 blend_colors:
-	ret
+    pushq %rbp /* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp /* move stack pointer to the address pointed by the base pointer */
+    subq $32, %rsp /* allocate 320 bits of memory for the local variables */
+
+    xor %eax, %eax /* clear out eax register before calling helper function */
+    call get_r /* Call get_r function with foreground color already stored inside %edi, result is stored in %al, subregister of %eax */
+    movl %eax, -4(%rbp) /* Store foreground r component (as 32 bit value) inside the stack */
+    call get_g /* Call get_g function with foreground color already stored inside %edi */
+    movl %eax, -8(%rbp) /* Store foreground g component inside the stack */
+    call get_b /* Call get_b function with foreground color already stored inside %edi */
+    movl %eax, -12(%rbp) /* Store foreground b component inside the stack */
+    call get_a /* Call get_a function with foreground color already stored inside %edi */
+    movl %eax, -16(%rbp) /* Store foreground alpha value inside the stack */
+    movl %esi, %edi /* Move bg color from %esi to %edi to call helper functions */  
+    call get_r /* Call get_r function with background color */
+    movl %eax, -20(%rbp) /* Store background r component inside the stack */
+    call get_g /* Call get_g function with background color */
+    movl %eax, -24(%rbp) /* Store background g component inside the stack */
+    call get_b /* Call get_b function with background color */
+    movl %eax, -28(%rbp) /* Store background b component inside the stack */
+
+    movl -4(%rbp), %edi /* Move fg_r into the first argument register */
+    movl -20(%rbp), %esi /* Move bg_r into the second argument register */
+    movl -16(%rbp), %edx /* Move alpha into the third argument register */
+    xor %eax, %eax /* Clear %eax register before calling blend_components */
+    call blend_components /* Call function with fg_r, bg_r, alpha */
+    movb %al, -29(%rbp) /* Store the new r component inside the stack */
+
+    movl -8(%rbp), %edi /* Move fg_g into the first argument register */
+    movl -24(%rbp), %esi /* Move bg_g into the second argument register */
+    call blend_components /* Call function with fg_g, bg_g, alpha */
+    movb %al, -30(%rbp) /* Store the new g component inside the stack */
+
+    movl -12(%rbp), %edi /* Move fg_b into the first argument register */
+    movl -28(%rbp), %esi /* Move bg_b into the second argument register */
+    call blend_components /* Call function with fg_b, bg_b, alpha */
+    movb %al, -31(%rbp) /* Store the new b component inside the stack */
+
+    xor %eax, %eax /* Set the %eax register to 0 before adding the color inside */
+    orb -29(%rbp), %al /* Sets the lowest 8 bits of color to r */
+    shll $8, %eax /* Left shift %eax by 8 bits */ 
+    orb -30(%rbp), %al /* Sets the lowest 8 bits of color to g */
+    shll $8, %eax /* Left shift %eax by 8 bits */
+    orb -31(%rbp), %al /* Sets the lowest 8 bits of color to b */
+    shll $8, %eax /* Left shift %eax by 8 bits */
+    orb $255, %al /* Sets the lowest 8 bits of color to alpha (default 255) */
+
+    addq $32, %rsp /* reset stack pointer after function is done, local variables no longer needed */
+    popq %rbp  /* pop the base pointer from the stack after function is over */
+
+	ret /* Returns the new color (in %eax) */
 
 
 
