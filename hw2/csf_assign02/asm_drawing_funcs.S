@@ -193,6 +193,11 @@ draw_pixel:
 	pushq %r13
 	pushq %r14
 
+	/* check if the given point is within the image limit */
+	call in_bounds
+	cmpq $0, %rax
+	jl .Lending
+
 	/* get the index of the given point */
 	call compute_index
 	movl %esi, %r12d						/* save the x coordinate to r12 */
@@ -213,6 +218,7 @@ draw_pixel:
 	/* put the blended color back to the image */
 	call set_pixel
 
+.Lending
 	popq %r14								/* restore the value originally in %r12 */
 	popq %r13								/* restore the value originally in %r13 */
 	popq %r12								/* restore the value originally in %r14 */
