@@ -162,7 +162,7 @@ get_pixel:
  * Parameters:
  *   %rdi     - pointer to struct Image
  *   %rsi     - index of the pixel to rewrite
- * 	 %rdx     - the color to be write into the image
+ * 	 %edx     - the color to be write into the image
 
  * Returns (in %rax):
  *  no return
@@ -171,7 +171,7 @@ get_pixel:
 set_pixel:
 
 	movq IMAGE_DATA_OFFSET(%rdi), %r10 			/* get the pointer that points to the data (pixel array) */
-	movq %rdx, (%r10, %rsi, 4) 					/* move target color to the destination pixel */
+	movl %edx, (%r10, %rsi, 4) 					/* move target color to the destination pixel */
 	ret											/* return */
 
 
@@ -189,14 +189,33 @@ set_pixel:
 	.globl draw_pixel
 draw_pixel:
 
+	pushq %r12 
+	pushq %r13
+	pushq %r14
+
 	/* get the index of the given point */
-
+	call compute_index
+	movl %esi, %r12d						/* save the x coordinate to r12 */
+	movq %rax, %rsi							/* put the new input value (index) to call register*/
+	
 	/* get the pixel of the given index (background color)*/
-
+	call get_pixel
+	movq %rdi, %r13							/* save the struct pointer color to r13 */
+	movl %ecx, %edi							/* put the foreground color to input register */
+	movq %rsi, %r14							/* put the index to r14d */
+	movl %eax, %esi							/* put the background color to input register */
 	/* blend the foreground and background color */
+	call blend_colors
+	movq %r13, %rdi							/* put the struct pointer back to rdi */
+	movq %r14, %rsi							/* put the index back to rsi */
+	movl %eax, %edx							/* put the color to edx */
 
 	/* put the blended color back to the image */
+	call set_pixel
 
+	popq %r14								/* restore the value originally in %r12 */
+	popq %r13								/* restore the value originally in %r13 */
+	popq %r12								/* restore the value originally in %r14 */
 	ret
 
 
