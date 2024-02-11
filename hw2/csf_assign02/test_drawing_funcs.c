@@ -434,7 +434,7 @@ void test_in_bound(TestObjs *objs)
 {
   int inBoundCheck = in_bounds(&objs->small, 2, 2);
   ASSERT(inBoundCheck == 1);
-  inBoundCheck = in_bounds(&objs->small, 100, 100);
+  inBoundCheck = in_bounds(&objs->small, 8, 6);
   ASSERT(inBoundCheck == -1);
   inBoundCheck = in_bounds(&objs->small, 10, 10);
   ASSERT(inBoundCheck == -1);
