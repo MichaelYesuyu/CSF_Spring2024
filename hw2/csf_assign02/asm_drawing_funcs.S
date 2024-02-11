@@ -218,7 +218,7 @@ draw_pixel:
 	/* put the blended color back to the image */
 	call set_pixel
 
-.Lending
+.Lending:
 	popq %r14								/* restore the value originally in %r12 */
 	popq %r13								/* restore the value originally in %r13 */
 	popq %r12								/* restore the value originally in %r14 */
