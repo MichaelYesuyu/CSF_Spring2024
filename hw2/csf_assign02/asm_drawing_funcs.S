@@ -234,7 +234,8 @@ draw_pixel:
  *	%r13 - Stores the y value of rect as the loop iterates
  *	%r14 - Stores the ending x value of rect as the loop iterates
  *	%r15 - Stores the ending y value of rect as the loop iterates
- *	%rbx - Stores the color value for the duration of the function
+ *	%ebx - Stores the color value for the duration of the function
+ *	%rbp - Stores the pointer to the struct Image for the duration of the function
  */
 	.globl draw_rect
 draw_rect:
@@ -243,14 +244,17 @@ draw_rect:
 	pushq %r14 /* Preserve value of %r14 */
 	pushq %r15 /* Preserve value of %r15 */
 	pushq %rbx /* Preserve value of %rbx */
+	pushq %rbp /* Preserve value of %rbp */
 
-	movl RECT_X_OFFSET(%rsi), %r12d /* Store the value of the x starting point on the rectangle in %r12 */
-	movl RECT_Y_OFFSET(%rsi), %r13d /* Store the value of the y starting point on the rectangle in %r13 */
+	movl %edx, %ebx 							/* Store the color value inside %ebx */
+	movq %rdi, %rbp 							/* Store the pointer to the struct Image for the duration of the function */
+	movl RECT_X_OFFSET(%rsi), %r12d 			/* Store the value of the x starting point on the rectangle in %r12 */
+	movl RECT_Y_OFFSET(%rsi), %r13d 			/* Store the value of the y starting point on the rectangle in %r13 */
 	
-	movl RECT_X_OFFSET(%rsi), %r14d /* Store the value of the x starting point in %r14 */
-	addl RECT_WIDTH_OFFSET(%rsi), %r14d /* Add the width to get the ending x coordinate */
-	movl RECT_Y_OFFSET(%rsi), %r15d /* Store the value of the y starting point in %r15 */
-	addl RECT_HEIGHT_OFFSET(%rsi), %r15d /* Add the height to get the ending y coordinate */
+	movl RECT_X_OFFSET(%rsi), %r14d 			/* Store the value of the x starting point in %r14 */
+	addl RECT_WIDTH_OFFSET(%rsi), %r14d 		/* Add the width to get the ending x coordinate */
+	movl RECT_Y_OFFSET(%rsi), %r15d 			/* Store the value of the y starting point in %r15 */
+	addl RECT_HEIGHT_OFFSET(%rsi), %r15d 		/* Add the height to get the ending y coordinate */
 
 	/* Nested for loop to loop through the rectangle */
 		jmp .LcheckInXLoop
@@ -259,25 +263,26 @@ draw_rect:
 		/* first argument Image pointer is already inside %rdi register */
 		movl %r12d, %esi
 		movl %r13d, %edx
-		/* fourth argument color is already inside the %
+		movq %rdi, %rbp
+		call draw_pixel
 
 	.LcheckInYLoop:
-		cmpq %r15, %r13 /* check if current y coord is less than y ending coord */
-		inc %r13 /* Increment y coord by 1 */
+		cmpq %r15, %r13 						/* check if current y coord is less than y ending coord */
+		inc %r13 								/* Increment y coord by 1 */
 		jl .LloopBody
 
 	.LcheckInXLoop:
-		cmpq %r14, %r12 /* check if current x coord is less than x ending coord */
-		inc %r12 /* Increment x coord by 1 */
+		cmpq %r14, %r12 						/* check if current x coord is less than x ending coord */
+		inc %r12 								/* Increment x coord by 1 */
 		jl .LcheckInYLoop
 
 
-	
-	popq %rbx /* Restore value of %rbx */
-	popq %r15 /* Restore value of %r15 */
-	popq %r14 /* Restore value of %r14 */
-	popq %r13 /* Restore value of %r12 */
-	popq %r12 /* Restore value of %r13 */
+	popq %rbp 									/* Restore value of %rbp */
+	popq %rbx 									/* Restore value of %rbx */
+	popq %r15 									/* Restore value of %r15 */
+	popq %r14 									/* Restore value of %r14 */
+	popq %r13 									/* Restore value of %r12 */
+	popq %r12 									/* Restore value of %r13 */
 	ret
 
 
@@ -395,9 +400,9 @@ draw_sprite:
 
     .globl get_r
 get_r:
-    shrl $24, %edi /* Perform right shift by 24 to set the lower 8 bits of rdi to r component value */
-    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
-	ret /* returns the r component value */
+    shrl $24, %edi 		/* Perform right shift by 24 to set the lower 8 bits of rdi to r component value */
+    movb %dil, %al 		/* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret 				/* returns the r component value */
 
 
 /*
@@ -412,8 +417,8 @@ get_r:
 */
 	.globl get_g
 get_g:
-    shrl $16, %edi /* Perform right shift by 16 to set the lower 8 bits of rdi to g component value */
-    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+    shrl $16, %edi 		/* Perform right shift by 16 to set the lower 8 bits of rdi to g component value */
+    movb %dil, %al 		/* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
 	ret /* returns the G component value */
 
 /*
@@ -428,9 +433,9 @@ get_g:
 */
 	.globl get_b
 get_b:
-	shrl $8, %edi /* Perform right shift by 8 to set the lower 8 bits of rdi to b component value */
-    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
-	ret /* returns the b component value */
+	shrl $8, %edi 		/* Perform right shift by 8 to set the lower 8 bits of rdi to b component value */
+    movb %dil, %al 		/* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret 				/* returns the b component value */
 
 /*
  * Gets the 8 bit integer representing the a component of the 32 bit integer color
@@ -444,8 +449,8 @@ get_b:
 */
 	.globl get_a
 get_a:
-    movb %dil, %al /* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
-	ret /* returns the a component value */
+    movb %dil, %al 		/* Move the lower 8 bits of edi into al (the 8 bit sub-register of rax) */
+	ret 				/* returns the a component value */
 
 
 /*
@@ -467,17 +472,17 @@ get_a:
 */
     .globl blend_components
 blend_components:
-    imull %edx, %edi /* computes alpha * fg and stores it in %edi */
-    movl %edx, %r10d /* stores the value of alpha inside %r10d */
-	movl $255, %edx /*stores 255 inside %edx to be subtracted by alpha later */
-    subl %r10d, %edx /* computes (255 - alpha) and stores it inside %edx */
-    imull %esi, %edx /* computes (255 - alpha) * bg and stores it inside %edx */
-    addl %edi, %edx /* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
-    movl %edx, %eax /* moves the dividend into %eax */
-	xor %edx, %edx /* clear all the bits of edx as it is unused in division */
-	movl $255, %r10d /* moves the constant 255 into %r10d to divide the whole equation in the next step */
-    divl %r10d /* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
-    ret /* Only the lower 8 bits (al) should have bits set to 1 */
+    imull %edx, %edi 		/* computes alpha * fg and stores it in %edi */
+    movl %edx, %r10d 		/* stores the value of alpha inside %r10d */
+	movl $255, %edx 		/* stores 255 inside %edx to be subtracted by alpha later */
+    subl %r10d, %edx 		/* computes (255 - alpha) and stores it inside %edx */
+    imull %esi, %edx 		/* computes (255 - alpha) * bg and stores it inside %edx */
+    addl %edi, %edx 		/* computes ((alpha * fg) + (255 - alpha) * (bg)) and stores it inside %edx */
+    movl %edx, %eax 		/* moves the dividend into %eax */
+	xor %edx, %edx 			/* clear all the bits of edx as it is unused in division */
+	movl $255, %r10d 		/* moves the constant 255 into %r10d to divide the whole equation in the next step */
+    divl %r10d 				/* computes ((alpha * fg) + (255 - alpha) * (bg)) / 255  and stores it inside %eax */
+    ret 					/* Only the lower 8 bits (al) should have bits set to 1 */
 
 /*
  * Computes the new blended color of the foreground and background colors
@@ -497,78 +502,78 @@ blend_components:
 */
 	.globl blend_colors
 blend_colors:
-	pushq %r12 /* Push register onto stack to store value of foreground color */
-	pushq %r13 /* Push register onto stack to store value of background color */
-    pushq %rbp /* push base pointer onto stack before allocating stack memory */
-    movq %rsp, %rbp /* move stack pointer to the address pointed by the base pointer */
-    subq $48, %rsp /* allocate 32 bytes of memory for the local variables */
+	pushq %r12 				/* Push register onto stack to store value of foreground color */
+	pushq %r13 				/* Push register onto stack to store value of background color */
+    pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
+    subq $48, %rsp 			/* allocate 32 bytes of memory for the local variables */
 
-	movl %edi, %r12d /* Moves value of foreground color into %r12 */
-	movl %esi, %r13d /* Moves value of background color into %r13 */
+	movl %edi, %r12d 		/* Moves value of foreground color into %r12 */
+	movl %esi, %r13d 		/* Moves value of background color into %r13 */
 
-    xor %eax, %eax /* clear out eax register before calling helper function */
-	movl %r12d, %edi /* Moves foreground color into 1st argument register */
-    call get_r /* Call get_r function with foreground color, result is stored in %al, subregister of %eax */
-    movl %eax, -4(%rbp) /* Store foreground r component (as 32 bit value) inside the stack */
+    xor %eax, %eax 			/* clear out eax register before calling helper function */
+	movl %r12d, %edi 		/* Moves foreground color into 1st argument register */
+    call get_r 				/* Call get_r function with foreground color, result is stored in %al, subregister of %eax */
+    movl %eax, -4(%rbp) 	/* Store foreground r component (as 32 bit value) inside the stack */
 
-	movl %r12d, %edi /* Moves foreground color into 1st argument register */
-    call get_g /* Call get_g function with foreground color */
-    movl %eax, -8(%rbp) /* Store foreground g component inside the stack */
+	movl %r12d, %edi 		/* Moves foreground color into 1st argument register */
+    call get_g 				/* Call get_g function with foreground color */
+    movl %eax, -8(%rbp) 	/* Store foreground g component inside the stack */
 
-	movl %r12d, %edi /* Moves foreground color into 1st argument register */
-    call get_b /* Call get_b function with foreground color */
-    movl %eax, -12(%rbp) /* Store foreground b component inside the stack */
+	movl %r12d, %edi 		/* Moves foreground color into 1st argument register */
+    call get_b 				/* Call get_b function with foreground color */
+    movl %eax, -12(%rbp) 	/* Store foreground b component inside the stack */
 
-	movl %r12d, %edi /* Moves foreground color into 1st argument register */
-    call get_a /* Call get_a function with foreground color */
-    movl %eax, -16(%rbp) /* Store foreground alpha value inside the stack */
+	movl %r12d, %edi 		/* Moves foreground color into 1st argument register */
+    call get_a 				/* Call get_a function with foreground color */
+    movl %eax, -16(%rbp) 	/* Store foreground alpha value inside the stack */
 
-    movl %r13d, %edi /* Moves background color into 1st argument register */
-    call get_r /* Call get_r function with background color */
-    movl %eax, -20(%rbp) /* Store background r component inside the stack */
+    movl %r13d, %edi 		/* Moves background color into 1st argument register */
+    call get_r 				/* Call get_r function with background color */
+    movl %eax, -20(%rbp) 	/* Store background r component inside the stack */
 
-	movl %r13d, %edi /* Moves background color into 1st argument register */
-    call get_g /* Call get_g function with background color */
-    movl %eax, -24(%rbp) /* Store background g component inside the stack */
+	movl %r13d, %edi 		/* Moves background color into 1st argument register */
+    call get_g 				/* Call get_g function with background color */
+    movl %eax, -24(%rbp) 	/* Store background g component inside the stack */
 
-	movl %r13d, %edi /* Moves background color into 1st argument register */
-    call get_b /* Call get_b function with background color */
-    movl %eax, -28(%rbp) /* Store background b component inside the stack */
+	movl %r13d, %edi 		/* Moves background color into 1st argument register */
+    call get_b 				/* Call get_b function with background color */
+    movl %eax, -28(%rbp) 	/* Store background b component inside the stack */
 
-    movl -4(%rbp), %edi /* Move fg_r into the first argument register */
-    movl -20(%rbp), %esi /* Move bg_r into the second argument register */
-    movl -16(%rbp), %edx /* Move alpha into the third argument register */
-    xor %eax, %eax /* Clear %eax register before calling blend_components */
-    call blend_components /* Call function with fg_r, bg_r, alpha */
-    movl %eax, -32(%rbp) /* Store the new r component inside the stack */
+    movl -4(%rbp), %edi 	/* Move fg_r into the first argument register */
+    movl -20(%rbp), %esi 	/* Move bg_r into the second argument register */
+    movl -16(%rbp), %edx 	/* Move alpha into the third argument register */
+    xor %eax, %eax 			/* Clear %eax register before calling blend_components */
+    call blend_components 	/* Call function with fg_r, bg_r, alpha */
+    movl %eax, -32(%rbp) 	/* Store the new r component inside the stack */
 
-    movl -8(%rbp), %edi /* Move fg_g into the first argument register */
-    movl -24(%rbp), %esi /* Move bg_g into the second argument register */
-	movl -16(%rbp), %edx /* Move alpha into the third argument register */
-    call blend_components /* Call function with fg_g, bg_g, alpha */
-    movl %eax, -36(%rbp) /* Store the new g component inside the stack */
+    movl -8(%rbp), %edi 	/* Move fg_g into the first argument register */
+    movl -24(%rbp), %esi 	/* Move bg_g into the second argument register */
+	movl -16(%rbp), %edx 	/* Move alpha into the third argument register */
+    call blend_components 	/* Call function with fg_g, bg_g, alpha */
+    movl %eax, -36(%rbp) 	/* Store the new g component inside the stack */
 
-    movl -12(%rbp), %edi /* Move fg_b into the first argument register */
-    movl -28(%rbp), %esi /* Move bg_b into the second argument register */
-	movl -16(%rbp), %edx /* Move alpha into the third argument register */
-    call blend_components /* Call function with fg_b, bg_b, alpha */
-    movl %eax, -40(%rbp) /* Store the new b component inside the stack */
+    movl -12(%rbp), %edi 	/* Move fg_b into the first argument register */
+    movl -28(%rbp), %esi 	/* Move bg_b into the second argument register */
+	movl -16(%rbp), %edx 	/* Move alpha into the third argument register */
+    call blend_components 	/* Call function with fg_b, bg_b, alpha */
+    movl %eax, -40(%rbp) 	/* Store the new b component inside the stack */
 
-    xor %eax, %eax /* Set the %eax register to 0 before adding the color inside */
-    orl -32(%rbp), %eax /* Sets eax color to r */
-    shll $8, %eax /* Left shift %eax by 8 bits */ 
-    orl -36(%rbp), %eax /* Sets the lowest 8 bits of color to g */
-    shll $8, %eax /* Left shift %eax by 8 bits */
-    orl -40(%rbp), %eax /* Sets the lowest 8 bits of color to b */
-    shll $8, %eax /* Left shift %eax by 8 bits */
-    orl $255, %eax /* Sets the lowest 8 bits of color to alpha (default 255) */
+    xor %eax, %eax 			/* Set the %eax register to 0 before adding the color inside */
+    orl -32(%rbp), %eax 	/* Sets eax color to r */
+    shll $8, %eax 			/* Left shift %eax by 8 bits */ 
+    orl -36(%rbp), %eax 	/* Sets the lowest 8 bits of color to g */
+    shll $8, %eax 			/* Left shift %eax by 8 bits */
+    orl -40(%rbp), %eax 	/* Sets the lowest 8 bits of color to b */
+    shll $8, %eax 			/* Left shift %eax by 8 bits */
+    orl $255, %eax 			/* Sets the lowest 8 bits of color to alpha (default 255) */
 
-    addq $48, %rsp /* reset stack pointer after function is done, local variables no longer needed */
-    popq %rbp  /* pop the base pointer from the stack after function is over */
-	popq %r13 /* restore value of %r13 */
-	popq %r12 /* restore value of %r12 */
+    addq $48, %rsp 			/* reset stack pointer after function is done, local variables no longer needed */
+    popq %rbp  				/* pop the base pointer from the stack after function is over */
+	popq %r13 				/* restore value of %r13 */
+	popq %r12 				/* restore value of %r12 */
 
-	ret /* Returns the new color (in %eax) */
+	ret 					/* Returns the new color (in %eax) */
 
 
 

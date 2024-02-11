@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
   // TODO: add TEST() directives for your helper functions
   TEST(test_draw_pixel);
-  // TEST(test_draw_rect);
+  TEST(test_draw_rect);
   // TEST(test_draw_circle);
   // TEST(test_draw_circle_clip);
   // TEST(test_draw_tile);
@@ -358,10 +358,6 @@ void test_color_blending(TestObjs *objs)
   fg |= alpha_2;
 
   uint32_t new_color = blend_colors(fg, bg);
-  printf("\nNew R: %d\n", get_r(new_color));
-  printf("New G: %d\n", get_g(new_color));
-  printf("New B: %d\n", get_b(new_color));
-  printf("New A: %d\n", get_a(new_color));
   ASSERT(get_a(new_color) == 255);
   ASSERT(get_r(new_color) == 120);
   ASSERT(get_g(new_color) == 120);
