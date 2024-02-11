@@ -272,6 +272,7 @@ draw_rect:
 		jl .LloopBody
 
 	.LcheckInXLoop:
+		
 		cmpq %r14, %r12 						/* check if current x coord is less than x ending coord */
 		inc %r12 								/* Increment x coord by 1 */
 		jl .LcheckInYLoop
