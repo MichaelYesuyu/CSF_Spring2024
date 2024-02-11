@@ -94,7 +94,7 @@ square_dist:
 	.globl in_bounds
 in_bounds:
 
-	/* cmpq %rsi, $0			*/		/* compare x with 0 */
+	cmpq %rsi, $0					/* compare x with 0 */
 	jl .LoutOfBound
 
 .LoutOfBound:
