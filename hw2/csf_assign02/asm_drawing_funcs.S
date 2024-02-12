@@ -619,14 +619,14 @@ draw_sprite:
 	movl -36(%rsp), %edx				/* Move sprite start y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if our of bounds */
 	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
-	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
+	je .LouterLoopEndSprite				/* Jump to the end of the function if out of bounds */
 
 	movq -16(%rsp), %rdi				/* Move the spritemap pointer into 1st argument register */
 	movl -32(%rsp), %esi				/* Move sprite end x coord into 2nd argument register */
 	movl -40(%rsp), %edx				/* Move sprite end y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if out of bounds */
 	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
-	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
+	je .LouterLoopEndSprite				/* Jump to the end of the function if out of bounds */
 
 	movl -28(%rsp), %r12d				/* Initializing the x coord to the x starting value before loop */
 	movl -36(%rsp), %r13d				/* Initializing the y coord to the y starting value before loop */
@@ -682,8 +682,6 @@ draw_sprite:
 		jmp .LouterLoopSprite			/* Jump to outer loop */
 
 	.LouterLoopEndSprite:
-
-	.LspriteOutOfBounds:
 		addq $48, %rsp					/* Reset stack pointer */
 		popq %rbp						/* Reset base pointer */
 		popq %rbx						/* Restore value of %rbx */
