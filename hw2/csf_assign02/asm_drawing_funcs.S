@@ -367,7 +367,7 @@ draw_circle:
 	/* save variables on stack */	
 	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
-    subq $48, %rsp 								/* allocate 48 bytes of memory for the local variables */
+    subq $16, %rsp 								/* allocate 48 bytes of memory for the local variables */
 	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width into stack */
 	movl %r10d, -4(%rbp) 
 	movl IMAGE_HEIGHT_OFFSET(%rdi), %r10d 		/* put height into stack */
@@ -418,7 +418,7 @@ draw_circle:
 	jmp .LcircleOuterLoop						/* back to the beginning of the outer loop, where we'll check if go into next iteration or not */						
 
 .LcircleOuterLoopEnd:
-	addq $48, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	addq $16, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
 	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	popq %rbx									/* Restore value of %r12 */
 	popq %r15									/* Restore value of %r11 */
