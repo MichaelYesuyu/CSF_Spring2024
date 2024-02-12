@@ -272,22 +272,23 @@ draw_rect:
 	.LouterLoop:
 		cmp -24(%rbp), %r11d					/* Compares the current x coord to the ending x coord */
 		jge .LouterLoopEnd						/* If equal, the end of the loop has been reached */
-		movl -20(%rbp), %r12d					/* Reset the current y coord for each iteration of the outer loop */
 
 	.LinnerLoop:
+		cmp -28(%rbp), %r12d					/* Compares the current y coord to the ending y coord */
+		jge .LinnerLoopEnd						/* Jump to .LinnerLoopEnd if y coord == ending y coord */
+		
 		movq -12(%rbp), %rdi					/* Moves the image pointer into the first argument register */
 		movl %r11d, %esi						/* Moves current x coord to second argument register */
 		movl %r12d, %edx						/* Moves current y coord to third argument register */
 		movl -4(%rbp), %ecx						/* Moves color to fourth argument register */
 		call draw_pixel							/* Draws the pixel */
 
-		cmp -28(%rbp), %r12d					/* Compares the current y coord to the ending y coord */
-		jge .LinnerLoopEnd						/* Jump to .LinnerLoopEnd if y coord == ending y coord */
 		inc %r12d								/* Increment the current y coord by 1 otherwise */
 		jmp .LinnerLoop							/* Loop through inner loop again until end condition is reached */
 
 	.LinnerLoopEnd:
 		inc %r11d								/* Increment the current x coord by 1 */
+		movl -20(%rbp), %r12d					/* Reset the current y coord for each iteration of the outer loop */
 		jmp .LouterLoop							/* Jump back to the outer loop */
 
 	.LouterLoopEnd:
