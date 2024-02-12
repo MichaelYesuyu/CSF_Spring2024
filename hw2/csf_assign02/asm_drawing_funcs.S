@@ -238,18 +238,24 @@ draw_pixel:
  * Register Use:
  *	%rbp - base pointer for stack memory
  *	%rsp - stack pointer for stack memory
- *	%r10 - for temporary calculations
+ *	%r10d - for temporary calculations
+ *	%r11d - Stores the current x coord in the loop
+ *	%r12d - Stores the current y coord in the loop
  */
 	.globl draw_rect
 draw_rect:
+	pushq %r11				/* Preserve value of %r11 */
+	pushq %r12				/* Preserve value of %r12 */
 	pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
-    subq $48, %rsp 			/* allocate 48 bytes of memory for the local variables */
+    subq $32, %rsp 			/* allocate 48 bytes of memory for the local variables */
 
 	movl %edx, -4(%rbp) 						/* Store the color value inside the stack */
 	movq %rdi, -12(%rbp)						/* Store the pointer to the struct Image for the duration of the function */
-	movl RECT_X_OFFSET(%rsi), -16(%rbp) 		/* Store the value of the x starting point on the rectangle in the stack */
-	movl RECT_Y_OFFSET(%rsi), -20(%rbp) 		/* Store the value of the y starting point on the rectangle in the stack */
+	movl RECT_X_OFFSET(%rsi), %r10d		 		/* Store the value of the x starting point in %r10d temporarily */
+	movl %r10d, -16(%rbp)						/* Stores the value of the x starting point in the stack */
+	movl RECT_Y_OFFSET(%rsi), %r10d				/* Store the value of the y starting point in %r10d temporarily */
+	movl %r10d, -20(%rbp)						/* Stores the value of the y starting point in the stack */
 
 	movl RECT_X_OFFSET(%rsi), %r10d 			/* Store the value of the x starting point in %r10 for temp calculation */
 	addl RECT_WIDTH_OFFSET(%rsi), %r10d			/* Calculate the x ending point */
@@ -258,17 +264,38 @@ draw_rect:
 	addl RECT_HEIGHT_OFFSET(%rsi), %r10d		/* Calculate the y ending point */
 	movl %r10d, -28(%rbp)						/* Store the y ending point in the stack */
 
-	.LouterLoop
-		
+	movl -16(%rbp), %r11d						/* Sets %r11d to the x starting point */
+	movl -20(%rbp), %r12d						/* Sets %r12d to the y starting point */
 
-	.LinnerLoop
+	/* Nested for loop to draw the rectangle */
 
-	.LinnerLoopEnd
+	.LouterLoop:
+		cmp -24(%rbp), %r11d					/* Compares the current x coord to the ending x coord */
+		jge .LouterLoopEnd						/* If equal, the end of the loop has been reached */
+		movl -20(%rbp), %r12d					/* Reset the current y coord for each iteration of the outer loop */
 
-	.LouterLoopEnd
+	.LinnerLoop:
+		movq -12(%rbp), %rdi					/* Moves the image pointer into the first argument register */
+		movl %r11d, %esi						/* Moves current x coord to second argument register */
+		movl %r12d, %edx						/* Moves current y coord to third argument register */
+		movl -4(%rbp), %ecx						/* Moves color to fourth argument register */
+		call draw_pixel							/* Draws the pixel */
 
-	addq $48, %rsp 			/* reset stack pointer after function is done, local variables no longer needed */
-    popq %rbp  				/* pop the base pointer from the stack after function is over */	
+		cmp -28(%rbp), %r12d					/* Compares the current y coord to the ending y coord */
+		jge .LinnerLoopEnd						/* Jump to .LinnerLoopEnd if y coord == ending y coord */
+		inc %r12d								/* Increment the current y coord by 1 otherwise */
+		jmp .LinnerLoop							/* Loop through inner loop again until end condition is reached */
+
+	.LinnerLoopEnd:
+		inc %r11d								/* Increment the current x coord by 1 */
+		jmp .LouterLoop							/* Jump back to the outer loop */
+
+	.LouterLoopEnd:
+		addq $32, %rsp 			/* Reset stack pointer after function is done, local variables no longer needed */
+		popq %rbp  				/* Pop the base pointer from the stack after function is over */
+		popq %r12				/* Restore value of %r12 */
+		popq %r11				/* Restore value of %r11 */
+
 	ret
 
 /*
