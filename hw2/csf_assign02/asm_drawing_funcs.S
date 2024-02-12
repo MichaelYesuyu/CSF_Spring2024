@@ -330,29 +330,55 @@ in_circle:
  */
 	.globl draw_circle
 draw_circle:
-
+	/* save registers */
 	pushq %r12 									/* Preserve value of %r12 */
 	pushq %r13 									/* Preserve value of %r13 */
 	pushq %r14 									/* Preserve value of %r14 */
 	pushq %r15									/* Preserve value of %r15 */
 	pushq %rbx 									/* Preserve value of %rbx */
-	
+
+	/* save variables on stack */	
+	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
+    subq $48, %rsp 								/* allocate 48 bytes of memory for the local variables */
+	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width into stack */
+	movl %r10d, -4(%rbp) 
+	movl IMAGE_HEIGHT_OFFSET(%rdi), %r10d 		/* put height into stack */
+	movl %r10d, -8(%rbp) 
+	movl %esi, -12(%rbp) 						/* put the x coordinate of the center into stack */
+	movl %edx, -16(%rbp) 						/* put the y coordinate of the center into stack */
+
+	/* save variables on registers */
 	movl $0, %r12d 								/* let r12d be the x Coordinate, iterate till it equals width */
 	movl $0, %r13d 								/* let r13d be the y Coordinate, iterate till it equals height */
-	movl %esi, %r14d							/* let r14d store the width*/
-	movl %edx, %r15d							/* let r15d store the height*/
+	movl %ecx, %r14d							/* move the radius to r14 */
+	movl %r8d, %r15d							/* move the color value to r15 */
 	movq %rdi, %rbx								/* move the struct pointer to rbx and store it there permanently*/
 .LouterLoop:
-	cmpl %r14d, %r12d
-	jge .LouterLoopEnd
+	cmpl -4(%rbp), %r12d						/* compare x coordinate and width */
+	jge .LouterLoopEnd							/* if x reaches the maximum, end the outer loop */
 
 .LinnerLoop:
-	cmpl %r15d, %r13d
-	jge .LinnerLoopEnd
-	movl %
+	cmpl -8(%rbp), %r13d						/* compare y and height */
+	jge .LinnerLoopEnd							/* if y reaches maximum, end inner loop, which then jumps to next outerloop */
+	
 	/* check if this point is in the circle, if not, jump to skip drawing flag */
-	movl %
+	
+	movl -12(%rbp), %edi						/* put x center into edi */		
+	movl -16(%rbp), %esi						/* put y center into esi */		
+	movl %r14d, %edx							/* put radius to edx */
+	movl %r12d, %ecx							/* put x coordinate of the current point to ecx */
+	movl %r13d, %r8d							/* put y coordinate of the current point to r8d */
+	call in_circle								/* call in circle function to check if to paint or not*/
+	cmpq $0, %rax								/* if return value is smaller than 0, then skip the drawing action */
+	jl .LskipDrawingFlag						/* skip drawing action */
 
+	/* This is the beginning of one drawing action, there should be width*height drawing actions */
+	movq %rbx, %rdi								/* put the struct pointer to rdi */
+	movl %r12d, %esi							/* put the x value to esi */
+	movl %r13d, %edx							/* put the y value to edx */
+	movl %r15d, %ecx							/* put color to ecx */
+	call draw_pixel								/* draw the pixel */
 
 .LskipDrawingFlag:
 
