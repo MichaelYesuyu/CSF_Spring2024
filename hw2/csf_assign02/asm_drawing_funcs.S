@@ -352,7 +352,41 @@ in_circle:
  */
 	.globl draw_circle
 draw_circle:
-	/* TODO: implement */
+
+	pushq %r12 									/* Preserve value of %r12 */
+	pushq %r13 									/* Preserve value of %r13 */
+	pushq %r14 									/* Preserve value of %r14 */
+	pushq %r15									/* Preserve value of %r15 */
+	pushq %rbx 									/* Preserve value of %rbx */
+	
+	movl $0, %r12d 								/* let r12d be the x Coordinate, iterate till it equals width */
+	movl $0, %r13d 								/* let r13d be the y Coordinate, iterate till it equals height */
+	movl %esi, %r14d							/* let r14d store the width*/
+	movl %edx, %r15d							/* let r15d store the height*/
+	movq %rdi, %rbx								/* move the struct pointer to rbx and store it there permanently*/
+.LouterLoop:
+	cmpl %r14d, %r12d
+	jge .LouterLoopEnd
+
+.LinnerLoop:
+	cmpl %r15d, %r13d
+	jge .LinnerLoopEnd
+	movl %
+	/* check if this point is in the circle, if not, jump to skip drawing flag */
+	movl %
+
+
+.LskipDrawingFlag:
+
+	addl $1, %r13d
+	jmp .LinnerLoop
+
+.LinnerLoopEnd:
+	addl $1, %r12d
+	jmp .LouterLoop
+
+.LouterLoopEnd:
+
 	ret
 
 /*
