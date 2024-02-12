@@ -248,7 +248,7 @@ draw_rect:
 	pushq %r12				/* Preserve value of %r12 */
 	pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
-    subq $32, %rsp 			/* allocate 48 bytes of memory for the local variables */
+    subq $32, %rsp 			/* allocate 32 bytes of memory for the local variables */
 
 	movl %edx, -4(%rbp) 						/* Store the color value inside the stack */
 	movq %rdi, -12(%rbp)						/* Store the pointer to the struct Image for the duration of the function */
