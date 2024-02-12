@@ -655,20 +655,20 @@ draw_sprite:
 
 		movq -16(%rsp), %rdi			/* Store the spritemap pointer into the 1st argument register */
 		movl %r12d, %esi				/* Store the x coord into the 2nd argument register */
-		movl %r13d, %esi				/* Store the y coord into the 3rd argument register */
+		movl %r13d, %edx				/* Store the y coord into the 3rd argument register */
 		call compute_index				/* Computes the index on the sprite map */
 		movl %eax, %ebx					/* Stores the index temporarily on the %ebx register */
 
 		movq -16(%rsp), %rdi			/* Store the spritemap pointer into the 1st argument register */
 		movq %rbx, %rsi					/* Moves the index of the pixel to retrieve into 2nd argument register */
 		call get_pixel					/* Returns the color of the pixel */
-		movl %eax, %r11d				/* Stores the pixel color temporarily on %r11d */
+		movl %eax, %ebx					/* Stores the pixel color temporarily in %ebx */
 
 		movq -8(%rsp), %rdi				/* Store the pointer in the 1st argument register */
 		movl %r12d, %esi				/* Store the x coord in the 2nd argument register */
 		movl %r13d, %edx				/* Store the y coord in the 3rd argument register */
-		movl %r11, %ecx					/* Store the color in the 4th argument register */
-		
+		movl %ebx, %ecx				/* Store the color in the 4th argument register */
+
 		inc %r13d						/* Increment inner loop counter by 1 */
 		jmp .LinnerLoopSprite			/* Loop again */
 
