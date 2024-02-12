@@ -236,62 +236,40 @@ draw_pixel:
  *   %edx     - uint32_t color value
  *
  * Register Use:
- *	%r12 - Stores the x value of rect as the loop iterates
- *	%r13 - Stores the y value of rect as the loop iterates
- *	%r14 - Stores the ending x value of rect as the loop iterates
- *	%r15 - Stores the ending y value of rect as the loop iterates
- *	%ebx - Stores the color value for the duration of the function
- *	%rbp - Stores the pointer to the struct Image for the duration of the function
+ *	%rbp - base pointer for stack memory
+ *	%rsp - stack pointer for stack memory
+ *	%r10 - for temporary calculations
  */
 	.globl draw_rect
 draw_rect:
-	pushq %r12 /* Preserve value of %r12 */
-	pushq %r13 /* Preserve value of %r13 */
-	pushq %r14 /* Preserve value of %r14 */
-	pushq %r15 /* Preserve value of %r15 */
-	pushq %rbx /* Preserve value of %rbx */
-	pushq %rbp /* Preserve value of %rbp */
+	pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
+    subq $48, %rsp 			/* allocate 48 bytes of memory for the local variables */
 
-	movl %edx, %ebx 							/* Store the color value inside %ebx */
-	movq %rdi, %rbp 							/* Store the pointer to the struct Image for the duration of the function */
-	movl RECT_X_OFFSET(%rsi), %r12d 			/* Store the value of the x starting point on the rectangle in %r12 */
-	movl RECT_Y_OFFSET(%rsi), %r13d 			/* Store the value of the y starting point on the rectangle in %r13 */
-	
-	movl RECT_X_OFFSET(%rsi), %r14d 			/* Store the value of the x starting point in %r14 */
-	addl RECT_WIDTH_OFFSET(%rsi), %r14d 		/* Add the width to get the ending x coordinate */
-	movl RECT_Y_OFFSET(%rsi), %r15d 			/* Store the value of the y starting point in %r15 */
-	addl RECT_HEIGHT_OFFSET(%rsi), %r15d 		/* Add the height to get the ending y coordinate */
+	movl %edx, -4(%rbp) 						/* Store the color value inside the stack */
+	movq %rdi, -12(%rbp)						/* Store the pointer to the struct Image for the duration of the function */
+	movl RECT_X_OFFSET(%rsi), -16(%rbp) 		/* Store the value of the x starting point on the rectangle in the stack */
+	movl RECT_Y_OFFSET(%rsi), -20(%rbp) 		/* Store the value of the y starting point on the rectangle in the stack */
 
-	/* Nested for loop to loop through the rectangle */
-		jmp .LcheckInXLoop
-	
-	.LloopBody:
-		/* first argument Image pointer is already inside %rdi register */
-		movl %r12d, %esi
-		movl %r13d, %edx
-		movq %rdi, %rbp
-		call draw_pixel
+	movl RECT_X_OFFSET(%rsi), %r10d 			/* Store the value of the x starting point in %r10 for temp calculation */
+	addl RECT_WIDTH_OFFSET(%rsi), %r10d			/* Calculate the x ending point */
+	movl %r10d, -24(%rbp)						/* Store the x ending point in the stack */
+	movl RECT_Y_OFFSET(%rsi), %r10d				/* Store the value of the y starting point in %r10 for temp calculation */
+	addl RECT_HEIGHT_OFFSET(%rsi), %r10d		/* Calculate the y ending point */
+	movl %r10d, -28(%rbp)						/* Store the y ending point in the stack */
 
-	.LcheckInYLoop:
-		cmpq %r15, %r13 						/* check if current y coord is less than y ending coord */
-		inc %r13 								/* Increment y coord by 1 */
-		jl .LloopBody
-
-	.LcheckInXLoop:
+	.LouterLoop
 		
-		cmpq %r14, %r12 						/* check if current x coord is less than x ending coord */
-		inc %r12 								/* Increment x coord by 1 */
-		jl .LcheckInYLoop
 
+	.LinnerLoop
 
-	popq %rbp 									/* Restore value of %rbp */
-	popq %rbx 									/* Restore value of %rbx */
-	popq %r15 									/* Restore value of %r15 */
-	popq %r14 									/* Restore value of %r14 */
-	popq %r13 									/* Restore value of %r12 */
-	popq %r12 									/* Restore value of %r13 */
+	.LinnerLoopEnd
+
+	.LouterLoopEnd
+
+	addq $48, %rsp 			/* reset stack pointer after function is done, local variables no longer needed */
+    popq %rbp  				/* pop the base pointer from the stack after function is over */	
 	ret
-
 
 /*
  * check if a point is within the circle. if not, return -1. Otherwise, return 1
@@ -513,7 +491,7 @@ blend_colors:
 	pushq %r13 				/* Push register onto stack to store value of background color */
     pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
-    subq $48, %rsp 			/* allocate 32 bytes of memory for the local variables */
+    subq $48, %rsp 			/* allocate 48 bytes of memory for the local variables */
 
 	movl %edi, %r12d 		/* Moves value of foreground color into %r12 */
 	movl %esi, %r13d 		/* Moves value of background color into %r13 */
