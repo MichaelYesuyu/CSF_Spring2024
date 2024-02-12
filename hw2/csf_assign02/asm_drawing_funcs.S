@@ -96,16 +96,16 @@ in_bounds:
 
     pushq %r12                              /* save the value in %r12 to memory */
     
-    movl IMAGE_WIDTH_OFFSET(%rdi), %r12d     /* Load width value from struct Image */
+    movl IMAGE_WIDTH_OFFSET(%rdi), %r12d    /* Load width value from struct Image */
     cmpl $0, %esi                           /* compare x with 0 */
     jl .LoutOfBound                         /* jump to out of bound flag is x < 0 */
-    cmpl %r12d, %esi                         /* compare x to width */
+    cmpl %r12d, %esi                        /* compare x to width */
     jge .LoutOfBound                        /* jump to out of bound flag is x >= width */
     
-    movl IMAGE_HEIGHT_OFFSET(%rdi), %r12d    /* Load height value from struct Image */
+    movl IMAGE_HEIGHT_OFFSET(%rdi), %r12d   /* Load height value from struct Image */
     cmpl $0, %edx                           /* compare y with 0 */
     jl .LoutOfBound                         /* jump to out of bound flag is y < 0 */
-    cmpl %r12d, %edx                         /* compare y to height */
+    cmpl %r12d, %edx                        /* compare y to height */
     jge .LoutOfBound                        /* jump to out of bound flag is y >= height */
     
     movq $1, %rax                           /* 1 means the input is in bound */
@@ -189,14 +189,14 @@ set_pixel:
 	.globl draw_pixel
 draw_pixel:
 
-	pushq %r12 
-	pushq %r13
-	pushq %r14
+	pushq %r12 								/* save the value originally in %r12 */
+	pushq %r13								/* save the value originally in %r13 */
+	pushq %r14								/* save the value originally in %r14 */
 
 	/* check if the given point is within the image limit */
-	call in_bounds
-	cmpq $0, %rax
-	jl .Lending
+	call in_bounds							/* call in bound function with pointer, x, and y */
+	cmpq $0, %rax							/* compare result to 0 */
+	jl .Lending								/* jump to the end if the pixel is not in bound */
 
 	/* get the index of the given point */
 	call compute_index
@@ -219,9 +219,9 @@ draw_pixel:
 	call set_pixel
 
 .Lending:
-	popq %r14								/* restore the value originally in %r12 */
+	popq %r14								/* restore the value originally in %r14 */
 	popq %r13								/* restore the value originally in %r13 */
-	popq %r12								/* restore the value originally in %r14 */
+	popq %r12								/* restore the value originally in %r12 */
 	ret
 
 
@@ -332,15 +332,15 @@ in_circle:
 
 
     movq $1, %rax                           /* 1 means the input is in bound */
-    popq %r14                               /* restore the value originally in %r12 */
-    popq %r13                               /* restore the value originally in %r12 */
+    popq %r14                               /* restore the value originally in %r14 */
+    popq %r13                               /* restore the value originally in %r13 */
 	popq %r12                               /* restore the value originally in %r12 */
     ret
 
 .LoutOfCircle:
     movq $-1, %rax                          /* -1 means the input is not in bound */
-    popq %r14                               /* restore the value originally in %r12 */
-    popq %r13                               /* restore the value originally in %r12 */
+    popq %r14                               /* restore the value originally in %r14 */
+    popq %r13                               /* restore the value originally in %r13 */
 	popq %r12                               /* restore the value originally in %r12 */
 	ret
 
@@ -421,11 +421,11 @@ draw_circle:
 .LcircleOuterLoopEnd:
 	addq $16, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
 	popq %rbp  									/* Pop the base pointer from the stack after function is over */
-	popq %rbx									/* Restore value of %r12 */
-	popq %r15									/* Restore value of %r11 */
-	popq %r14									/* Restore value of %r11 */
-	popq %r13									/* Restore value of %r11 */
-	popq %r12									/* Restore value of %r11 */
+	popq %rbx									/* Restore value of %rbx */
+	popq %r15									/* Restore value of %r15 */
+	popq %r14									/* Restore value of %r14 */
+	popq %r13									/* Restore value of %r13 */
+	popq %r12									/* Restore value of %r12 */
 	ret
 
 /*
@@ -497,12 +497,12 @@ draw_tile:
 	movl -56(%rbp), %edx						/* move the y value to edx */
 	call in_bounds								/* check if the left up corner is in the tile or not */
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
-	jl .LtileOuterLoopEnd								/* jump to the end */
+	jl .LtileOuterLoopEnd						/* jump to the end */
 	movl -68(%rbp), %esi						/* move x + width to esi */
 	movl -72(%rbp), %edx 						/* move y + height to edx */
 	call in_bounds								/* check if the right bottom corner is in the tile or not */
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
-	jl .LtileOuterLoopEnd								/* jump to the end */
+	jl .LtileOuterLoopEnd						/* jump to the end */
 
 	/* loop over every element of the rectangle and put it to the image */
 	movl -52(%rbp), %r12d						/* put the starting of x into r12 */
@@ -557,11 +557,11 @@ draw_tile:
 .LtileOuterLoopEnd:
 	addq $80, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
 	popq %rbp  									/* Pop the base pointer from the stack after function is over */
-	popq %rbx									/* Restore value of %r12 */
-	popq %r15									/* Restore value of %r11 */
-	popq %r14									/* Restore value of %r11 */
-	popq %r13									/* Restore value of %r11 */
-	popq %r12									/* Restore value of %r11 */
+	popq %rbx									/* Restore value of %rbx */
+	popq %r15									/* Restore value of %r15 */
+	popq %r14									/* Restore value of %r14 */
+	popq %r13									/* Restore value of %r13 */
+	popq %r12									/* Restore value of %r12 */
 	ret
 
 /*
@@ -622,14 +622,24 @@ draw_sprite:
 	movl -28(%rsp), %esi				/* Move sprite start x coord into 2nd argument register */
 	movl -36(%rsp), %edx				/* Move sprite start y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if our of bounds */
+<<<<<<< HEAD
 	cmpq $-1, %rax						/* Check if rax == -1, indicating out of bounds */
 	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
+=======
+	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
+	je .LouterLoopEndSprite				/* Jump to the end of the function if out of bounds */
+>>>>>>> 95eab7f68f6c35158a5ada0d886043bb811ba3b3
 
 	movl -32(%rsp), %esi				/* Move sprite end x coord into 2nd argument register */
 	movl -40(%rsp), %edx				/* Move sprite end y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if out of bounds */
+<<<<<<< HEAD
 	cmpq $-1, %rax						/* Check if rax == -1, indicating out of bounds */
 	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
+=======
+	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
+	je .LouterLoopEndSprite				/* Jump to the end of the function if out of bounds */
+>>>>>>> 95eab7f68f6c35158a5ada0d886043bb811ba3b3
 
 	movl -28(%rsp), %r12d				/* Initializing the x coord to the x starting value before loop */
 	movl -36(%rsp), %r13d				/* Initializing the y coord to the y starting value before loop */
@@ -671,21 +681,31 @@ draw_sprite:
 		movl %r14d, %esi				/* Store the x coord in the 2nd argument register */
 		movl %r15d, %edx				/* Store the y coord in the 3rd argument register */
 		movl %ebx, %ecx					/* Store the color in the 4th argument register */
+<<<<<<< HEAD
 		call draw_pixel					/* Call draw pixel */
+=======
+
+		addl $1, %r13d						/* Increment inner loop counter by 1 */
+		jmp .LinnerLoopSprite			/* Loop again */
+>>>>>>> 95eab7f68f6c35158a5ada0d886043bb811ba3b3
 
 	.LskipDrawingSprite:
-		inc %r13d						/* Increment inner loop counter by 1 */
+		addl $1, %r13d						/* Increment inner loop counter by 1 */
 		jmp .LinnerLoopSprite			/* Loop again */
 
 	.LinnerLoopEndSprite:
-		inc %r12d						/* Increment outer loop counter by 1 */
+		addl $1, %r12d						/* Increment outer loop counter by 1 */
 		movl -36(%rsp), %r13d			/* reset inner loop counter */
 		jmp .LouterLoopSprite			/* Jump to outer loop */
 
 	.LouterLoopEndSprite:
+<<<<<<< HEAD
 
 	.LspriteOutOfBounds:
 		addq $56, %rsp					/* Reset stack pointer */
+=======
+		addq $48, %rsp					/* Reset stack pointer */
+>>>>>>> 95eab7f68f6c35158a5ada0d886043bb811ba3b3
 		popq %rbp						/* Reset base pointer */
 		popq %rbx						/* Restore value of %rbx */
 		popq %r15						/* Restore value of %r15 */
