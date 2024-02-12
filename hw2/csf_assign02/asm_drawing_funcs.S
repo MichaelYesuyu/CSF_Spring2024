@@ -381,13 +381,13 @@ draw_circle:
 	movl %ecx, %r14d							/* move the radius to r14 */
 	movl %r8d, %r15d							/* move the color value to r15 */
 	movq %rdi, %rbx								/* move the struct pointer to rbx and store it there permanently*/
-.LouterLoop:
-	cmpl -4(%rbp), %r12d						/* compare x coordinate and width */
-	jge .LouterLoopEnd							/* if x reaches the maximum, end the outer loop */
+.LcircleOuterLoop:
+	cmpl -8(%rbp), %r13d						/* compare y with height */
+	jge .LcircleOuterLoopEnd							/* if x reaches the maximum, end the outer loop */
 
-.LinnerLoop:
-	cmpl -8(%rbp), %r13d						/* compare y and height */
-	jge .LinnerLoopEnd							/* if y reaches maximum, end inner loop, which then jumps to next outerloop */
+.LcircleInnerLoop:
+	cmpl -4(%rbp), %r12d						/* compare x with width */
+	jge .LcircleInnerLoopEnd							/* if y reaches maximum, end inner loop, which then jumps to next outerloop */
 	
 	/* check if this point is in the circle, if not, jump to skip drawing flag */
 	
@@ -409,15 +409,21 @@ draw_circle:
 
 .LskipDrawingFlag:
 
-	addl $1, %r13d
-	jmp .LinnerLoop
+	addl $1, %r12d								/* after each iteration of the inner loop, add one to x */ 				
+	jmp .LcircleInnerLoop								/* back to the beginning of the inner loop, where we'll check if go into next iteration or not */						
 
-.LinnerLoopEnd:
-	addl $1, %r12d
-	jmp .LouterLoop
+.LcircleInnerLoopEnd:
+	addl $1, %r13d								/* after each iteration of the outer loop, add one to y */
+	jmp .LcircleOuterLoop								/* back to the beginning of the outer loop, where we'll check if go into next iteration or not */						
 
-.LouterLoopEnd:
-
+.LcircleOuterLoopEnd:
+	addq $48, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	popq %rbp  									/* Pop the base pointer from the stack after function is over */
+	popq %rbx									/* Restore value of %r12 */
+	popq %r15									/* Restore value of %r11 */
+	popq %r14									/* Restore value of %r11 */
+	popq %r13									/* Restore value of %r11 */
+	popq %r12									/* Restore value of %r11 */
 	ret
 
 /*
