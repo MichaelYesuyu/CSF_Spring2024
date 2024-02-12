@@ -383,11 +383,11 @@ draw_circle:
 	movq %rdi, %rbx								/* move the struct pointer to rbx and store it there permanently*/
 .LcircleOuterLoop:
 	cmpl -8(%rbp), %r13d						/* compare y with height */
-	jge .LcircleOuterLoopEnd							/* if x reaches the maximum, end the outer loop */
+	jge .LcircleOuterLoopEnd					/* if x reaches the maximum, end the outer loop */
 
 .LcircleInnerLoop:
 	cmpl -4(%rbp), %r12d						/* compare x with width */
-	jge .LcircleInnerLoopEnd							/* if y reaches maximum, end inner loop, which then jumps to next outerloop */
+	jge .LcircleInnerLoopEnd					/* if y reaches maximum, end inner loop, which then jumps to next outerloop */
 	
 	/* check if this point is in the circle, if not, jump to skip drawing flag */
 	
@@ -410,11 +410,12 @@ draw_circle:
 .LskipDrawingFlag:
 
 	addl $1, %r12d								/* after each iteration of the inner loop, add one to x */ 				
-	jmp .LcircleInnerLoop								/* back to the beginning of the inner loop, where we'll check if go into next iteration or not */						
+	jmp .LcircleInnerLoop						/* back to the beginning of the inner loop, where we'll check if go into next iteration or not */						
 
 .LcircleInnerLoopEnd:
+	movl $0, %r12d								/* reset x to be zero */
 	addl $1, %r13d								/* after each iteration of the outer loop, add one to y */
-	jmp .LcircleOuterLoop								/* back to the beginning of the outer loop, where we'll check if go into next iteration or not */						
+	jmp .LcircleOuterLoop						/* back to the beginning of the outer loop, where we'll check if go into next iteration or not */						
 
 .LcircleOuterLoopEnd:
 	addq $48, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
