@@ -270,11 +270,11 @@ draw_rect:
 	/* Nested for loop to draw the rectangle */
 
 	.LouterLoop:
-		cmp -24(%rbp), %r12d					/* Compares the current x coord to the ending x coord */
+		cmpl -24(%rbp), %r12d					/* Compares the current x coord to the ending x coord */
 		jge .LouterLoopEnd						/* If equal, the end of the loop has been reached */
 
 	.LinnerLoop:
-		cmp -28(%rbp), %r13d					/* Compares the current y coord to the ending y coord */
+		cmpl -28(%rbp), %r13d					/* Compares the current y coord to the ending y coord */
 		jge .LinnerLoopEnd						/* Jump to .LinnerLoopEnd if y coord == ending y coord */
 		
 		movq -12(%rbp), %rdi					/* Moves the image pointer into the first argument register */
@@ -454,7 +454,7 @@ draw_tile:
 	/* save variables on stack */	
 	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
-    subq $80, %rsp 								/* allocate 64 bytes of memory for the local variables */
+    subq $80, %rsp 								/* allocate 80 bytes of memory for the local variables */
 	
 	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
 	movl %r10d, -4(%rbp) 
@@ -597,12 +597,16 @@ draw_sprite:
 	pushq %rbx							/* Preserve value of %rbx */
 	pushq %rbp							/* Push base pointer onto stack before allocating stack memory */
 	movq %rsp, %rbp						/* Move the stack pointer to the location of the base pointer */
-	subq $48, %rsp						/* Allocate stack memory space */
+	subq $56, %rsp						/* Allocate stack memory space */
 
 	movq %rdi, -8(%rsp)					/* Store the image pointer inside the stack */
 	movq %rcx, -16(%rsp)				/* Store the spritemap pointer inside the stack */
 	movl %esi, -20(%rsp)				/* Store x coord to be copied inside the stack */
 	movl %edx, -24(%rsp)				/* Store y coord to be copied inside the stack */
+	movl RECT_WIDTH_OFFSET(%r8), %r10d	/* Store width temporarily */
+	movl %r10d, -44(%rsp) 				/* Store the width inside the stack */
+	movl RECT_HEIGHT_OFFSET(%r8), %r10d /* Store height temporarily */
+	movl %r10d, -48(%rsp) 				/* Store the height inside the stack */
 	movl RECT_X_OFFSET(%r8), %r10d		/* Store the starting x coord of the sprite rect temporarily in %r10d */
 	movl %r10d, -28(%rsp)				/* Store the starting x coord of the sprite rect inside the stack */
 	addl RECT_WIDTH_OFFSET(%r8), %r10d	/* Calculate the x end coord of the sprite rect */
@@ -618,38 +622,38 @@ draw_sprite:
 	movl -28(%rsp), %esi				/* Move sprite start x coord into 2nd argument register */
 	movl -36(%rsp), %edx				/* Move sprite start y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if our of bounds */
-	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
+	cmpq $-1, %rax						/* Check if rax == -1, indicating out of bounds */
 	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
 
 	movl -32(%rsp), %esi				/* Move sprite end x coord into 2nd argument register */
 	movl -40(%rsp), %edx				/* Move sprite end y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if out of bounds */
-	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
+	cmpq $-1, %rax						/* Check if rax == -1, indicating out of bounds */
 	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
 
 	movl -28(%rsp), %r12d				/* Initializing the x coord to the x starting value before loop */
 	movl -36(%rsp), %r13d				/* Initializing the y coord to the y starting value before loop */
 
 	.LouterLoopSprite:
-		cmp -32(%rsp), %r12d			/* Checks outer for loop condition */
+		cmpl -32(%rsp), %r12d			/* Checks outer for loop condition */
 		jge .LouterLoopEndSprite		/* If current x coord >= sprite end x coord, end loop */
 
 	.LinnerLoopSprite:
-		cmp -40(%rsp), %r13d			/* Checks inner for loop condition */
+		cmpl -40(%rsp), %r13d			/* Checks inner for loop condition */
 		jge .LinnerLoopEndSprite		/* If current y coord >= sprite end y coord, end loop */
 
 		movl %r12d, %r14d				/* Moves xCoordSprite into r14d for calculation */
 		addl -20(%rsp), %r14d			/* Calculates x coord to be copied + xCoordSprite */
-		subl -28(%rsp), %r14d			/* Stores x + xCoordSprite - sprite->x in %r14d */
+		subl -44(%rsp), %r14d			/* Stores x + xCoordSprite - sprite->x in %r14d */
 		movl %r13d, %r15d				/* Moves yCoordSprite into r15d for calculation */
 		addl -24(%rsp), %r15d			/* Calculates y coord to be copied + yCoordSprite */
-		subl -36(%rsp), %r15d			/* Stores y + yCoordSprite - sprite->y in %r15d */
+		subl -48(%rsp), %r15d			/* Stores y + yCoordSprite - sprite->y in %r15d */
 
 		movq -8(%rsp), %rdi				/* Moves the image pointer into the 1st argument register */
-		movl %r12d, %esi				/* Moves xCoordImage into 2nd argument register */
-		movl %r13d, %edx				/* Moves yCoordImage into 3rd argument register */
+		movl %r14d, %esi				/* Moves xCoordImage into 2nd argument register */
+		movl %r15d, %edx				/* Moves yCoordImage into 3rd argument register */
 		call in_bounds					/* returns -1 if out of bounds */
-		cmp $-1, %rax					/* Checks to see if in_bounds returned -1 */
+		cmpq $-1, %rax					/* Checks to see if in_bounds returned -1 */
 		je .LskipDrawingSprite			/* Skip drawing this pixel if out of bounds */
 
 		movq -16(%rsp), %rdi			/* Store the spritemap pointer into the 1st argument register */
@@ -659,17 +663,15 @@ draw_sprite:
 		movl %eax, %ebx					/* Stores the index temporarily on the %ebx register */
 
 		movq -16(%rsp), %rdi			/* Store the spritemap pointer into the 1st argument register */
-		movq %rbx, %rsi					/* Moves the index of the pixel to retrieve into 2nd argument register */
+		movl %ebx, %esi					/* Moves the index of the pixel to retrieve into 2nd argument register */
 		call get_pixel					/* Returns the color of the pixel */
 		movl %eax, %ebx					/* Stores the pixel color temporarily in %ebx */
 
 		movq -8(%rsp), %rdi				/* Store the pointer in the 1st argument register */
-		movl %r12d, %esi				/* Store the x coord in the 2nd argument register */
-		movl %r13d, %edx				/* Store the y coord in the 3rd argument register */
+		movl %r14d, %esi				/* Store the x coord in the 2nd argument register */
+		movl %r15d, %edx				/* Store the y coord in the 3rd argument register */
 		movl %ebx, %ecx					/* Store the color in the 4th argument register */
-
-		inc %r13d						/* Increment inner loop counter by 1 */
-		jmp .LinnerLoopSprite			/* Loop again */
+		call draw_pixel					/* Call draw pixel */
 
 	.LskipDrawingSprite:
 		inc %r13d						/* Increment inner loop counter by 1 */
@@ -683,7 +685,7 @@ draw_sprite:
 	.LouterLoopEndSprite:
 
 	.LspriteOutOfBounds:
-		addq $48, %rsp					/* Reset stack pointer */
+		addq $56, %rsp					/* Reset stack pointer */
 		popq %rbp						/* Reset base pointer */
 		popq %rbx						/* Restore value of %rbx */
 		popq %r15						/* Restore value of %r15 */

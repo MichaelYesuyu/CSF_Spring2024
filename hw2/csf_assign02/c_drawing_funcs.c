@@ -146,14 +146,14 @@ void draw_sprite(struct Image *img,
     for(int32_t yCoordSprite = sprite->y; yCoordSprite < (sprite->y + sprite->height); yCoordSprite++){
       int32_t xCoordImage = x + xCoordSprite - sprite->x;
       int32_t yCoordImage = y + yCoordSprite - sprite->y;
-      if(in_bounds(img, xCoordImage, yCoordImage)){
+      //if(in_bounds(img, xCoordImage, yCoordImage)){
         //Find the index of the current coords of the tilemap
         int32_t indexSprite = compute_index(spritemap, xCoordSprite, yCoordSprite);
         //Get the color
         int32_t colorSprite = (spritemap->data)[indexSprite];
         //Call drawpixel to update the image
         draw_pixel(img, xCoordImage, yCoordImage, colorSprite);
-      }
+      //}
     }
   }
 }

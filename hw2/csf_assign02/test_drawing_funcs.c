@@ -440,6 +440,8 @@ void test_in_bound(TestObjs *objs)
   ASSERT(inBoundCheck == -1);
   inBoundCheck = in_bounds(&objs->small, 0, 0);
   ASSERT(inBoundCheck == 1);
+  inBoundCheck = in_bounds(&objs->small, -1, 0);
+  ASSERT(inBoundCheck == -1);
 }
 
 void test_set_pixel(TestObjs *objs)
