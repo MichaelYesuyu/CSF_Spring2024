@@ -621,7 +621,6 @@ draw_sprite:
 	cmp $-1, %rax						/* Check if rax == -1, indicating out of bounds */
 	je .LspriteOutOfBounds				/* Jump to the end of the function if out of bounds */
 
-	movq -16(%rsp), %rdi				/* Move the spritemap pointer into 1st argument register */
 	movl -32(%rsp), %esi				/* Move sprite end x coord into 2nd argument register */
 	movl -40(%rsp), %edx				/* Move sprite end y coord into 3rd argument register */
 	call in_bounds						/* Returns -1 if out of bounds */
@@ -667,7 +666,7 @@ draw_sprite:
 		movq -8(%rsp), %rdi				/* Store the pointer in the 1st argument register */
 		movl %r12d, %esi				/* Store the x coord in the 2nd argument register */
 		movl %r13d, %edx				/* Store the y coord in the 3rd argument register */
-		movl %ebx, %ecx				/* Store the color in the 4th argument register */
+		movl %ebx, %ecx					/* Store the color in the 4th argument register */
 
 		inc %r13d						/* Increment inner loop counter by 1 */
 		jmp .LinnerLoopSprite			/* Loop again */
