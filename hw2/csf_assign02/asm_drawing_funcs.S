@@ -444,7 +444,124 @@ draw_circle:
  */
 	.globl draw_tile
 draw_tile:
-	/* TODO: implement */
+	/* save registers */
+	pushq %r12 									/* Preserve value of %r12 */
+	pushq %r13 									/* Preserve value of %r13 */
+	pushq %r14 									/* Preserve value of %r14 */
+	pushq %r15									/* Preserve value of %r15 */
+	pushq %rbx 									/* Preserve value of %rbx */
+
+	/* save variables on stack */	
+	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
+    subq $80, %rsp 								/* allocate 64 bytes of memory for the local variables */
+	
+	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
+	movl %r10d, -4(%rbp) 
+	movl IMAGE_HEIGHT_OFFSET(%rdi), %r10d 		/* put destination image height into stack */
+	movl %r10d, -8(%rbp) 
+	
+	movl %esi, -12(%rbp) 						/* put the x coordinate of the copy location into stack */
+	movl %edx, -16(%rbp) 						/* put the y coordinate of the copy location into stack */
+	
+	movq %rdi, -24(%rbp) 						/* put the pointer to the target image struct into stack */
+	movq %rcx, -32(%rbp)						/* put the pointer to the tilemap struct into stack */
+	movq %r8, -40(%rbp)							/* put the pointer to the rectangle struct into stack */
+	
+	movl IMAGE_WIDTH_OFFSET(%rcx), %r10d		/* put the width of tilemap into stack */
+	movl %r10d, -44(%rbp)
+	movl IMAGE_HEIGHT_OFFSET(%rcx), %r10d		/* put the height of tilemap into stack */
+	movl %r10d, -48(%rbp)
+	
+	movl RECT_X_OFFSET(%r8), %r10d				/* put the rectangle.x into stack */
+	movl %r10d, -52(%rbp)
+	movl RECT_Y_OFFSET(%r8), %r10d				/* put the rectangle.y into stack */
+	movl %r10d, -56(%rbp)
+	movl RECT_WIDTH_OFFSET(%r8), %r10d			/* put the rectangle width into stack */
+	movl %r10d, -60(%rbp)
+	movl RECT_HEIGHT_OFFSET(%r8), %r10d			/* put the rectangle height into stack */
+	movl %r10d, -64(%rbp)
+	
+	/* put ending x and y of tile into stack */
+	movl -52(%rbp), %r10d						/* put x into r10d */
+	addl -60(%rbp), %r10d						/* put x + width into r10d */
+	movl %r10d, -68(%rbp)						/* put x + width into stack */
+	movl -56(%rbp), %r10d						/* put y into r10d */
+	addl -64(%rbp), %r10d						/* put y + height into r10d */
+	movl %r10d, -72(%rbp)						/* put y + height into stack */
+
+
+	/*check if the rectangle is within the bound of tilemap */
+	movq  -32(%rbp), %rdi						/* put the pointer to tilemap to rdi */
+	movl -52(%rbp), %esi						/* move the x value to esi */
+	movl -56(%rbp), %edx						/* move the y value to edx */
+	call in_bounds								/* check if the left up corner is in the tile or not */
+	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
+	jl .LtileOuterLoopEnd								/* jump to the end */
+	movl -68(%rbp), %esi						/* move x + width to esi */
+	movl -72(%rbp), %edx 						/* move y + height to edx */
+	call in_bounds								/* check if the right bottom corner is in the tile or not */
+	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
+	jl .LtileOuterLoopEnd								/* jump to the end */
+
+	/* loop over every element of the rectangle and put it to the image */
+	movl -52(%rbp), %r12d						/* put the starting of x into r12 */
+	movl -56(%rbp), %r13d						/* put the starting of y into r13 */
+
+.LtileOuterLoop:
+	cmpl -72(%rbp), %r13d						/* compare y to y0 + height */
+	jge .LtileOuterLoopEnd						/* if y is no less that y0 + height, end outer loop */
+
+.LtileInnerLoop:
+	cmpl -68(%rbp), %r12d						/* compare x to x0 + width */
+	jge .LtileInnerLoopEnd						/* if x is no less that x0 + width, end inner loop */
+
+	/* check if this point should be painted or not */
+	movl -12(%rbp), %r14d						/* put the x of image to r14 */
+	addl %r12d, %r14d							/* put x + xcoordtile to r14 */
+	subl -52(%rbp), %r14d						/* put x + xcoordtile - initial x on tile to r14, this is now x of image */
+	movl -16(%rbp), %r15d						/* put the y of image to r15 */
+	addl %r13d, %r15d							/* put y + ycoordtile to r15 */
+	subl -56(%rbp), %r15d						/* put y + ycoordtile - initial y on tile to r15, this is now y of image */
+	movq -24(%rbp), %rdi						/* put pointer to image to rdi */		
+	movl %r14d, %esi							/* put x of image to esi */
+	movl %r15d, %edx							/* put y of image to edx */
+	call in_bounds								/* check if the point is in bound */
+	cmpq $0, %rax								/* compare result flag to 0 */
+	jl .LtileSkipFlag							/* if -1, then no need to draw this tile */
+
+	/* paint the destination pixel */
+	call compute_index							/* compute the index of the pixel we want to draw */
+	movl %eax, %r14d							/* put the index of the image at r14 */
+	movq -32(%rbp), %rdi						/* put the pointer to the tilemap to rdi */
+	movl %r12d, %esi							/* put the x of the tile map to esi */
+	movl %r13d, %edx							/* put the y of the tile map to edx */
+	call compute_index							/* compute the index of the tilemap */
+	movl %eax, %esi								/* move the index of the tilemap to esi */
+	call get_pixel								/* get the pixel of the tilemap */
+	movq -24(%rbp), %rdi						/* move the pointer to the image to rdi */
+	movl %r14d, %esi							/* move the index of the target tile to esi */
+	movl %eax, %edx								/* move the color to edx */
+	call set_pixel								/* set the target tile to the target color */
+
+.LtileSkipFlag:
+	addl $1, %r12d								/* add one to x */
+	jmp .LtileInnerLoop							/* jump to the starting of the inner loop, where we'll check if we want to iterate once more or not */
+
+.LtileInnerLoopEnd:
+	movl -52(%rbp), %r12d						/* reset x */
+	addl $1, %r13d								/* add one to y */							
+	jmp .LtileOuterLoop							/* back to the starting of the outer loop, where we'll check if we want to iterate once more or not */
+
+
+.LtileOuterLoopEnd:
+	addq $80, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	popq %rbp  									/* Pop the base pointer from the stack after function is over */
+	popq %rbx									/* Restore value of %r12 */
+	popq %r15									/* Restore value of %r11 */
+	popq %r14									/* Restore value of %r11 */
+	popq %r13									/* Restore value of %r11 */
+	popq %r12									/* Restore value of %r11 */
 	ret
 
 /*
