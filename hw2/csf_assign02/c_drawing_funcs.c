@@ -31,6 +31,10 @@ void draw_pixel(struct Image *img, int32_t x, int32_t y, uint32_t color) {
   }
 }
 
+int32_t get_pixel(struct Image *img, int64_t index) {
+  return (img->data)[index];
+}
+
 //
 // Draw a rectangle.
 // The rectangle has rect->x,rect->y as its upper left corner,
@@ -282,13 +286,13 @@ void set_pixel(struct Image *img, uint32_t index, uint32_t color){
 }
 
 //return the square of an int64_t
-int32_t square(int32_t x){
+int64_t square(int64_t x){
     return (x*x);
 }
 
 //return the square distance of two points
-int32_t square_dist(int32_t x1, int32_t y1, int32_t x2, int32_t y2){
-    int32_t x_dist = x1 - x2;
-    int32_t y_dist = y1 - y2;
+int64_t square_dist(int64_t x1, int64_t y1, int64_t x2, int64_t y2){
+    int64_t x_dist = x1 - x2;
+    int64_t y_dist = y1 - y2;
     return (square(x_dist) + square(y_dist));
 }
