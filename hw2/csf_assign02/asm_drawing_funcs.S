@@ -499,7 +499,9 @@ draw_tile:
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
 	jl .LtileOuterLoopEnd						/* jump to the end */
 	movl -68(%rbp), %esi						/* move x + width to esi */
+	subl $1, %esi								/* subtract 1 to check x + width - 1 as upper bound */
 	movl -72(%rbp), %edx 						/* move y + height to edx */
+	subl $1, %edx								/* subtract 1 to check y + height - 1 as upper bound */
 	call in_bounds								/* check if the right bottom corner is in the tile or not */
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
 	jl .LtileOuterLoopEnd						/* jump to the end */
@@ -579,14 +581,6 @@ draw_tile:
  *   %rcx - pointer to Image (the spritemap)
  *   %r8  - pointer to Rect (the sprite)
  *
- * Register use:
- *	%r10 - temporary storage
- *	%r11 - Used for storing indexSprite for temporary calculations
- *	%r12d - Used to track current x coord in loop
- *	%r13d - Used to track current y coord in loop
- *	%r14d - Used to store corresponding x coord in image for calculations
- *	%r15d - Used to store corresponding y coord in image for calculations
- *	%rbx - Used to store the color of the sprite to be copied
  */
 
 	.globl draw_sprite
@@ -603,7 +597,7 @@ draw_sprite:
     movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
     subq $80, %rsp 								/* allocate 80 bytes of memory for the local variables */
 
-		movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
+	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
 	movl %r10d, -4(%rbp) 
 	movl IMAGE_HEIGHT_OFFSET(%rdi), %r10d 		/* put destination image height into stack */
 	movl %r10d, -8(%rbp) 
@@ -612,12 +606,12 @@ draw_sprite:
 	movl %edx, -16(%rbp) 						/* put the y coordinate of the copy location into stack */
 	
 	movq %rdi, -24(%rbp) 						/* put the pointer to the target image struct into stack */
-	movq %rcx, -32(%rbp)						/* put the pointer to the tilemap struct into stack */
+	movq %rcx, -32(%rbp)						/* put the pointer to the spritemap struct into stack */
 	movq %r8, -40(%rbp)							/* put the pointer to the rectangle struct into stack */
 	
-	movl IMAGE_WIDTH_OFFSET(%rcx), %r10d		/* put the width of tilemap into stack */
+	movl IMAGE_WIDTH_OFFSET(%rcx), %r10d		/* put the width of spritemap into stack */
 	movl %r10d, -44(%rbp)
-	movl IMAGE_HEIGHT_OFFSET(%rcx), %r10d		/* put the height of tilemap into stack */
+	movl IMAGE_HEIGHT_OFFSET(%rcx), %r10d		/* put the height of spritemap into stack */
 	movl %r10d, -48(%rbp)
 	
 	movl RECT_X_OFFSET(%r8), %r10d				/* put the rectangle.x into stack */
@@ -646,7 +640,9 @@ draw_sprite:
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
 	jl .LspriteOuterLoopEnd						/* jump to the end */
 	movl -68(%rbp), %esi						/* move x + width to esi */
+	subl $1, %esi								/* subtract 1 as we want to check x + width - 1 as upper bound */
 	movl -72(%rbp), %edx 						/* move y + height to edx */
+	subl $1, %edx								/* subtract 1 as we want to check y + height - 1 as upper bound */
 	call in_bounds								/* check if the right bottom corner is in the tile or not */
 	cmpq $0, %rax								/* if result is -1, then no need to draw anything */
 	jl .LspriteOuterLoopEnd						/* jump to the end */
@@ -657,49 +653,49 @@ draw_sprite:
 
 .LspriteOuterLoop:
 	cmpl -72(%rbp), %r13d						/* compare y to y0 + height */
-	jge .LspriteOuterLoopEnd						/* if y is no less that y0 + height, end outer loop */
+	jge .LspriteOuterLoopEnd					/* if y is no less that y0 + height, end outer loop */
 
 .LspriteInnerLoop:
 	cmpl -68(%rbp), %r12d						/* compare x to x0 + width */
-	jge .LspriteInnerLoopEnd						/* if x is no less that x0 + width, end inner loop */
+	jge .LspriteInnerLoopEnd					/* if x is no less that x0 + width, end inner loop */
 
 	/* check if this point should be painted or not */
 	movl -12(%rbp), %r14d						/* put the x of image to r14 */
-	addl %r12d, %r14d							/* put x + xcoordtile to r14 */
-	subl -52(%rbp), %r14d						/* put x + xcoordtile - initial x on tile to r14, this is now x of image */
+	addl %r12d, %r14d							/* put x + xcoordsprite to r14 */
+	subl -52(%rbp), %r14d						/* put x + xcoordsprite - initial x on tile to r14, this is now x of image */
 	movl -16(%rbp), %r15d						/* put the y of image to r15 */
-	addl %r13d, %r15d							/* put y + ycoordtile to r15 */
-	subl -56(%rbp), %r15d						/* put y + ycoordtile - initial y on tile to r15, this is now y of image */
+	addl %r13d, %r15d							/* put y + ycoordsprite to r15 */
+	subl -56(%rbp), %r15d						/* put y + ycoordsprite - initial y on tile to r15, this is now y of image */
 	movq -24(%rbp), %rdi						/* put pointer to image to rdi */		
 	movl %r14d, %esi							/* put x of image to esi */
 	movl %r15d, %edx							/* put y of image to edx */
 	call in_bounds								/* check if the point is in bound */
 	cmpq $0, %rax								/* compare result flag to 0 */
-	jl .LspriteSkipFlag							/* if -1, then no need to draw this tile */
+	jl .LspriteSkipFlag							/* if -1, then no need to draw this pixel */
 
 	/* paint the destination pixel */
-	movq -32(%rbp), %rdi						/* put the pointer to the tilemap to rdi */
-	movl %r12d, %esi							/* put the x of the tile map to esi */
-	movl %r13d, %edx							/* put the y of the tile map to edx */
-	call compute_index							/* compute the index of the tilemap */
-	movl %eax, %esi								/* move the index of the tilemap to esi */
-	call get_pixel								/* get the pixel of the tilemap */
+	movq -32(%rbp), %rdi						/* put the pointer to the spritemap to rdi */
+	movl %r12d, %esi							/* put the x of the sprite map to esi */
+	movl %r13d, %edx							/* put the y of the sprite map to edx */
+	call compute_index							/* compute the index of the spritemap */
+	movl %eax, %esi								/* move the index of the spritemap to esi */
+	call get_pixel								/* get the pixel of the spritemap */
 	movq -24(%rbp), %rdi						/* move the pointer to the image to rdi */
 
 	movl %r14d, %esi
-	movl %r15d, %edx							/* move the y coord of the target tile to esi */
+	movl %r15d, %edx							/* move the y coord of the target sprite to esi */
 	movl %eax, %ecx								/* move the color to edx */
 
-	call draw_pixel								/* set the target tile to the target color */
+	call draw_pixel								/* set the target sprite to the target color */
 
 .LspriteSkipFlag:
 	addl $1, %r12d								/* add one to x */
-	jmp .LspriteInnerLoop							/* jump to the starting of the inner loop, where we'll check if we want to iterate once more or not */
+	jmp .LspriteInnerLoop						/* jump to the starting of the inner loop, where we'll check if we want to iterate once more or not */
 
 .LspriteInnerLoopEnd:
 	movl -52(%rbp), %r12d						/* reset x */
 	addl $1, %r13d								/* add one to y */							
-	jmp .LspriteOuterLoop							/* back to the starting of the outer loop, where we'll check if we want to iterate once more or not */
+	jmp .LspriteOuterLoop						/* back to the starting of the outer loop, where we'll check if we want to iterate once more or not */
 
 
 .LspriteOuterLoopEnd:
