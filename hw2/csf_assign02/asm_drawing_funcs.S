@@ -244,11 +244,12 @@ draw_pixel:
  */
 	.globl draw_rect
 draw_rect:
-	pushq %r12				/* Preserve value of %r12 */
-	pushq %r13				/* Preserve value of %r13 */
+	
 	pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
     subq $32, %rsp 			/* allocate 32 bytes of memory for the local variables */
+	pushq %r12				/* Preserve value of %r12 */
+	pushq %r13				/* Preserve value of %r13 */
 
 	movl %edx, -4(%rbp) 						/* Store the color value inside the stack */
 	movq %rdi, -12(%rbp)						/* Store the pointer to the struct Image for the duration of the function */
@@ -292,10 +293,10 @@ draw_rect:
 		jmp .LouterLoop							/* Jump back to the outer loop */
 
 	.LouterLoopEnd:
-		addq $32, %rsp 			/* Reset stack pointer after function is done, local variables no longer needed */
-		popq %rbp  				/* Pop the base pointer from the stack after function is over */
 		popq %r13				/* Restore value of %r13 */
 		popq %r12				/* Restore value of %r12 */
+		addq $32, %rsp 			/* Reset stack pointer after function is done, local variables no longer needed */
+		popq %rbp  				/* Pop the base pointer from the stack after function is over */
 
 	ret
 
@@ -358,6 +359,11 @@ in_circle:
  */
 	.globl draw_circle
 draw_circle:
+
+	/* save variables on stack */	
+	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
+    subq $24, %rsp 								/* allocate 48 bytes of memory for the local variables. 24 = 16 + 8, so also aligns stack */
 	/* save registers */
 	pushq %r12 									/* Preserve value of %r12 */
 	pushq %r13 									/* Preserve value of %r13 */
@@ -365,10 +371,6 @@ draw_circle:
 	pushq %r15									/* Preserve value of %r15 */
 	pushq %rbx 									/* Preserve value of %rbx */
 
-	/* save variables on stack */	
-	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
-    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
-    subq $24, %rsp 								/* allocate 48 bytes of memory for the local variables. 24 = 16 + 8, so also aligns stack */
 	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width into stack */
 	movl %r10d, -4(%rbp) 
 	movl IMAGE_HEIGHT_OFFSET(%rdi), %r10d 		/* put height into stack */
@@ -419,13 +421,13 @@ draw_circle:
 	jmp .LcircleOuterLoop						/* back to the beginning of the outer loop, where we'll check if go into next iteration or not */						
 
 .LcircleOuterLoopEnd:
-	addq $24, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
-	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	popq %rbx									/* Restore value of %rbx */
 	popq %r15									/* Restore value of %r15 */
 	popq %r14									/* Restore value of %r14 */
 	popq %r13									/* Restore value of %r13 */
 	popq %r12									/* Restore value of %r12 */
+	addq $24, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	ret
 
 /*
@@ -444,17 +446,17 @@ draw_circle:
  */
 	.globl draw_tile
 draw_tile:
+
+	/* save variables on stack */	
+	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
+    subq $88, %rsp 								/* allocate 88 bytes of memory for the local variables. 88 is 16*5 + 8 so aligns stack */
 	/* save registers */
 	pushq %r12 									/* Preserve value of %r12 */
 	pushq %r13 									/* Preserve value of %r13 */
 	pushq %r14 									/* Preserve value of %r14 */
 	pushq %r15									/* Preserve value of %r15 */
 	pushq %rbx 									/* Preserve value of %rbx */
-
-	/* save variables on stack */	
-	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
-    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
-    subq $88, %rsp 								/* allocate 88 bytes of memory for the local variables. 88 is 16*5 + 8 so aligns stack */
 	
 	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
 	movl %r10d, -4(%rbp) 
@@ -557,13 +559,13 @@ draw_tile:
 
 
 .LtileOuterLoopEnd:
-	addq $88, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
-	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	popq %rbx									/* Restore value of %rbx */
 	popq %r15									/* Restore value of %r15 */
 	popq %r14									/* Restore value of %r14 */
 	popq %r13									/* Restore value of %r13 */
 	popq %r12									/* Restore value of %r12 */
+	addq $88, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	ret
 
 /*
@@ -585,17 +587,18 @@ draw_tile:
 
 	.globl draw_sprite
 draw_sprite:
+
+	/* save variables on stack */	
+	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
+    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
+    subq $88, %rsp 								/* allocate 88 bytes of memory for the local variables. 88 is 16*5 + 8 so aligns stack */
+
 	/* save registers */
 	pushq %r12 									/* Preserve value of %r12 */
 	pushq %r13 									/* Preserve value of %r13 */
 	pushq %r14 									/* Preserve value of %r14 */
 	pushq %r15									/* Preserve value of %r15 */
 	pushq %rbx 									/* Preserve value of %rbx */
-
-	/* save variables on stack */	
-	pushq %rbp 									/* push base pointer onto stack before allocating stack memory */
-    movq %rsp, %rbp 							/* move stack pointer to the address pointed by the base pointer */
-    subq $88, %rsp 								/* allocate 88 bytes of memory for the local variables. 88 is 16*5 + 8 so aligns stack */
 
 	movl IMAGE_WIDTH_OFFSET(%rdi), %r10d		/* put width of destination image into stack */
 	movl %r10d, -4(%rbp) 
@@ -699,13 +702,13 @@ draw_sprite:
 
 
 .LspriteOuterLoopEnd:
-	addq $88, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
-	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	popq %rbx									/* Restore value of %rbx */
 	popq %r15									/* Restore value of %r15 */
 	popq %r14									/* Restore value of %r14 */
 	popq %r13									/* Restore value of %r13 */
 	popq %r12									/* Restore value of %r12 */
+	addq $88, %rsp 								/* Reset stack pointer after function is done, local variables no longer needed */
+	popq %rbp  									/* Pop the base pointer from the stack after function is over */
 	ret
 
 /*
@@ -823,12 +826,13 @@ blend_components:
 */
 	.globl blend_colors
 blend_colors:
-	pushq %r12 				/* Push register onto stack to store value of foreground color */
-	pushq %r13 				/* Push register onto stack to store value of background color */
-    pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
+	
+	pushq %rbp 				/* push base pointer onto stack before allocating stack memory */
     movq %rsp, %rbp 		/* move stack pointer to the address pointed by the base pointer */
     subq $48, %rsp 			/* allocate 48 bytes of memory for the local variables */
-
+	pushq %r12 				/* Push register onto stack to store value of foreground color */
+	pushq %r13 				/* Push register onto stack to store value of background color */
+    
 	movl %edi, %r12d 		/* Moves value of foreground color into %r12 */
 	movl %esi, %r13d 		/* Moves value of background color into %r13 */
 
@@ -889,13 +893,12 @@ blend_colors:
     shll $8, %eax 			/* Left shift %eax by 8 bits */
     orl $255, %eax 			/* Sets the lowest 8 bits of color to alpha (default 255) */
 
-    addq $48, %rsp 			/* reset stack pointer after function is done, local variables no longer needed */
-    popq %rbp  				/* pop the base pointer from the stack after function is over */
 	popq %r13 				/* restore value of %r13 */
 	popq %r12 				/* restore value of %r12 */
+    addq $48, %rsp 			/* reset stack pointer after function is done, local variables no longer needed */
+    popq %rbp  				/* pop the base pointer from the stack after function is over */
 
 	ret 					/* Returns the new color (in %eax) */
-
 
 
 /*
