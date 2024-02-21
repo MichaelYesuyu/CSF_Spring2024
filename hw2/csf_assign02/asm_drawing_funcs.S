@@ -1,5 +1,10 @@
 /*
- * Assembly-language implementations of the drawing functions
+ * ASM drawing functions 
+ * CSF Assignment 2
+ * Ruoxi Liu
+ * rliu79@jh.edu
+ * Michael Ye
+ * sye10@jh.edu
  */
 
 

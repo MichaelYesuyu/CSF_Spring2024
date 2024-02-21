@@ -32,4 +32,5 @@ Ruoxi:
 - Draw pixel
 - Draw circle
 - Draw rectangle
+- Draw tile
 - More debugging
