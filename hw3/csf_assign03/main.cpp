@@ -53,5 +53,6 @@ int main(int argc, char** argv) {
     cout << replace_strategy << endl;
     cout << "cache size: " << cache.sets.size() << "sets" << endl;
     cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
+    cout << get_tag(0x1fffff50, 256, 256) << endl;
     return 0;
 }
