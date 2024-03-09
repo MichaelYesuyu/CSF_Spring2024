@@ -80,24 +80,17 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t numBlocks){
-    for(int i = 0; i < numBlocks; i++){
-        cache.sets[indexSet].slots[i].access_ts++;
-    }
-    cache.sets[indexSet].slots[indexSlot].access_ts = 0;
+void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep){
+    cache.sets[indexSet].slots[indexSlot].access_ts = simulation_timestep;
 }
 
 void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
-    //Increment all the access_ts to ensure all the access_ts are at least 1
-    for(int i = 0; i < numBlocks; i++){
-        cache.sets[indexSet].slots[i].access_ts++;
-    }
-    int max = 0;
+    uint32_t min = UINT32_MAX;
     int index_LRU = 0;
     //Look for the least recently used slot and replace it with the new slot
     for(int i = 0; i < numBlocks; i++){
-        if(cache.sets[indexSet].slots[i].access_ts > max){
-            max = cache.sets[indexSet].slots[i].access_ts;
+        if(cache.sets[indexSet].slots[i].access_ts < min){
+            min = cache.sets[indexSet].slots[i].access_ts;
             index_LRU = i;
         }
     }
