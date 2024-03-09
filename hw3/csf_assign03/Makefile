@@ -3,14 +3,14 @@
 CC = g++
 CXXFLAGS = -g -Wall -Wextra -pedantic -std=c++17
 
-csim: main.o functions.o
-	$(CC) $(CXXFLAGS) -o csim main.o functions.o
+csim: main.o cacheSimulator.o
+	$(CC) $(CXXFLAGS) -o csim main.o cacheSimulator.o
 
-main.o: main.cpp functions.h
+main.o: main.cpp cacheSimulator.h
 	$(CC) $(CXXFLAGS) -c main.cpp
 
-functions.o: functions.cpp functions.h
-	$(CC) $(CXXFLAGS) -c functions.cpp
+cacheSimulator.o: cacheSimulator.cpp cacheSimulator.h
+	$(CC) $(CXXFLAGS) -c cacheSimulator.cpp
 
 clean:
 	rm -f *.o csim

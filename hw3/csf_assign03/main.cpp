@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "functions.h"
+#include "cacheSimulator.h"
 
 using std::ifstream;
 using std::stoi;
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     string replace_strategy = argv[6];
     string fileName = argv[8];
 
-    
+
 
 
 
