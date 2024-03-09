@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <pair>
 #include "functions.h"
 
 using std::ifstream;
@@ -61,12 +62,21 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+Slot find(Cache& cache, uint32_t index, uint32_t tag){
 
-void handle_cache_hit(Cache cache, uint32_t indexSet, uint32_t indexSlot){
-    for(Set curSet : cache.sets){
-        for(Slot curSlot : curSet.slots){
-            curSlot.access_ts++;
-        }
+}
+
+void handle_cache_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t numBlocks){
+    for(int i = 0; i < numBlocks; i++){
+        cache.sets[indexSet].slots[i].access_ts++;
     }
     cache.sets[indexSet].slots[indexSlot].access_ts = 0;
+}
+
+void handle_cache_miss_LRU(){
+    
+}
+
+void handle_cache_miss_FIFO(){
+
 }
