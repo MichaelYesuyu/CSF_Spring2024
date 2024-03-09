@@ -39,7 +39,8 @@ struct Cache {
 
 Cache create_cache(int numSets, int numBlocks);
 
-uint32_t get_tag(uint32_t address, int numSets, int bytesOfMemory);
+uint32_t get_tag(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
+uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
 
 
 
