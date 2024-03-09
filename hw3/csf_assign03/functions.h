@@ -37,6 +37,7 @@ struct Cache {
     std::vector<Set> sets;
 };
 
+Cache create_cache(int numSets, int numBlocks, int bytesOfMemory);
 
 
 
