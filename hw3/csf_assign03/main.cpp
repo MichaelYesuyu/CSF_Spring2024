@@ -62,6 +62,10 @@ int main(int argc, char** argv) {
 
 
 void handle_cache_hit(Cache cache, uint32_t indexSet, uint32_t indexSlot){
+    for(Set curSet : cache.sets){
+        for(Slot curSlot : curSet.slots){
+            curSlot.access_ts++;
+        }
+    }
     cache.sets[indexSet].slots[indexSlot].access_ts = 0;
-    
 }
