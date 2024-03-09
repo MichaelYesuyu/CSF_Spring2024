@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "cacheSimulator.h"
+#include "functions.h"
 
 using std::ifstream;
 using std::stoi;
