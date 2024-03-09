@@ -20,6 +20,10 @@ int main(int argc, char** argv) {
     string replace_strategy = argv[6];
     string fileName = argv[8];
 
+    
+
+
+
     //Testing
     cout << "numSets: " << numSets << endl << "numBlocks: " << numBlocks  << endl << "bytesOfMemory " << bytesOfMemory << endl;
     cout << type_write_miss << endl;
