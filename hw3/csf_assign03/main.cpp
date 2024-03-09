@@ -36,11 +36,14 @@ int main(int argc, char** argv) {
 
     //Read the trace file and update cache
     string line;
+    uint32_t simulation_timestep = 0;
     while(getline(cin, line)){
         stringstream ss(line);
         string command;
         string address;
         ss >> command >> address;
+        //Increment simulation timestep
+        simulation_timestep++;
         cout << command << " " << address << endl;
         //Call some function to handle
         //updateCache(command, address, type_write_miss, type_write_hit, replace_strategy);
@@ -54,4 +57,10 @@ int main(int argc, char** argv) {
     cout << "cache size: " << cache.sets.size() << "sets" << endl;
     cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
     return 0;
+}
+
+
+void handle_cache_hit(Cache cache, uint32_t indexSet, uint32_t indexSlot){
+    cache.sets[indexSet].slots[indexSlot].access_ts = 0;
+    
 }
