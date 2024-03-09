@@ -34,7 +34,7 @@ void load(uint32_t address, Cache cache){
 
 }
 
-std::tuple<int32_t, int32_t> find(Cache& cache, uint32_t index, uint32_t in_tag){
+std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
     for(int32_t i = 0; i < (int32_t)cache.sets.size(); i++){
         if(i == (int32_t)index){
             std::vector<Slot> lines = ((cache.sets)[i]).slots;
@@ -47,6 +47,8 @@ std::tuple<int32_t, int32_t> find(Cache& cache, uint32_t index, uint32_t in_tag)
         return std::make_tuple(-1, -1);
     }
 }
+
+void store(Cache& cache, uint32_t address)
 
 void write_allocate()
 
