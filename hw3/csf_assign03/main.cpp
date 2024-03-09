@@ -31,6 +31,9 @@ int main(int argc, char** argv) {
     string type_write_hit = argv[5];
     string replace_strategy = argv[6];
 
+    //create a cache according to the inputs
+   
+
     //Read the trace file and update cache
     string line;
     while(getline(cin, line)){
