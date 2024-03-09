@@ -28,3 +28,17 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
     uint32_t index = tag_index & (numSets - 1);
     return index;
 }
+
+void load(uint32_t address, Cache cache){
+
+}
+
+
+
+void write_allocate()
+
+void no_write_allocate()
+
+void write_through()
+
+void write_back()
