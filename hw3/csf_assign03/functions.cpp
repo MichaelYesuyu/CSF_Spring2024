@@ -184,9 +184,7 @@ void store(uint32_t address, Cache& cache){
     } else { //cache hit
         cache.totalStoreHits++;
         if(cache.type_write_hit == "write-through"){ //write through
-            load(address, cache);
-            cache.totalLoadHits--;
-            cache.totalLoads--;
+            cache.totalCycles++;
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
             cache.totalCycles += cycleNum;
             return;
