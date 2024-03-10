@@ -1,5 +1,7 @@
 #include "functions.h"
 #include <iostream>
+#include <iostream>
+#include <fstream>
 #include <tuple>
 #include <string>
 #include <cassert>
@@ -191,11 +193,10 @@ void store(uint32_t address, Cache& cache){
             cache.totalCycles += cycleNum;
             return;
         } else { //write_back
-            load(address, cache);
-            cache.totalLoadHits--;
-            cache.totalLoads--;
+            cache.totalCycles++;
             index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
+            cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].access_ts = cache.totalCycles;
             cache.totalCycles++;
             return;
            }
