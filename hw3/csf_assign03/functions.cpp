@@ -50,7 +50,7 @@ std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
     }
 }
 
-void load(uint32_t address, Cache cache, uint32_t simulation_timestep){
+void load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
@@ -112,7 +112,7 @@ void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
     cache.sets[indexSet].slots[index_FIFO] = newSlot;
 }
 
-void store(Cache& cache, uint32_t address, uint32_t simulation_timestep ){
+void store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     
 }
 

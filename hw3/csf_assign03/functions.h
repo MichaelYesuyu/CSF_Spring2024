@@ -54,7 +54,7 @@ void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32
 void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot);
 void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot);
 
-
+void store(uint32_t address, Cache& cache, uint32_t simulation_timestep);
 
 
 
