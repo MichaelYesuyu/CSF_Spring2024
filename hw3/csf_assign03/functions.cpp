@@ -116,7 +116,22 @@ void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
 }
 
 void store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
-    
+    uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
+    uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
+    std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
+    if (std::get<0>(index_slot_pair) != -1){ //cache miss
+        if(cache.type_write_miss == "write-allocate"){
+            write_allocate();
+        } else {
+            no_write_allocate();
+        }
+    } else { //cache hit
+        if(cache.type_write_hit == "write-through"){
+            write_through();
+        } else {
+            write_back();
+        }
+    }
 }
 
 void write_allocate(){}
