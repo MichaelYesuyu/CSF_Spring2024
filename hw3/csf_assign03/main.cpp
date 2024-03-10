@@ -63,31 +63,25 @@ int main(int argc, char** argv) {
         simulation_timestep++;    
 
         if(command == "l"){ //load
-            int status = load(stoul(address, nullptr, 16), cache, simulation_timestep);
+            tuple<int, int, int> count = load(stoul(address, nullptr, 16), cache, simulation_timestep);
             totalLoads++;
-            if(status == 1){
-                totalLoadHits++;
-                totalCycles++;
-            } else if (status == -1){
-                totalLoadMisses++;
-                totalCycles = totalCycles + 100 * bytesOfMemory / 4;
-            } else {
+            if(get<0>(count) == -1){
                 cerr << "Invalid input" << endl;
                 return 1;
             }
+            totalLoadHits += get<0>(count);
+            totalLoadMisses += get<1>(count);
+            totalCycles += get<2>(count);
         } else if (command == "s"){ //store
-            int status = store(stoul(address, nullptr, 16), cache, simulation_timestep);
+            tuple<int, int, int> count = store(stoul(address, nullptr, 16), cache, simulation_timestep);
             totalStores++;
-            if(status == 1){
-                totalStoreHits++;
-                totalCycles++;
-            } else if (status == -1){
-                totalStoreMisses++;
-                totalCycles = totalCycles + 100 * bytesOfMemory / 4;
-            } else if (status == 2){
-                totalStoreHits++;
-                totalCycles = totalCycles + 100 * bytesOfMemory / 4;
+            if(get<0>(count) == -1){
+                cerr << "Invalid input" << endl;
+                return 1;
             }
+            totalStoreHits += get<0>(count);
+            totalStoreMisses += get<1>(count);
+            totalCycles += get<2>(count);
         } else {
             cerr << "Invalid command" << endl;
             return 1;

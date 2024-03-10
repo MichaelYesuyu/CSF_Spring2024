@@ -50,12 +50,12 @@ uint32_t get_tag(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
 uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
 std::tuple<int32_t, int32_t> find(const Cache& cache, uint32_t index, uint32_t in_tag);
 
-int load(uint32_t address, Cache& cache, uint32_t simulation_timestep);
+std::tuple<int, int, int> load(uint32_t address, Cache& cache, uint32_t simulation_timestep);
 void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep);
-void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot);
-void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot);
+int handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot);
+int handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot);
 
-int store(uint32_t address, Cache& cache, uint32_t simulation_timestep);
+std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulation_timestep);
 
 int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, std::string type_write_miss, std::string type_write_hit);
 
