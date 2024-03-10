@@ -115,13 +115,14 @@ int handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot){
             index_LRU = i;
         }
     }
-    int prev_index = index_LRU;
-    cache.sets[indexSet].slots[index_LRU] = newSlot;
-    if(cache.sets[indexSet].slots[prev_index].dirty){
-        return 1;
+    int check_dirty;
+    if(cache.sets[indexSet].slots[index_LRU].dirty){
+        check_dirty = 1;
     } else {
-        return 0;
+        check_dirty = 0;
     }
+    cache.sets[indexSet].slots[index_LRU] = newSlot;
+    return check_dirty;
 }
 
 int handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
@@ -142,13 +143,14 @@ int handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
             index_FIFO = i;
         }
     }
-    int prev_index = index_FIFO;
-    cache.sets[indexSet].slots[index_FIFO] = newSlot;
-    if(cache.sets[indexSet].slots[prev_index].dirty){
-        return 1;
+    int check_dirty;
+    if(cache.sets[indexSet].slots[index_FIFO].dirty){
+        check_dirty = 1;
     } else {
-        return 0;
+        check_dirty = 0;
     }
+    cache.sets[indexSet].slots[index_FIFO] = newSlot;
+    return check_dirty;
 }
 
 //tuple<_hit_count, miss_count, cycle> counts the increments of these three
@@ -162,8 +164,7 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
             int loadCycle = get<2>(loadStatus);
             index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
-            int cycleNum = 100 * (cache.bytesOfMemory / 4);
-            return std::make_tuple(0, 1, loadCycle + cycleNum);
+            return std::make_tuple(0, 1, loadCycle);
         } else { //no_write_allocate
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
             return std::make_tuple(0, 1, cycleNum);
@@ -173,7 +174,7 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
           std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
           int loadCycle = get<2>(loadStatus);
           int cycleNum = 100 * (cache.bytesOfMemory / 4);
-          return std::make_tuple(1, 0, loadCycle + cycleNum + 1);
+          return std::make_tuple(1, 0, loadCycle + cycleNum);
         } else { //write_back
             std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
             int loadCycle = get<2>(loadStatus);
