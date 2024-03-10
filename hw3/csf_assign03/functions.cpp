@@ -62,9 +62,6 @@ void load(uint32_t address, Cache cache, uint32_t simulation_timestep){
                 handle_load_miss_LRU(cache, index, new_slot);
             } else if (cache.replace_strategy == "fifo") {
                 handle_load_miss_FIFO(cache, index, new_slot);
-            } else {
-                cerr << "Invalid load strategy" << endl;
-                return 1;
             }
     }
 }
