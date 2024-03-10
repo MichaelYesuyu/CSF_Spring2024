@@ -57,6 +57,7 @@ void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot);
 
 int store(uint32_t address, Cache& cache, uint32_t simulation_timestep);
 
+int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string type_write_miss, string type_write_hit);
 
 
 

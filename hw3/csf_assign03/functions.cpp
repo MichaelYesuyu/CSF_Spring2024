@@ -8,6 +8,7 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::get;
+using std::cerr;
 
 Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory, string replace_strategy, string type_write_miss, string type_write_hit){
     Cache cache;
@@ -152,15 +153,53 @@ int store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
         if(cache.type_write_hit == "write-through"){
           return load(address, cache, simulation_timestep);
         } else { //write_back
-           if(cache.sets[get<0>(index_slot_pair)].slots[get<0>(index_slot_pair)].dirty){
+           if(cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty){
             return load(address, cache, simulation_timestep);
            } else {
-            cache.sets[get<0>(index_slot_pair)].slots[get<0>(index_slot_pair)].dirty = true;
+            cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
             return 1;
            }
         }
     }
 }
+
+int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string type_write_miss, string type_write_hit){
+    //Make sure number of sets is positive
+    if(numSets < 0){
+        cerr << "Number of sets must be positive" << endl;
+        return 1;
+    }
+    //Make sure number of blocks is positive
+    if(numBlocks < 0){
+        cerr << "Number of blocks must be positive" << endl;
+        return 1;
+    }
+    //Make sure block size is at least 4
+    if(bytesOfMemory < 4){
+        cerr << "Block size must be at least 4" << endl;
+        return 1;
+    }
+    //Make sure that block size is a power of 2
+    int num = bytesOfMemory & (bytesOfMemory - 1);
+    if(num != 0){
+        cerr << "Block size must be a power of 2" << endl;
+        return 1;
+    }
+    //Make sure that number of sets is a power of 2
+    int num2 = numSets & (numSets - 1);
+    if(num2 != 0){
+        cerr << "Number of sets must be a power of 2" << endl;
+        return 1;
+    }
+    //Make sure no-write-allocate and write-back and not specified together
+    if(type_write_miss == "no-write-allocate" && type_write_hit == "write-back"){
+        cerr << "Cannot specify no-write-allocate with write-back" << endl;
+        return 1;
+    }
+
+    return 0;
+}
+
 
 void write_allocate(){}
 

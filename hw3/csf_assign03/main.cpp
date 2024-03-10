@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
     string replace_strategy = argv[6];
 
     //error handling
-    //if(input_error_handling(numSets, numBlocks, bytesOfMemory, type_write_miss, type_write_hit) == 1){
-    //    return 1;
-    //}
+    if(input_error_handling(numSets, numBlocks, bytesOfMemory, type_write_miss, type_write_hit) == 1){
+        return 1;
+    }
 
     //create a cache according to the inputs
     Cache cache = create_cache(numSets, numBlocks, bytesOfMemory, replace_strategy, type_write_miss, type_write_hit);
@@ -113,39 +113,3 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string type_write_miss, string type_write_hit){
-    //Make sure number of sets is positive
-    if(numSets < 0){
-        cerr << "Number of sets must be positive" << endl;
-        return 1;
-    }
-    //Make sure number of blocks is positive
-    if(numBlocks < 0){
-        cerr << "Number of blocks must be positive" << endl;
-        return 1;
-    }
-    //Make sure block size is at least 4
-    if(bytesOfMemory < 4){
-        cerr << "Block size must be at least 4" << endl;
-        return 1;
-    }
-    //Make sure that block size is a power of 2
-    int num = bytesOfMemory & (bytesOfMemory - 1);
-    if(num != 0){
-        cerr << "Block size must be a power of 2" << endl;
-        return 1;
-    }
-    //Make sure that number of sets is a power of 2
-    int num2 = numSets & (numSets - 1);
-    if(num2 != 0){
-        cerr << "Number of sets must be a power of 2" << endl;
-        return 1;
-    }
-    //Make sure no-write-allocate and write-back and not specified together
-    if(type_write_miss == "no-write-allocate" && type_write_hit == "write-back"){
-        cerr << "Cannot specify no-write-allocate with write-back" << endl;
-        return 1;
-    }
-
-    return 0;
-}
