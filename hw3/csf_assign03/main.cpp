@@ -37,6 +37,15 @@ int main(int argc, char** argv) {
     //create a cache according to the inputs
     Cache cache = create_cache(numSets, numBlocks, bytesOfMemory, replace_strategy, type_write_miss, type_write_hit);
 
+    //Counter variables to display later
+    uint32_t totalLoads = 0;
+    uint32_t totalStores = 0;
+    uint32_t totalLoadHits = 0;
+    uint32_t totalLoadMisses = 0;
+    uint32_t totalStoreHits = 0;
+    uint32_t totalStoreMisses = 0;
+    uint32_t totalCycles = 0;
+
     //Read the trace file and update cache
     string line;
     uint32_t simulation_timestep = 0;
@@ -53,9 +62,19 @@ int main(int argc, char** argv) {
         tuple<int32_t, int32_t> result = find(cache, index, tag);
 
         if(command == "l"){ //load
-            load(stoi(address), cache, simulation_timestep);
+            int status = load(stoi(address), cache, simulation_timestep);
+            totalLoads++;
+            if(status == 1){
+                totalLoadHits++;
+            } else if (status == -1){
+                totalLoadMisses++;
+            } else {
+                cerr << "Invalid input" << endl;
+                return 1;
+            }
         } else if (command == "s"){ //store
             store(stoi(address), cache, simulation_timestep);
+            totalStores++;
         } else {
             cerr << "Invalid command" << endl;
             return 1;
@@ -66,13 +85,21 @@ int main(int argc, char** argv) {
     }
 
     //Testing
-    cout << "numSets: " << numSets << endl << "numBlocks: " << numBlocks  << endl << "bytesOfMemory " << bytesOfMemory << endl;
-    cout << type_write_miss << endl;
-    cout << type_write_hit << endl;
-    cout << replace_strategy << endl;
-    cout << "cache size: " << cache.sets.size() << "sets" << endl;
-    cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
-    cout << get_tag(0x1fffff50, 256, 256) << endl;
-    cout << get_index(0x1fffff50, 256, 256) << endl;
+    //cout << "numSets: " << numSets << endl << "numBlocks: " << numBlocks  << endl << "bytesOfMemory " << bytesOfMemory << endl;
+    //cout << type_write_miss << endl;
+    //cout << type_write_hit << endl;
+    //cout << replace_strategy << endl;
+    //cout << "cache size: " << cache.sets.size() << "sets" << endl;
+    //cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
+    //cout << get_tag(0x1fffff50, 256, 256) << endl;
+    //cout << get_index(0x1fffff50, 256, 256) << endl;
+    cout << "Total loads: " << totalLoads << endl;
+    cout << "Total stores: " << totalStores << endl;
+    cout << "Load hits  " << totalLoadHits << endl;
+    cout << "Load misses: " << totalLoadMisses << endl;
+    cout << "Store hits: " << totalStoreHits << endl;
+    cout << "Store misses: " << totalStoreMisses << endl;
+    cout << "Total cycles: " << totalCycles << endl;
+    
     return 0;
 }

@@ -53,18 +53,23 @@ std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
     return std::make_tuple(-1, -1);
 }
 
-void load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
+int load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     if (std::get<0>(index_slot_pair) != -1){
         handle_load_hit(cache, std::get<0>(index_slot_pair), std::get<1>(index_slot_pair), simulation_timestep);
+        return 1;
     } else {
         Slot new_slot = Slot(tag, true, simulation_timestep, simulation_timestep, false);
         if(cache.replace_strategy == "lru"){
                 handle_load_miss_LRU(cache, index, new_slot);
+                return -1;
             } else if (cache.replace_strategy == "fifo") {
                 handle_load_miss_FIFO(cache, index, new_slot);
+                return -1;
+            } else { //error
+                return 0;
             }
     }
 }
@@ -121,15 +126,15 @@ void store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     if (std::get<0>(index_slot_pair) != -1){ //cache miss
         if(cache.type_write_miss == "write-allocate"){
-            write_allocate();
+            //write_allocate();
         } else {
-            no_write_allocate();
+           // no_write_allocate();
         }
     } else { //cache hit
         if(cache.type_write_hit == "write-through"){
-            write_through();
+           // write_through();
         } else {
-            write_back();
+          //  write_back();
         }
     }
 }
