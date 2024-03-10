@@ -40,15 +40,6 @@ int main(int argc, char** argv) {
     //create a cache according to the inputs
     Cache cache = create_cache(numSets, numBlocks, bytesOfMemory, replace_strategy, type_write_miss, type_write_hit);
 
-    //Counter variables to display later
-    uint32_t totalLoads = 0;
-    uint32_t totalStores = 0;
-    uint32_t totalLoadHits = 0;
-    uint32_t totalLoadMisses = 0;
-    uint32_t totalStoreHits = 0;
-    uint32_t totalStoreMisses = 0;
-    uint32_t totalCycles = 0;
-
     //Read the trace file and update cache
     string line;
     while(getline(cin, line)){
@@ -59,25 +50,9 @@ int main(int argc, char** argv) {
         ss >> command >> address;
 
         if(command == "l"){ //load
-            tuple<int, int, int> count = load(stoul(address, nullptr, 16), cache, totalCycles);
-            totalLoads++;
-            if(get<0>(count) == -1){
-                cerr << "Invalid input" << endl;
-                return 1;
-            }
-            totalLoadHits += get<0>(count);
-            totalLoadMisses += get<1>(count);
-            totalCycles += get<2>(count);
+            load(stoul(address, nullptr, 16), cache);
         } else if (command == "s"){ //store
-            tuple<int, int, int> count = store(stoul(address, nullptr, 16), cache, totalCycles);
-            totalStores++;
-            if(get<0>(count) == -1){
-                cerr << "Invalid input" << endl;
-                return 1;
-            }
-            totalStoreHits += get<0>(count);
-            totalStoreMisses += get<1>(count);
-            totalCycles += get<2>(count);
+            store(stoul(address, nullptr, 16), cache);
         } else {
             cerr << "Invalid command" << endl;
             return 1;
@@ -95,13 +70,13 @@ int main(int argc, char** argv) {
     //cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
     //cout << get_tag(0x1fffff50, 256, 256) << endl;
     //cout << get_index(0x1fffff50, 256, 256) << endl;
-    cout << "Total loads: " << totalLoads << endl;
-    cout << "Total stores: " << totalStores << endl;
-    cout << "Load hits  " << totalLoadHits << endl;
-    cout << "Load misses: " << totalLoadMisses << endl;
-    cout << "Store hits: " << totalStoreHits << endl;
-    cout << "Store misses: " << totalStoreMisses << endl;
-    cout << "Total cycles: " << totalCycles << endl;
+    cout << "Total loads: " << cache.totalLoads << endl;
+    cout << "Total stores: " << cache.totalStores << endl;
+    cout << "Load hits  " << cache.totalLoadHits << endl;
+    cout << "Load misses: " << cache.totalLoadMisses << endl;
+    cout << "Store hits: " << cache.totalStoreHits << endl;
+    cout << "Store misses: " << cache.totalStoreMisses << endl;
+    cout << "Total cycles: " << cache.totalCycles << endl;
     
     return 0;
 }

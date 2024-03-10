@@ -42,6 +42,13 @@ struct Cache {
     std::string replace_strategy;
     std::string type_write_miss;
     std::string type_write_hit;
+    uint32_t totalLoads;
+    uint32_t totalStores;
+    uint32_t totalLoadHits;
+    uint32_t totalLoadMisses;
+    uint32_t totalStoreHits;
+    uint32_t totalStoreMisses;
+    uint32_t totalCycles;
 };
 
 Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory, std::string replace_strategy, std::string type_write_miss, std::string type_write_hit);
@@ -50,12 +57,12 @@ uint32_t get_tag(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
 uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory);
 std::tuple<int32_t, int32_t> find(const Cache& cache, uint32_t index, uint32_t in_tag);
 
-std::tuple<int, int, int> load(uint32_t address, Cache& cache, uint32_t simulation_timestep);
-void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep);
+void load(uint32_t address, Cache& cache);
+void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot);
 int handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot);
 int handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot);
 
-std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulation_timestep);
+void store(uint32_t address, Cache& cache);
 
 int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, std::string type_write_miss, std::string type_write_hit);
 
