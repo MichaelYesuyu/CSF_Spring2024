@@ -158,22 +158,26 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     if (std::get<0>(index_slot_pair) == -1){ //cache miss
         if(cache.type_write_miss == "write-allocate"){
-            load(address, cache, simulation_timestep);
+            std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+            int loadCycle = get<2>(loadStatus);
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
-            return std::make_tuple(0, 1, cycleNum + 1);
+            return std::make_tuple(0, 1, loadCycle + cycleNum + 1);
         } else { //no_write_allocate
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
             return std::make_tuple(0, 1, cycleNum);
         }
     } else { //cache hit
         if(cache.type_write_hit == "write-through"){
-          load(address, cache, simulation_timestep);
+          std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+          int loadCycle = get<2>(loadStatus);
           int cycleNum = 100 * (cache.bytesOfMemory / 4);
-          return std::make_tuple(1, 0, cycleNum + 1);
+          return std::make_tuple(1, 0, loadCycle + cycleNum + 1);
         } else { //write_back
-            load(address, cache, simulation_timestep);
+            std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+            int loadCycle = get<2>(loadStatus);
+            index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
-            return std::make_tuple(1, 0, 1);
+            return std::make_tuple(1, 0, 1 + loadCycle);
            }
         }
     
