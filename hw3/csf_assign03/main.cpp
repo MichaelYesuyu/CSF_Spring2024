@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
     string replace_strategy = argv[6];
 
     //error handling
-    if(input_error_handling(numSets, numBlocks, bytesOfMemory, type_write_miss, type_write_hit) == 1){
-        return 1;
-    }
+    //if(input_error_handling(numSets, numBlocks, bytesOfMemory, type_write_miss, type_write_hit) == 1){
+    //    return 1;
+    //}
 
     //create a cache according to the inputs
     Cache cache = create_cache(numSets, numBlocks, bytesOfMemory, replace_strategy, type_write_miss, type_write_hit);

@@ -7,6 +7,7 @@
 using std::string;
 using std::cout;
 using std::endl;
+using std::get;
 
 Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory, string replace_strategy, string type_write_miss, string type_write_hit){
     Cache cache;
@@ -151,10 +152,10 @@ int store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
         if(cache.type_write_hit == "write-through"){
           return load(address, cache, simulation_timestep);
         } else { //write_back
-           if(cache.sets[index].slots[tag].dirty){
+           if(cache.sets[get<0>(index_slot_pair)].slots[get<0>(index_slot_pair)].dirty){
             return load(address, cache, simulation_timestep);
            } else {
-            cache.sets[index].slots[tag].dirty = true;
+            cache.sets[get<0>(index_slot_pair)].slots[get<0>(index_slot_pair)].dirty = true;
             return 1;
            }
         }
