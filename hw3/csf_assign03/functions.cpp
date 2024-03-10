@@ -53,6 +53,14 @@ void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32
 }
 
 void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
+    //If there are empty slots, insert value there
+    for(int i = 0; i < numBlocks; i++){
+        if(!cache.sets[indexSet].slots[i].valid){
+            cache.sets[indexSet].slots[i] = newSlot;
+            return;
+        }
+    }
+    //Replace using LRU if all the slots inside the set are full
     uint32_t min = UINT32_MAX;
     int index_LRU = 0;
     //Look for the least recently used slot and replace it with the new slot
@@ -66,6 +74,14 @@ void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, S
 }
 
 void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
+     //If there are empty slots, insert value there
+    for(int i = 0; i < numBlocks; i++){
+        if(!cache.sets[indexSet].slots[i].valid){
+            cache.sets[indexSet].slots[i] = newSlot;
+            return;
+        }
+    }
+    //Replace using FIFO if all the slots inside the set are full
     uint32_t min = UINT32_MAX;
     int index_FIFO = 0;
     //Look for the earliest loaded slot and replace it with the new slot
