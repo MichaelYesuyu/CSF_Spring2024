@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
 
     //Read the trace file and update cache
     string line;
-    uint32_t simulation_timestep = 0;
     while(getline(cin, line)){
         //Read in line from input file and store the command and address
         stringstream ss(line);
@@ -59,11 +58,8 @@ int main(int argc, char** argv) {
         string address;
         ss >> command >> address;
 
-        //Increment simulation timestep
-        simulation_timestep++;    
-
         if(command == "l"){ //load
-            tuple<int, int, int> count = load(stoul(address, nullptr, 16), cache, simulation_timestep);
+            tuple<int, int, int> count = load(stoul(address, nullptr, 16), cache, totalCycles);
             totalLoads++;
             if(get<0>(count) == -1){
                 cerr << "Invalid input" << endl;
@@ -73,7 +69,7 @@ int main(int argc, char** argv) {
             totalLoadMisses += get<1>(count);
             totalCycles += get<2>(count);
         } else if (command == "s"){ //store
-            tuple<int, int, int> count = store(stoul(address, nullptr, 16), cache, simulation_timestep);
+            tuple<int, int, int> count = store(stoul(address, nullptr, 16), cache, totalCycles);
             totalStores++;
             if(get<0>(count) == -1){
                 cerr << "Invalid input" << endl;

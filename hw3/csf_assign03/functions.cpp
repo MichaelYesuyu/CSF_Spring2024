@@ -62,16 +62,16 @@ std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t i
 }
 
 //tuple<_hit_count, miss_count, cycle> counts the increments of these three
-std::tuple<int, int, int> load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
+std::tuple<int, int, int> load(uint32_t address, Cache& cache, uint32_t current_cycle){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     //cout << std::get<0>(index_slot_pair) << " " << std::get<1>(index_slot_pair) << endl;
     if (std::get<0>(index_slot_pair) != -1){
-        handle_load_hit(cache, std::get<0>(index_slot_pair), std::get<1>(index_slot_pair), simulation_timestep);
+        handle_load_hit(cache, std::get<0>(index_slot_pair), std::get<1>(index_slot_pair), current_cycle);
         return std::make_tuple(1, 0, 1);
     } else {
-        Slot new_slot = Slot(tag, true, simulation_timestep, simulation_timestep, false);
+        Slot new_slot = Slot(tag, true, current_cycle, current_cycle, false);
         int status = 0;
         if(cache.replace_strategy == "lru"){
                 status = handle_load_miss_LRU(cache, index, new_slot);
@@ -86,8 +86,8 @@ std::tuple<int, int, int> load(uint32_t address, Cache& cache, uint32_t simulati
     }
 }
 
-void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep){
-    cache.sets[indexSet].slots[indexSlot].access_ts = simulation_timestep;
+void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t current_cycle){
+    cache.sets[indexSet].slots[indexSlot].access_ts = current_cycle;
 }
 
 //0 for not replacing a dirty slot, 1 for replacing a dirty slot (write to memory)
@@ -149,13 +149,13 @@ int handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
 }
 
 //tuple<_hit_count, miss_count, cycle> counts the increments of these three
-std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
+std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t current_cycle){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     if (std::get<0>(index_slot_pair) == -1){ //cache miss
         if(cache.type_write_miss == "write-allocate"){
-            std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+            std::tuple<int, int, int> loadStatus = load(address, cache, current_cycle);
             int loadCycle = get<2>(loadStatus);
             if(cache.type_write_hit == "write-back"){
                 index_slot_pair = find(cache, index, tag);
@@ -171,12 +171,12 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
         }
     } else { //cache hit
         if(cache.type_write_hit == "write-through"){
-          std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+          std::tuple<int, int, int> loadStatus = load(address, cache, current_cycle);
           int loadCycle = get<2>(loadStatus);
           int cycleNum = 100 * (cache.bytesOfMemory / 4);
           return std::make_tuple(1, 0, loadCycle + cycleNum);
         } else { //write_back
-            std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
+            std::tuple<int, int, int> loadStatus = load(address, cache, current_cycle);
             int loadCycle = get<2>(loadStatus);
             index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
