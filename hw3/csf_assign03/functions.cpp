@@ -52,15 +52,11 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
 
 //Returns tuple (index of set, index of slot)
 std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
-    for(int32_t i = 0; i < (int32_t)cache.numSets; i++){
-        if(i == (int32_t)index){
-            std::vector<Slot> lines = ((cache.sets)[i]).slots;
-            for(int32_t j = 0; j < (int32_t)cache.numBlocks; j++){
-                if(((lines[j]).tag == in_tag)&&(lines[j].valid)){
-                    return std::make_tuple(i, j);
-                }
-            }
-        }
+    std::vector<Slot> lines = ((cache.sets)[index]).slots;
+    for(int32_t i = 0; i < (int32_t)cache.numBlocks; i++){
+        if(((lines[i]).tag == in_tag)&&(lines[i].valid)){
+            return std::make_tuple(index, i);
+        }        
     }
     return std::make_tuple(-1, -1);
 }
@@ -104,10 +100,9 @@ int handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot){
             return 0;
         }
     }
-    //cout << "REACHED!" << endl;
     //Replace using LRU if all the slots inside the set are full
-    uint32_t min = UINT32_MAX;
-    int index_LRU = 0;
+    uint32_t min = cache.sets[indexSet].slots[0].access_ts;
+    uint32_t index_LRU = 0;
     //Look for the least recently used slot and replace it with the new slot
     for(uint32_t i = 0; i < cache.numBlocks; i++){
         if(cache.sets[indexSet].slots[i].access_ts < min){
@@ -162,9 +157,14 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
         if(cache.type_write_miss == "write-allocate"){
             std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
             int loadCycle = get<2>(loadStatus);
-            index_slot_pair = find(cache, index, tag);
-            cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
-            return std::make_tuple(0, 1, loadCycle);
+            if(cache.type_write_hit == "write-back"){
+                index_slot_pair = find(cache, index, tag);
+                cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
+                return std::make_tuple(0, 1, loadCycle);
+            } else {
+                int cycleNum = 100 * (cache.bytesOfMemory / 4);
+                return std::make_tuple(1, 0, loadCycle + cycleNum);
+            }
         } else { //no_write_allocate
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
             return std::make_tuple(0, 1, cycleNum);
