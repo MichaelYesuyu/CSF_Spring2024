@@ -65,8 +65,17 @@ void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, S
     cache.sets[indexSet].slots[index_LRU] = newSlot;
 }
 
-void handle_load_miss_FIFO(){
-
+void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
+    uint32_t min = UINT32_MAX;
+    int index_FIFO = 0;
+    //Look for the earliest loaded slot and replace it with the new slot
+    for(int i = 0; i < numBlocks; i++){
+        if(cache.sets[indexSet].slots[i].load_ts < min){
+            min = cache.sets[indexSet].slots[i].load_ts;
+            index_FIFO = i;
+        }
+    }
+    cache.sets[indexSet].slots[index_FIFO] = newSlot;
 }
 
 std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
