@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     //cout << get_index(0x1fffff50, 256, 256) << endl;
     cout << "Total loads: " << cache.totalLoads << endl;
     cout << "Total stores: " << cache.totalStores << endl;
-    cout << "Load hits  " << cache.totalLoadHits << endl;
+    cout << "Load hits: " << cache.totalLoadHits << endl;
     cout << "Load misses: " << cache.totalLoadMisses << endl;
     cout << "Store hits: " << cache.totalStoreHits << endl;
     cout << "Store misses: " << cache.totalStoreMisses << endl;

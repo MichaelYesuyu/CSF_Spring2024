@@ -168,12 +168,12 @@ void store(uint32_t address, Cache& cache){
             load(address, cache);
             cache.totalLoadMisses--;
             cache.totalLoads--;
-            if(cache.type_write_hit == "write-back"){
+            if(cache.type_write_hit == "write-back"){ //write back write allocate
                 index_slot_pair = find(cache, index, tag);
                 cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
                 cache.totalCycles++;
                 return;
-            } else {
+            } else { //write through write allocate
                 int cycleNum = 100 * (cache.bytesOfMemory / 4);
                 cache.totalCycles += cycleNum;
             }
@@ -183,7 +183,7 @@ void store(uint32_t address, Cache& cache){
         }
     } else { //cache hit
         cache.totalStoreHits++;
-        if(cache.type_write_hit == "write-through"){
+        if(cache.type_write_hit == "write-through"){ //write through
             load(address, cache);
             cache.totalLoadHits--;
             cache.totalLoads--;
