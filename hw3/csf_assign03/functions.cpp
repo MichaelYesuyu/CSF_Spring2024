@@ -1,8 +1,8 @@
 #include "functions.h"
 #include <iostream>
-#include <cmath>
 #include <tuple>
 #include <string>
+#include <cassert>
 
 using std::string;
 using std::cout;
@@ -27,16 +27,22 @@ Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory,
     return cache;
 }
 
+int log2int(uint32_t value) {
+    int log = 0;
+    while (value >>= 1) ++log;
+    return log;
+}
+
 uint32_t get_tag(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
-    int indexSize = std::log2(numSets);
-    int offset = std::log2(bytesOfMemory);
+    int indexSize = log2int(numSets);
+    int offset = log2int(bytesOfMemory);
     int totaloffset = indexSize + offset;
     uint32_t tag = address >> totaloffset;
     return tag;
 }
 
 uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
-    int offset = std::log2(bytesOfMemory);
+    int offset = log2int(bytesOfMemory);
     uint32_t tag_index = address >> offset;
     uint32_t index = tag_index & (numSets - 1);
     return index;
@@ -44,11 +50,11 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
 
 //Returns tuple (index of set, index of slot)
 std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
-    for(int32_t i = 0; i < (int32_t)cache.sets.size(); i++){
+    for(int32_t i = 0; i < (int32_t)cache.numSets; i++){
         if(i == (int32_t)index){
             std::vector<Slot> lines = ((cache.sets)[i]).slots;
-            for(int32_t j = 0; j < (int32_t)lines.size(); j++){
-                if((lines[j]).tag == in_tag && lines[j].valid){
+            for(int32_t j = 0; j < (int32_t)cache.numBlocks; j++){
+                if(((lines[j]).tag == in_tag)&&(lines[j].valid)){
                     return std::make_tuple(i, j);
                 }
             }
@@ -134,11 +140,12 @@ int store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
 
     if (std::get<0>(index_slot_pair) == -1){ //cache miss
         if(cache.type_write_miss == "write-allocate"){
-            return load(address, cache, simulation_timestep);
+            assert(load(address, cache, simulation_timestep) == -1);
+            return -1;
         } else { //no_write_allocate
            // no_write_allocate();
            //do nothing?
-           return 1;
+           return -1;
         }
     } else { //cache hit
         if(cache.type_write_hit == "write-through"){
