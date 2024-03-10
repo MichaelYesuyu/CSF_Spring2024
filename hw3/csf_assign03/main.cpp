@@ -41,31 +41,28 @@ int main(int argc, char** argv) {
     string line;
     uint32_t simulation_timestep = 0;
     while(getline(cin, line)){
+        //Read in line from input file and store the command and address
         stringstream ss(line);
         string command;
         string address;
         ss >> command >> address;
 
+        //Look for the element inside the cache
+        uint32_t index = get_index(stoi(address), numSets, bytesOfMemory);
+        uint32_t tag = get_tag(stoi(address), numSets, bytesOfMemory);
+        tuple<int32_t, int32_t> result = find(cache, index, tag);
+
+        if(command == "l"){ //load
+            load(stoi(address), cache, simulation_timestep);
+        } else if (command == "s"){ //store
+            store(stoi(address), cache, simulation_timestep);
+        } else {
+            cerr << "Invalid command" << endl;
+            return 1;
+        }
 
         //Increment simulation timestep
-        simulation_timestep++;
-        //Look for the element inside the cache
-        tuple<int32_t, int32_t> result = find(cache, get_index(stoi(address), numSets, bytesOfMemory), get_tag(stoi(address), numSets, bytesOfMemory));
-        //Loading
-        if(get<0>(result) == -1){ //Element was not found
-            if(replace_strategy == "lru"){
-                handle_load_miss_LRU();
-            } else if (replace_strategy == "fifo") {
-                handle_load_miss_FIFO();
-            } else {
-                cerr << "Invalid load strategy" << endl;
-                return 1;
-            }
-        } else { //Element was found
-            handle_load_hit(cache, get<0>(result), get<1>(result), numBlocks);
-        }
-        
-        
+        simulation_timestep++;       
     }
 
     //Testing
@@ -78,34 +75,4 @@ int main(int argc, char** argv) {
     cout << get_tag(0x1fffff50, 256, 256) << endl;
     cout << get_index(0x1fffff50, 256, 256) << endl;
     return 0;
-}
-
-void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep){
-    cache.sets[indexSet].slots[indexSlot].access_ts = simulation_timestep;
-}
-
-void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
-    uint32_t min = UINT32_MAX;
-    int index_LRU = 0;
-    //Look for the least recently used slot and replace it with the new slot
-    for(int i = 0; i < numBlocks; i++){
-        if(cache.sets[indexSet].slots[i].access_ts < min){
-            min = cache.sets[indexSet].slots[i].access_ts;
-            index_LRU = i;
-        }
-    }
-    cache.sets[indexSet].slots[index_LRU] = newSlot;
-}
-
-void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
-    uint32_t min = UINT32_MAX;
-    int index_FIFO = 0;
-    //Look for the earliest loaded slot and replace it with the new slot
-    for(int i = 0; i < numBlocks; i++){
-        if(cache.sets[indexSet].slots[i].load_ts < min){
-            min = cache.sets[indexSet].slots[i].load_ts;
-            index_FIFO = i;
-        }
-    }
-    cache.sets[indexSet].slots[index_FIFO] = newSlot;
 }
