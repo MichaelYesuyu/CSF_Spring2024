@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     string replace_strategy = argv[6];
 
     //create a cache according to the inputs
-    Cache cache = create_cache(numSets, numBlocks);
+    Cache cache = create_cache(numSets, numBlocks, bytesOfMemory, replace_strategy, type_write_miss, type_write_hit);
 
     //Read the trace file and update cache
     string line;
