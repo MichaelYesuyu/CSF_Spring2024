@@ -30,7 +30,42 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
     return index;
 }
 
-void load(uint32_t address, Cache cache){
+void load(uint32_t address, Cache cache, uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory, string replace_strategy){
+    uint32_t index = get_index(address, numSets, bytesOfMemory);
+    uint32_t tag = get_tag(address, numSets, bytesOfMemory);
+    std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
+    if (std::get<0>(index_slot_pair) != -1){
+        handle_load_hit(cache, index, std::get<1>(index_slot_pair))
+    } else {
+        if(replace_strategy == "lru"){
+                handle_load_miss_LRU();
+            } else if (replace_strategy == "fifo") {
+                handle_load_miss_FIFO();
+            } else {
+                cerr << "Invalid load strategy" << endl;
+                return 1;
+            }
+    }
+}
+
+void handle_load_hit(Cache& cache, uint32_t indexSet, uint32_t indexSlot, uint32_t simulation_timestep){
+    cache.sets[indexSet].slots[indexSlot].access_ts = simulation_timestep;
+}
+
+void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, uint32_t numBlocks, Slot newSlot){
+    uint32_t min = UINT32_MAX;
+    int index_LRU = 0;
+    //Look for the least recently used slot and replace it with the new slot
+    for(int i = 0; i < numBlocks; i++){
+        if(cache.sets[indexSet].slots[i].access_ts < min){
+            min = cache.sets[indexSet].slots[i].access_ts;
+            index_LRU = i;
+        }
+    }
+    cache.sets[indexSet].slots[index_LRU] = newSlot;
+}
+
+void handle_load_miss_FIFO(){
 
 }
 
@@ -48,7 +83,11 @@ std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
     }
 }
 
-void store(Cache& cache, uint32_t address)
+void store(Cache& cache, uint32_t address, ){
+    find
+    load()
+    write_allocate()
+}
 
 void write_allocate()
 
