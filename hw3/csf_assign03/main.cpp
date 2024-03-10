@@ -6,6 +6,7 @@
 #include "functions.h"
 
 using std::ifstream;
+using std::stoul;
 using std::stoi;
 using std::string;
 using std::cout;
@@ -56,13 +57,8 @@ int main(int argc, char** argv) {
         string address;
         ss >> command >> address;
 
-        //Look for the element inside the cache
-        uint32_t index = get_index(stoi(address), numSets, bytesOfMemory);
-        uint32_t tag = get_tag(stoi(address), numSets, bytesOfMemory);
-        tuple<int32_t, int32_t> result = find(cache, index, tag);
-
         if(command == "l"){ //load
-            int status = load(stoi(address), cache, simulation_timestep);
+            int status = load(stoul(address, nullptr, 16), cache, simulation_timestep);
             totalLoads++;
             if(status == 1){
                 totalLoadHits++;

@@ -1,9 +1,12 @@
 #include "functions.h"
+#include <iostream>
 #include <cmath>
 #include <tuple>
 #include <string>
 
 using std::string;
+using std::cout;
+using std::endl;
 
 Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory, string replace_strategy, string type_write_miss, string type_write_hit){
     Cache cache;
@@ -39,7 +42,7 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
     return index;
 }
 
-std::tuple<int32_t, int32_t> find(Cache cache, uint32_t index, uint32_t in_tag){
+std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
     for(int32_t i = 0; i < (int32_t)cache.sets.size(); i++){
         if(i == (int32_t)index){
             std::vector<Slot> lines = ((cache.sets)[i]).slots;
@@ -58,6 +61,7 @@ int load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
     if (std::get<0>(index_slot_pair) != -1){
+        //cout << std::get<0>(index_slot_pair) << endl << std::get<1>(index_slot_pair);
         handle_load_hit(cache, std::get<0>(index_slot_pair), std::get<1>(index_slot_pair), simulation_timestep);
         return 1;
     } else {
