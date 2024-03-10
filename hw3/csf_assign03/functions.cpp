@@ -160,8 +160,9 @@ std::tuple<int, int, int> store(uint32_t address, Cache& cache, uint32_t simulat
         if(cache.type_write_miss == "write-allocate"){
             std::tuple<int, int, int> loadStatus = load(address, cache, simulation_timestep);
             int loadCycle = get<2>(loadStatus);
-            int cycleNum = 100 * (cache.bytesOfMemory / 4);
-            return std::make_tuple(0, 1, loadCycle + cycleNum + 1);
+            index_slot_pair = find(cache, index, tag);
+            cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
+            return std::make_tuple(0, 1, loadCycle);
         } else { //no_write_allocate
             int cycleNum = 100 * (cache.bytesOfMemory / 4);
             return std::make_tuple(0, 1, cycleNum);
