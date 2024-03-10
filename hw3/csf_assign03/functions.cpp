@@ -42,12 +42,13 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
     return index;
 }
 
+//Returns tuple (index of set, index of slot)
 std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
     for(int32_t i = 0; i < (int32_t)cache.sets.size(); i++){
         if(i == (int32_t)index){
             std::vector<Slot> lines = ((cache.sets)[i]).slots;
             for(int32_t j = 0; j < (int32_t)lines.size(); j++){
-                if((lines[j]).tag == in_tag){
+                if((lines[j]).tag == in_tag && lines[j].valid){
                     return std::make_tuple(i, j);
                 }
             }
@@ -60,8 +61,8 @@ int load(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
+    //cout << std::get<0>(index_slot_pair) << " " << std::get<1>(index_slot_pair) << endl;
     if (std::get<0>(index_slot_pair) != -1){
-        //cout << std::get<0>(index_slot_pair) << endl << std::get<1>(index_slot_pair);
         handle_load_hit(cache, std::get<0>(index_slot_pair), std::get<1>(index_slot_pair), simulation_timestep);
         return 1;
     } else {
@@ -86,10 +87,12 @@ void handle_load_miss_LRU(Cache& cache, uint32_t indexSet, Slot newSlot){
     //If there are empty slots, insert value there
     for(uint32_t i = 0; i < cache.numBlocks; i++){
         if(!cache.sets[indexSet].slots[i].valid){
+            //cout << "i value: " << i << endl;
             cache.sets[indexSet].slots[i] = newSlot;
             return;
         }
     }
+    //cout << "REACHED!" << endl;
     //Replace using LRU if all the slots inside the set are full
     uint32_t min = UINT32_MAX;
     int index_LRU = 0;
@@ -124,21 +127,29 @@ void handle_load_miss_FIFO(Cache& cache, uint32_t indexSet, Slot newSlot){
     cache.sets[indexSet].slots[index_FIFO] = newSlot;
 }
 
-void store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
+int store(uint32_t address, Cache& cache, uint32_t simulation_timestep){
     uint32_t index = get_index(address, cache.numSets, cache.bytesOfMemory);
     uint32_t tag = get_tag(address, cache.numSets, cache.bytesOfMemory);
     std::tuple<int32_t, int32_t> index_slot_pair = find(cache, index, tag);
-    if (std::get<0>(index_slot_pair) != -1){ //cache miss
+
+    if (std::get<0>(index_slot_pair) == -1){ //cache miss
         if(cache.type_write_miss == "write-allocate"){
-            //write_allocate();
-        } else {
+            return load(address, cache, simulation_timestep);
+        } else { //no_write_allocate
            // no_write_allocate();
+           //do nothing?
+           return 1;
         }
     } else { //cache hit
         if(cache.type_write_hit == "write-through"){
-           // write_through();
-        } else {
-          //  write_back();
+          return load(address, cache, simulation_timestep);
+        } else { //write_back
+           if(cache.sets[index].slots[tag].dirty){
+            return load(address, cache, simulation_timestep);
+           } else {
+            cache.sets[index].slots[tag].dirty = true;
+            return 1;
+           }
         }
     }
 }

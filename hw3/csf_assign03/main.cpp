@@ -18,9 +18,6 @@ using std::cin;
 using std::tuple;
 using std::get;
 
-//Sample command line input
-// ./csim 256 4 16 write-allocate write-back lru < sometracefile
-
 int main(int argc, char** argv) {
     //Handle case of invalid number of parameters
     if(argc != 7){
@@ -57,6 +54,9 @@ int main(int argc, char** argv) {
         string address;
         ss >> command >> address;
 
+        //Increment simulation timestep
+        simulation_timestep++;    
+
         if(command == "l"){ //load
             int status = load(stoul(address, nullptr, 16), cache, simulation_timestep);
             totalLoads++;
@@ -69,15 +69,19 @@ int main(int argc, char** argv) {
                 return 1;
             }
         } else if (command == "s"){ //store
-            store(stoi(address), cache, simulation_timestep);
+            int status = store(stoi(address), cache, simulation_timestep);
             totalStores++;
+            if(status == 1){
+                totalStoreHits++;
+            } else if (status == -1){
+                totalStoreMisses++;
+            }
         } else {
             cerr << "Invalid command" << endl;
             return 1;
         }
-
-        //Increment simulation timestep
-        simulation_timestep++;       
+        
+           
     }
 
     //Testing
