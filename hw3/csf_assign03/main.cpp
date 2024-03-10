@@ -84,6 +84,9 @@ int main(int argc, char** argv) {
             } else if (status == -1){
                 totalStoreMisses++;
                 totalCycles = totalCycles + 100 * bytesOfMemory / 4;
+            } else if (status == 2){
+                totalStoreHits++;
+                totalCycles = totalCycles + 100 * bytesOfMemory / 4;
             }
         } else {
             cerr << "Invalid command" << endl;

@@ -191,6 +191,15 @@ int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string t
         cerr << "Number of sets must be a power of 2" << endl;
         return 1;
     }
+    //Make sure types indicated are valid
+    if(type_write_miss != "no-write-allocate" && type_write_miss != "write-allocate"){
+        cerr << "Invalid type for write-miss" << endl;
+        return 1;
+    }
+    if(type_write_hit != "write-through" && type_write_hit != "write-back"){
+        cerr << "Invalid type for write-hit" << endl;
+        return 1;
+    }
     //Make sure no-write-allocate and write-back and not specified together
     if(type_write_miss == "no-write-allocate" && type_write_hit == "write-back"){
         cerr << "Cannot specify no-write-allocate with write-back" << endl;
@@ -199,12 +208,3 @@ int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string t
 
     return 0;
 }
-
-
-void write_allocate(){}
-
-void no_write_allocate(){}
-
-void write_through(){}
-
-void write_back(){}
