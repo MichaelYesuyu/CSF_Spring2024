@@ -33,7 +33,7 @@ Cache create_cache(uint32_t numSets, uint32_t numBlocks, uint32_t bytesOfMemory,
     cache.totalLoadMisses = 0;
     cache.totalStores = 0;
     cache.totalStoreHits = 0;
-    cache.totalLoadMisses = 0;
+    cache.totalStoreMisses = 0;
     cache.totalCycles = 0;
     return cache;
 }
@@ -61,7 +61,7 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
 
 //Returns tuple (index of set, index of slot)
 std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
-    std::vector<Slot> lines = ((cache.sets)[index]).slots;
+    const std::vector<Slot> &lines = ((cache.sets)[index]).slots;
     for(uint32_t i = 0; i < cache.numBlocks; i++){
         if(((lines[i]).tag == in_tag)&&(lines[i].valid)){
             return std::make_tuple(index, i);

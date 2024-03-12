@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <tuple>
+#include <chrono>
 #include "functions.h"
 
 using std::ifstream;
@@ -58,18 +59,8 @@ int main(int argc, char** argv) {
             return 1;
         }
         
-           
     }
 
-    //Testing
-    //cout << "numSets: " << numSets << endl << "numBlocks: " << numBlocks  << endl << "bytesOfMemory " << bytesOfMemory << endl;
-    //cout << type_write_miss << endl;
-    //cout << type_write_hit << endl;
-    //cout << replace_strategy << endl;
-    //cout << "cache size: " << cache.sets.size() << "sets" << endl;
-    //cout << "set size: " << ((cache.sets)[0]).slots.size() << "slots" << endl;
-    //cout << get_tag(0x1fffff50, 256, 256) << endl;
-    //cout << get_index(0x1fffff50, 256, 256) << endl;
     cout << "Total loads: " << cache.totalLoads << endl;
     cout << "Total stores: " << cache.totalStores << endl;
     cout << "Load hits: " << cache.totalLoadHits << endl;
