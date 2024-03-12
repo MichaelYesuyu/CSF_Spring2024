@@ -62,7 +62,7 @@ uint32_t get_index(uint32_t address, uint32_t numSets, uint32_t bytesOfMemory){
 //Returns tuple (index of set, index of slot)
 std::tuple<int32_t, int32_t> find(const Cache &cache, uint32_t index, uint32_t in_tag){
     std::vector<Slot> lines = ((cache.sets)[index]).slots;
-    for(int32_t i = 0; i < (int32_t)cache.numBlocks; i++){
+    for(uint32_t i = 0; i < cache.numBlocks; i++){
         if(((lines[i]).tag == in_tag)&&(lines[i].valid)){
             return std::make_tuple(index, i);
         }        
@@ -82,7 +82,7 @@ void load(uint32_t address, Cache& cache){
         cache.totalCycles++;
         return;
     } else {
-        Slot new_slot = Slot(tag, true, cache.totalCycles, cache.totalCycles, false);
+        Slot new_slot = Slot{tag, true, cache.totalCycles, cache.totalCycles, false};
         int status = 0;
         if(cache.replace_strategy == "lru"){
                 status = handle_load_miss_LRU(cache, index, new_slot);
@@ -90,7 +90,7 @@ void load(uint32_t address, Cache& cache){
                 status = handle_load_miss_FIFO(cache, index, new_slot);
             }
         cache.totalLoadMisses++;
-        int cycleNum = 100 * (cache.bytesOfMemory / 4);
+        int cycleNum = 25 * cache.bytesOfMemory;
         cache.totalCycles += (cycleNum * (status + 1));
         return;
     }
@@ -176,25 +176,20 @@ void store(uint32_t address, Cache& cache){
                 cache.totalCycles++;
                 return;
             } else { //write through write allocate
-                int cycleNum = 100 * (cache.bytesOfMemory / 4);
-                cache.totalCycles += cycleNum;
+                cache.totalCycles += 25 * cache.bytesOfMemory;
             }
         } else { //no_write_allocate
-            int cycleNum = 100 * (cache.bytesOfMemory / 4);
-            cache.totalCycles += cycleNum;
+            cache.totalCycles += 25 * cache.bytesOfMemory;
         }
     } else { //cache hit
         cache.totalStoreHits++;
         if(cache.type_write_hit == "write-through"){ //write through
             cache.totalCycles++;
-            index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].access_ts = cache.totalCycles;
-            int cycleNum = 100 * (cache.bytesOfMemory / 4);
-            cache.totalCycles += cycleNum;
+            cache.totalCycles += 25 * cache.bytesOfMemory;
             return;
         } else { //write_back
             cache.totalCycles++;
-            index_slot_pair = find(cache, index, tag);
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].dirty = true;
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].access_ts = cache.totalCycles;
             cache.totalCycles++;
