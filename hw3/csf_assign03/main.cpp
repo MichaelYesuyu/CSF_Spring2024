@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
         
     }
 
+    //print out the total counts
     cout << "Total loads: " << cache.totalLoads << endl;
     cout << "Total stores: " << cache.totalStores << endl;
     cout << "Load hits: " << cache.totalLoadHits << endl;
