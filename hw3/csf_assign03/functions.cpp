@@ -209,17 +209,17 @@ void store(uint32_t address, Cache& cache){
                 cache.totalCycles++;
                 return;
             } else { //write through write allocate
-                cache.totalCycles += 25 * cache.bytesOfMemory;
+                cache.totalCycles += 100;
             }
         } else { //no_write_allocate
-            cache.totalCycles += 25 * cache.bytesOfMemory;
+            cache.totalCycles += 100;
         }
     } else { //cache hit
         cache.totalStoreHits++;
         if(cache.type_write_hit == "write-through"){ //write through
             cache.totalCycles++;
             cache.sets[get<0>(index_slot_pair)].slots[get<1>(index_slot_pair)].access_ts = cache.totalCycles;
-            cache.totalCycles += 25 * cache.bytesOfMemory;
+            cache.totalCycles += 100;
             return;
         } else { //write_back
             cache.totalCycles++;
