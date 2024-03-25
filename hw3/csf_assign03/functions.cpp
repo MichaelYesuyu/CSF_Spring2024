@@ -255,9 +255,15 @@ int input_error_handling(int numSets, int numBlocks, int bytesOfMemory, string t
         cerr << "Block size must be a power of 2" << endl;
         return 1;
     }
+    //Make sure that number of blocks is a power of 2
+    int num2 = numBlocks & (numBlocks - 1);
+    if(num2 != 0 && numBlocks != 1){
+        cerr << "Number of blocks must be a power of 2" << endl;
+        return 1;
+    }
     //Make sure that number of sets is a power of 2
-    int num2 = numSets & (numSets - 1);
-    if(num2 != 0){
+    int num3 = numSets & (numSets - 1);
+    if(num3 != 0 && numSets != 1){
         cerr << "Number of sets must be a power of 2" << endl;
         return 1;
     }
